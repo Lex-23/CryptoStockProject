@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "cryptostockproject"
+version = "0.1.0"
+description = ""
+authors = ["aliaksei <liverpoolsmile23@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+Django = "^3.2.8"
+psycopg2-binary = "^2.9.1"
+djangorestframework = "^3.12.4"
+
+[tool.poetry.dev-dependencies]
+flake8 = "^4.0.1"
+autopep8 = "^1.5.7"
+pre-commit = "^2.15.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
