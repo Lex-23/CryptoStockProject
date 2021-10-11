@@ -1,1 +1,1 @@
-# CryptoStock
+# CryptoStockProject
