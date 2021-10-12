@@ -17,10 +17,8 @@ class Account(models.Model):
 
 
 class Broker(Account):
-
-    Type = "Broker account"
+    pass
 
 
 class Client(Account):
-
-    Type = "Client account"
+    pass
