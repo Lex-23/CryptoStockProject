@@ -6,8 +6,6 @@ from wallet.models import Wallet
 class Account(models.Model):
     """Base model"""
 
-    Type = "Base account"
-
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
     wallet = models.OneToOneField(Wallet, on_delete=models.CASCADE)
