@@ -1,5 +1,5 @@
 from django.db import models
-from utils.modules import CustomDecimalField
+from utils.modules import CountField, PriceField
 
 
 class AssetType(models.Model):
@@ -12,8 +12,8 @@ class AssetType(models.Model):
 
 class Asset(models.Model):
     type = models.ForeignKey(AssetType, on_delete=models.CASCADE)
-    price = CustomDecimalField()
-    count = CustomDecimalField()
+    price = PriceField()
+    count = CountField()
 
     def __str__(self):
         return f"asset: {self.type.name} for {self.price}"

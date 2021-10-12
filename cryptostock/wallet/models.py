@@ -3,7 +3,7 @@ from django.db import models
 
 
 class Wallet(models.Model):
-    asset = models.ForeignKey(Asset, on_delete=models.DO_NOTHING)
+    asset = models.ManyToManyField(Asset)
     name = models.CharField(max_length=100)
 
     def __str__(self):
