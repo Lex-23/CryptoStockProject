@@ -2,8 +2,13 @@ from asset.models import Asset, AssetType
 from django.contrib import admin
 
 
+class AssetInline(admin.TabularInline):
+    model = Asset
+
+
 @admin.register(AssetType)
 class AssetTypeAdmin(admin.ModelAdmin):
+    inlines = (AssetInline,)
     fields = ("name", "description")
     search_fields = ("name",)
     list_display = ("id", "name")

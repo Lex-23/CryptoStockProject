@@ -1,12 +1,15 @@
 from django.contrib import admin
-from wallet.models import Wallet
+from wallet.models import Wallet, WalletAssistant
+
+
+class WalletAssistantInline(admin.TabularInline):
+    model = WalletAssistant
+    extra = 1
 
 
 @admin.register(Wallet)
 class WalletAdmin(admin.ModelAdmin):
-    fields = ("asset", "name")
+    inlines = (WalletAssistantInline,)
+    fields = ("name",)
     search_fields = ("name",)
-    list_display = ("id", "name", "get_assets")
-
-    def get_assets(self, obj):
-        return "\n".join([str(_) for _ in obj.asset.all()])
+    list_display = ("id", "name")

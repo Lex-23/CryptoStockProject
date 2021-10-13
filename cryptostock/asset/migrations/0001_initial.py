@@ -10,11 +10,6 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    replaces = [
-        ("asset", "0001_initial"),
-        ("asset", "0002_alter_assettype_description"),
-    ]
-
     initial = True
 
     dependencies = []
