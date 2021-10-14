@@ -9,6 +9,10 @@ class Wallet(models.Model):
     def __str__(self):
         return self.name
 
+    @property
+    def all_assets(self):
+        return self.assets.all()
+
 
 class WalletAssistant(models.Model):
     asset = models.ForeignKey(Asset, on_delete=models.CASCADE)

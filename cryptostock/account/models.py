@@ -13,6 +13,10 @@ class Account(models.Model):
     def __str__(self):
         return f"{self.name} by {self.owner}"
 
+    @property
+    def have_assets(self):
+        return list(self.wallet.all_assets)
+
 
 class Broker(Account):
     pass

@@ -16,4 +16,4 @@ class Asset(models.Model):
     count = CountField()
 
     def __str__(self):
-        return f"Allow: {self.count} {self.type.name} for {self.price}"
+        return f"{self.count} {self.type.name} for {self.price}"
