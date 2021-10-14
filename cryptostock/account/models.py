@@ -11,7 +11,7 @@ class Account(models.Model):
     wallet = models.OneToOneField(Wallet, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.name} by: {self.owner}"
+        return f"{self.name} by {self.owner}"
 
 
 class Broker(Account):
