@@ -9,3 +9,4 @@ class WalletSerializer(serializers.ModelSerializer):
     class Meta:
         model = Wallet
         fields = ["id", "name", "assets"]
+        depth = 1
