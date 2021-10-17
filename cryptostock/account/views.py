@@ -1,4 +1,4 @@
-from account.models import Broker, Client
+from account.models import Account, Broker, Client
 from account.serializers import BrokerSerializer, ClientSerializer
 from asset.models import Asset
 from asset.serializers import AssetSerializer
@@ -6,6 +6,7 @@ from django.http import Http404
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from wallet.models import Wallet
 from wallet.serializers import WalletSerializer
 
 
@@ -26,11 +27,16 @@ class BrokerAssets(APIView):
 
 
 class AssetDetail(APIView):
-    def get(self, request, pk=None):
+    def get(self, request, pk=None, wal_id=None, acc_id=None):
         queryset = Asset.objects.all()
         asset = get_object_or_404(queryset, pk=pk)
         serializer = AssetSerializer(asset)
-        return Response(serializer.data)
+        if asset.wallet.get() == Wallet.objects.get(
+            id=wal_id
+        ) and asset.wallet.get().account == Account.objects.get(id=acc_id):
+            return Response(serializer.data)
+        else:
+            return Response(404)
 
 
 class ListClients(APIView):

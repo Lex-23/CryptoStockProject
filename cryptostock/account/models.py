@@ -8,7 +8,9 @@ class Account(models.Model):
 
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=50)
-    wallet = models.OneToOneField(Wallet, on_delete=models.CASCADE)
+    wallet = models.OneToOneField(
+        Wallet, on_delete=models.CASCADE, related_name="account"
+    )
 
     def __str__(self):
         return f"{self.name} by {self.owner}"

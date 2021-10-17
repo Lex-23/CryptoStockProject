@@ -3,7 +3,9 @@ from django.db import models
 
 
 class Wallet(models.Model):
-    assets = models.ManyToManyField(Asset, through="WalletAssistant")
+    assets = models.ManyToManyField(
+        Asset, through="WalletAssistant", related_name="wallet"
+    )
     name = models.CharField(max_length=100)
 
     def __str__(self):
