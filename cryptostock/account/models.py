@@ -1,5 +1,7 @@
+from asset.models import Asset
 from django.contrib.auth.models import User
 from django.db import models
+from utils.modules import CountField
 from wallet.models import Wallet
 
 
@@ -26,3 +28,10 @@ class Broker(Account):
 
 class Client(Account):
     pass
+
+
+class AssetBuy(models.Model):
+    client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    asset = models.ForeignKey(Asset, on_delete=models.CASCADE)
+    buy_count = CountField()
+    timestamp = models.DateTimeField(auto_now=True)

@@ -1,19 +1,18 @@
 from account.views import (
     AssetDetail,
-    BrokerAssets,
-    BrokerDetail,
-    BrokersAPIView,
+    BrokerDetailAssets,
     DetailClient,
+    ListBrokers,
     ListClients,
 )
 from django.urls import path
 
 urlpatterns = [
-    path("brokers/", BrokersAPIView.as_view()),
-    path("brokers/<pk>/", BrokerDetail.as_view()),
-    path("brokers/<pk>/assets/", BrokerAssets.as_view()),
+    path("brokers/", ListBrokers.as_view()),
+    path("brokers/<pk>/assets/", BrokerDetailAssets.as_view()),
     path(
-        "brokers/<int:acc_id>/wallet/<int:wal_id>/assets/<pk>/", AssetDetail.as_view()
+        "brokers/<int:acc_id>/wallet/<int:wal_id>/asset/<int:pk>/",
+        AssetDetail.as_view(),
     ),
     path("clients/", ListClients.as_view()),
     path("clients/<pk>/", DetailClient.as_view()),
