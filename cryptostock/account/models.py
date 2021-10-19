@@ -1,12 +1,12 @@
-from django.contrib.auth.models import User
 from django.db import models
+from user.models import User
 from wallet.models import Wallet
 
 
 class Account(models.Model):
     """Base model"""
 
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, unique=True)
     name = models.CharField(max_length=50)
     wallet = models.OneToOneField(Wallet, on_delete=models.CASCADE)
 

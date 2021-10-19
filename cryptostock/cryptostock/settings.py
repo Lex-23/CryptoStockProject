@@ -42,7 +42,10 @@ INSTALLED_APPS = [
     "asset",
     "wallet",
     "account",
+    "user",
 ]
+
+AUTH_USER_MODEL = "user.User"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -77,6 +80,13 @@ WSGI_APPLICATION = "cryptostock.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
+
+
+REST_FRAMEWORK = {
+    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
+    "DEFAULT_AUTHENTICATION_CLASSES": ("user.backends.JWTAuthentication",),
+}
+
 
 DATABASES = {
     "default": {
