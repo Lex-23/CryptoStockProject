@@ -38,7 +38,6 @@ class UserManager(BaseUserManager):
     def create_superuser(
         self, username=None, email=None, password=None, **extra_fields
     ):
-        breakpoint()
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
 
