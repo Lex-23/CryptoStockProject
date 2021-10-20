@@ -8,7 +8,7 @@ from wallet.models import Wallet
 class Account(models.Model):
     """Base model"""
 
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    owner = models.OneToOneField(User, on_delete=models.CASCADE, related_name="account")
     name = models.CharField(max_length=50)
     wallet = models.OneToOneField(
         Wallet, on_delete=models.CASCADE, related_name="account"

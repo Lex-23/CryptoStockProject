@@ -1,6 +1,7 @@
 from account.views import (
     AssetDetail,
     BrokerDetailAssets,
+    BuyAsset,
     DetailClient,
     ListBrokers,
     ListClients,
@@ -16,4 +17,8 @@ urlpatterns = [
     ),
     path("clients/", ListClients.as_view()),
     path("clients/<pk>/", DetailClient.as_view()),
+    path(
+        "brokers/<int:acc_id>/wallet/<int:wal_id>/asset/<int:pk>/buy/",
+        BuyAsset.as_view(),
+    ),
 ]

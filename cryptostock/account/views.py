@@ -1,5 +1,5 @@
 from account.models import Broker, Client
-from account.serializers import AssetBuySerializer, BrokerSerializer, ClientSerializer
+from account.serializers import BrokerSerializer, ClientSerializer
 from asset.models import Asset
 from asset.serializers import AssetSerializer
 from django.http import Http404
@@ -16,6 +16,7 @@ from utils.validators import (
 
 class ListBrokers(APIView):
     def get(self, request):
+        breakpoint()
         queryset = Broker.objects.all()
         serializer = BrokerSerializer(queryset, many=True)
         return Response(serializer.data)
@@ -80,11 +81,22 @@ class DetailClient(APIView):
 
 
 class BuyAsset(APIView):
-    def post(self, request, *args, **kwargs):
+    def patch(self, request, *args, **kwargs):
         assets = Asset.objects.all()
         asset = get_object_or_404(assets, pk=kwargs["pk"])
-        serializer = AssetBuySerializer(data=request.data)
+        account = request.user.account
+        data = request.data
 
-        if serializer.is_valid():
-            validate_wallet(asset, kwargs["wal_id"])
-            validate_account(asset, kwargs["acc_id"])
+        validate_wallet(asset, kwargs["wal_id"])
+        validate_account(asset, kwargs["acc_id"])
+        if hasattr(request.user.account, "client"):
+            account.wallet.assets.create(
+                type=asset.type, price=asset.price, count=data["price"]
+            )
+            account.wallet.assets.save()
+
+            asset.count -= data["price"]
+            asset.save()
+            return Response({"status": "deal is success"})
+        else:
+            return Response("You are not a client")
