@@ -33,14 +33,29 @@ class SalesDashboard(models.Model):
     price = PriceField()
     broker = models.ForeignKey(Broker, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f"{self.asset} - price:{self.price} - broker:{self.broker}"
+
 
 class Offer(models.Model):
+    deal = models.ForeignKey(
+        SalesDashboard, on_delete=models.CASCADE, related_name="offer"
+    )
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
-    asset = models.ForeignKey(Asset, on_delete=models.CASCADE)
     count = CountField()
-    price = PriceField()
-    broker = models.ForeignKey(Broker, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now=True)
+
+    @property
+    def price(self):
+        return self.deal.price
+
+    @property
+    def asset(self):
+        return self.deal.asset
+
+    @property
+    def broker(self):
+        return self.deal.broker
 
     @property
     def total_value(self):

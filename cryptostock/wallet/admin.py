@@ -12,7 +12,6 @@ class WalletRecordAdmin(admin.ModelAdmin):
     fields = ("asset", "count", "wallet")
     search_fields = ("wallet", "asset")
     list_display = ("id", "asset", "count", "wallet")
-    ordering = ("wallet",)
 
 
 @admin.register(Wallet)

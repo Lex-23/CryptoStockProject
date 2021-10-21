@@ -34,25 +34,23 @@ class SalesDashboardAdmin(admin.ModelAdmin):
     fields = ("asset", "count", "price", "broker")
     list_display = ("id", "asset", "count", "price", "broker")
     list_editable = ("count", "price")
-    ordering = ("asset", "broker")
     search_fields = ("asset", "broker")
     list_filter = ("asset", "broker")
 
 
 @admin.register(Offer)
 class OfferAdmin(admin.ModelAdmin):
-    fields = ("client", "asset", "count", "price", "broker")
+    fields = ("deal", "client", "count")
     list_display = (
         "id",
         "client",
         "asset",
-        "count",
         "price",
+        "count",
         "broker",
         "timestamp",
         "total_value",
     )
-    list_editable = ("count", "price")
-    ordering = ("asset", "broker", "client", "timestamp")
-    search_fields = ("asset", "broker", "client")
-    list_filter = ("asset", "broker")
+    list_editable = ("count",)
+    search_fields = ("client", "asset")
+    list_filter = ("client",)
