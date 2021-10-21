@@ -18,3 +18,6 @@ class WalletRecord(models.Model):
     wallet = models.ForeignKey(
         Wallet, on_delete=models.CASCADE, related_name="wallet_record"
     )
+
+    class Meta:
+        unique_together = ("asset", "wallet")
