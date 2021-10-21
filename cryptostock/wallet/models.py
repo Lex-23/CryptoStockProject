@@ -9,14 +9,10 @@ class Wallet(models.Model):
     def __str__(self):
         return self.name
 
-    @property
-    def all_assets(self):
-        return self.asset.all()
-
 
 class WalletRecord(models.Model):
     asset = models.ForeignKey(
-        Asset, on_delete=models.CASCADE, related_name="wallet_record", unique=True
+        Asset, on_delete=models.CASCADE, related_name="wallet_record"
     )
     count = CountField(default=0)
     wallet = models.ForeignKey(

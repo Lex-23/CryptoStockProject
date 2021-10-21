@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ("wallet", "0002_wallet_record"),
+        ("wallet", "0002_walletrecord"),
         ("asset", "0001_initial"),
     ]
 
