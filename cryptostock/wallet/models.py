@@ -11,7 +11,7 @@ class Wallet(models.Model):
 
     @property
     def all_assets(self):
-        return self.assets.all()
+        return self.asset.all()
 
 
 class WalletRecord(models.Model):

@@ -1,4 +1,4 @@
-from account.models import AssetBuy, Broker, Client
+from account.models import Broker, Client, SalesDashboard
 from asset.serializers import AssetSerializer
 from rest_framework import serializers
 from wallet.serializers import WalletSerializer
@@ -21,10 +21,19 @@ class ClientSerializer(AccountSerializer):
         fields = ["id", "name", "owner", "wallet"]
 
 
-class AssetBuySerializer(serializers.ModelSerializer):
-    client = ClientSerializer()
+class SalesDashboardSerializer(serializers.ModelSerializer):
+    broker = BrokerSerializer()
     asset = AssetSerializer()
 
     class Meta:
-        model = AssetBuy
-        fields = ["id", "client", "asset", "buy_count", "timestamp"]
+        model = SalesDashboard
+        fields = ["id", "asset", "count", "price", "broker"]
+
+
+class OfferSerializer(serializers.ModelSerializer):
+    deal = SalesDashboardSerializer()
+    client = ClientSerializer()
+
+    class Meta:
+        model = SalesDashboard
+        fields = ["id", "asset", "broker", "total_value", "timestamp", "deal"]

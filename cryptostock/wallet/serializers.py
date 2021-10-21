@@ -4,7 +4,14 @@ from wallet.models import Wallet
 
 
 class WalletSerializer(serializers.ModelSerializer):
-    assets = AssetSerializer(many=True)
+    class Meta:
+        model = Wallet
+        fields = ["id", "name"]
+
+
+class WalletRecordSerializer(serializers.ModelSerializer):
+    assets = AssetSerializer()
+    wallet = WalletSerializer()
 
     class Meta:
         model = Wallet
