@@ -1,24 +1,10 @@
-from account.views import (
-    AssetDetail,
-    BrokerDetailAssets,
-    BuyAsset,
-    DetailClient,
-    ListBrokers,
-    ListClients,
-)
+from account.views import SaleApiView, SalesListApiView
 from django.urls import path
 
 urlpatterns = [
-    path("brokers/", ListBrokers.as_view()),
-    path("brokers/<pk>/assets/", BrokerDetailAssets.as_view()),
-    path(
-        "brokers/<int:acc_id>/wallet/<int:wal_id>/asset/<int:pk>/",
-        AssetDetail.as_view(),
-    ),
-    path("clients/", ListClients.as_view()),
-    path("clients/<pk>/", DetailClient.as_view()),
-    path(
-        "brokers/<int:acc_id>/wallet/<int:wal_id>/asset/<int:pk>/buy/",
-        BuyAsset.as_view(),
-    ),
+    path("salesdashboard/", SalesListApiView.as_view()),
+    path("salesdashboard/<int:pk>/", SaleApiView.as_view()),
+    path("salesdashboard/<int:pk>/update/", SaleApiView.as_view()),
+    path("salesdashboard/<int:pk>/delete/", SaleApiView.as_view()),
+    path("newsale/<int:pk>/", SalesListApiView.as_view()),
 ]

@@ -1,102 +1,82 @@
-from account.models import Broker, Client
-from account.serializers import BrokerSerializer, ClientSerializer
+from account.models import SalesDashboard
+from account.serializers import SalesDashboardSerializer
 from asset.models import Asset
-from asset.serializers import AssetSerializer
 from django.http import Http404
-from rest_framework.generics import get_object_or_404
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from utils.validators import (
-    validate_account,
+    create_sale_object,
+    validate_asset_count,
+    validate_asset_exists,
+    validate_broker_owner_sale,
+    validate_is_broker,
     validate_price_positive,
-    validate_price_type,
-    validate_wallet,
 )
 
 
-class ListBrokers(APIView):
-    def get(self, request):
-        breakpoint()
-        queryset = Broker.objects.all()
-        serializer = BrokerSerializer(queryset, many=True)
+class SalesListApiView(APIView):
+    def get_asset(self, pk):
+        try:
+            return Asset.objects.get(pk=pk)
+        except Asset.DoesNotExist:
+            raise Http404
+
+    def get(self, request, format=None):
+        sales = SalesDashboard.objects.all()
+        serializer = SalesDashboardSerializer(sales, many=True)
         return Response(serializer.data)
 
+    def post(self, request, pk, format=None):
+        data = request.data
+        broker = request.user.account.broker
+        asset = self.get_asset(pk=pk)
+        new_sale = {"price": data["price"], "count": data["count"]}
+        serializer = SalesDashboardSerializer(data=new_sale)
 
-class BrokerDetailAssets(APIView):
+        if serializer.is_valid():
+
+            validate_price_positive(request)
+            validate_is_broker(request)
+            validate_asset_exists(asset, broker)
+            validate_asset_count(request, asset, broker)
+
+            new_object = create_sale_object(serializer, asset, broker)
+            return Response(new_object, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class SaleApiView(APIView):
     def get_object(self, pk):
         try:
-            return Broker.objects.get(pk=pk)
-        except Broker.DoesNotExist:
+            return SalesDashboard.objects.get(pk=pk)
+        except SalesDashboard.DoesNotExist:
             raise Http404
 
     def get(self, request, pk, format=None):
-        broker = self.get_object(pk)
-        serializer = BrokerSerializer(broker)
-        return Response(serializer.data["wallet"]["assets"])
-
-
-class AssetDetail(APIView):
-    def get_queryset(self):
-        queryset = Asset.objects.all()
-        return queryset
-
-    def get(self, request, *args, **kwargs):
-        asset = get_object_or_404(self.get_queryset(), pk=kwargs["pk"])
-        serializer = AssetSerializer(asset)
-
-        validate_wallet(asset, kwargs["wal_id"])
-        validate_account(asset, kwargs["acc_id"])
+        sale = self.get_object(pk)
+        serializer = SalesDashboardSerializer(sale)
         return Response(serializer.data)
 
-    def patch(self, request, *args, **kwargs):
-        asset = get_object_or_404(self.get_queryset(), pk=kwargs["pk"])
-        data = request.data
-        asset.price = data.get("price", asset.price)
-
-        validate_price_type(asset)
-        validate_price_positive(asset)
-
-        asset.save()
-        serializer = AssetSerializer(asset)
-
-        validate_wallet(asset, kwargs["wal_id"])
-        validate_account(asset, kwargs["acc_id"])
-        return Response(serializer.data)
-
-
-class ListClients(APIView):
-    def get(self, request):
-        queryset = Client.objects.all()
-        serializer = BrokerSerializer(queryset, many=True)
+    def patch(self, request, pk, format=None):
+        sale = self.get_object(pk)
+        serializer = SalesDashboardSerializer(sale, data=request.data)
         if serializer.is_valid():
+            breakpoint()
+            validate_price_positive(request)
+            validate_is_broker(request)
+            validate_broker_owner_sale(request, sale)
+            validate_asset_count(request, sale.asset, sale.broker)
+            serializer.save()
+
             return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    def delete(self, request, pk, format=None):
+        sale = self.get_object(pk)
 
-class DetailClient(APIView):
-    def get(self, request, pk=None):
-        queryset = Client.objects.all()
-        client = get_object_or_404(queryset, pk=pk)
-        serializer = ClientSerializer(client)
-        return Response(serializer.data)
+        validate_is_broker(request)
+        validate_broker_owner_sale(request, sale)
+        sale.delete()
 
-
-class BuyAsset(APIView):
-    def patch(self, request, *args, **kwargs):
-        assets = Asset.objects.all()
-        asset = get_object_or_404(assets, pk=kwargs["pk"])
-        account = request.user.account
-        data = request.data
-
-        validate_wallet(asset, kwargs["wal_id"])
-        validate_account(asset, kwargs["acc_id"])
-        if hasattr(request.user.account, "client"):
-            account.wallet.assets.create(
-                type=asset.type, price=asset.price, count=data["price"]
-            )
-            account.wallet.assets.save()
-
-            asset.count -= data["price"]
-            asset.save()
-            return Response({"status": "deal is success"})
-        else:
-            return Response("You are not a client")
+        return Response({"status": "sale deleted"}, status=status.HTTP_204_NO_CONTENT)

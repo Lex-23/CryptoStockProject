@@ -7,9 +7,9 @@ urlpatterns = [
     path("api/v1/", include("account.urls")),
     path("api/v2/", include("market.urls")),
     path(
-        "api/token/", jwt_views.TokenObtainPairView.as_view(), name="token_obtain_pair"
+        "api/auth/", jwt_views.TokenObtainPairView.as_view(), name="token_obtain_pair"
     ),
     path(
-        "api/token/refresh/", jwt_views.TokenRefreshView.as_view(), name="token_refresh"
+        "api/auth/refresh/", jwt_views.TokenRefreshView.as_view(), name="token_refresh"
     ),
 ]

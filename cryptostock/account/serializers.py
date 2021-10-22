@@ -22,12 +22,19 @@ class ClientSerializer(AccountSerializer):
 
 
 class SalesDashboardSerializer(serializers.ModelSerializer):
-    broker = BrokerSerializer()
-    asset = AssetSerializer()
+    broker = BrokerSerializer(required=False)
+    asset = AssetSerializer(required=False)
 
     class Meta:
         model = SalesDashboard
         fields = ["id", "asset", "count", "price", "broker"]
+
+
+# class SaleSerializer(serializers.ModelSerializer):
+#
+#     class Meta:
+#         model = SalesDashboard
+#         fields = ["count", "price"]
 
 
 class OfferSerializer(serializers.ModelSerializer):
