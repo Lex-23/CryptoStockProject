@@ -17,13 +17,13 @@ class AccountSerializer(serializers.ModelSerializer):
 class BrokerSerializer(AccountSerializer):
     class Meta:
         model = Broker
-        fields = ["id", "name", "owner", "cash_balance", "wallet"]
+        fields = ["id", "name", "owner", "wallet"]
 
 
 class ClientSerializer(AccountSerializer):
     class Meta:
         model = Client
-        fields = ["id", "name", "owner", "cash_balance", "wallet"]
+        fields = ["id", "name", "owner", "wallet"]
 
 
 class SalesDashboardSerializer(serializers.ModelSerializer):

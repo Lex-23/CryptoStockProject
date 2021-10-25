@@ -3,18 +3,6 @@ import decimal
 from rest_framework.serializers import ValidationError
 
 
-def update_cash_balance(client, broker, value):
-    client.cash_balance -= decimal.Decimal(value)
-    client.save()
-    broker.cash_balance += decimal.Decimal(value)
-    broker.save()
-
-
-def update_deal(deal, count):
-    deal.count -= decimal.Decimal(count)
-    deal.save()
-
-
 def validate_is_broker(request):
     if not hasattr(request.user.account, "broker"):
         raise ValidationError(
@@ -39,6 +27,11 @@ def validate_broker_owner_sale(request, sale):
         raise ValidationError(
             ["You haven`t permissions for this operation. This is not your sale."]
         )
+
+
+def broker_validate(request, sale):
+    validate_is_broker(request)
+    validate_broker_owner_sale(request, sale)
 
 
 def validate_asset_count(request, asset, broker):

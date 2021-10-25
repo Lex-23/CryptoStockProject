@@ -11,12 +11,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from utils import validators
-from utils.services import (
-    broker_wallet_record_flow,
-    client_wallet_record_flow,
-    create_offer,
-    create_sale_object,
-)
+from utils.services import create_sale_object, offer_flow
 
 
 class SalesListApiView(APIView):
@@ -33,18 +28,13 @@ class SalesListApiView(APIView):
 
     def post(self, request, pk, format=None):
         data = request.data
-        broker = request.user.account.broker
         asset = self.get_asset(pk=pk)
         new_sale = {"price": data["price"], "count": data["count"]}
         serializer = SalesDashboardSerializer(data=new_sale)
 
         if serializer.is_valid():
-            validators.validate_is_broker(request)
-            validators.validate_asset_exists(asset, broker)
-            validators.validate_asset_count(request, asset, broker)
-
-            new_object = create_sale_object(serializer, asset, broker)
-            return Response(new_object, status=status.HTTP_201_CREATED)
+            sale_object = create_sale_object(serializer, asset, request)
+            return Response(sale_object, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -64,21 +54,16 @@ class SaleApiView(APIView):
         sale = self.get_object(pk)
         serializer = SalesDashboardSerializer(sale, data=request.data)
         if serializer.is_valid():
-            validators.validate_is_broker(request)
-            validators.validate_broker_owner_sale(request, sale)
+            validators.broker_validate(request, sale)
             validators.validate_asset_count(request, sale.asset, sale.broker)
             serializer.save()
-
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk, format=None):
         sale = self.get_object(pk)
-
-        validators.validate_is_broker(request)
-        validators.validate_broker_owner_sale(request, sale)
+        validators.broker_validate(request, sale)
         sale.delete()
-
         return Response({"status": "sale deleted"}, status=status.HTTP_204_NO_CONTENT)
 
 
@@ -97,30 +82,13 @@ class OffersListApiView(APIView):
     @transaction.atomic
     def post(self, request, pk, format=None):
         data = request.data
-        client = request.user.account.client
         deal = self.get_sale(pk=pk)
         offer_count = {"count": data["count"]}
         serializer = OfferSerializer(data=offer_count)
 
         if serializer.is_valid():
-            offer_count = serializer.data["count"]
-
-            validators.validate_is_client(request)
-            validators.validate_offer_count(serializer, deal)
-
-            offer = create_offer(client, deal, count=offer_count)
-            deal_value = offer.total_value
-            validators.validate_cash_balance(client, deal_value)
-
-            client_wallet_record_flow(client, deal, count=offer_count)
-            broker = deal.broker
-            broker_wallet_record_flow(broker, deal, count=offer_count)
-            validators.update_cash_balance(client, broker, value=deal_value)
-            validators.update_deal(deal, count=offer_count)
-
-            offer.save()
-            serializer = OfferSerializer(offer)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            offer = offer_flow(serializer, request, deal)
+            return Response(offer, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
