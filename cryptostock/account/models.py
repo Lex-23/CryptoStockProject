@@ -1,7 +1,9 @@
+import decimal
+
 from asset.models import Asset
 from django.contrib.auth.models import User
 from django.db import models
-from utils.modules import CountField, PriceField
+from utils.fields import CountField, PriceField
 from wallet.models import Wallet
 
 
@@ -17,6 +19,9 @@ class Account(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.owner})"
+
+    def wallet_records(self):
+        return self.wallet.wallet_record.all()
 
 
 class Broker(Account):
@@ -59,4 +64,4 @@ class Offer(models.Model):
 
     @property
     def total_value(self):
-        return self.count * self.price
+        return decimal.Decimal(self.count) * decimal.Decimal(self.price)

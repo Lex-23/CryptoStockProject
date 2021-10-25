@@ -1,24 +1,29 @@
-from account.models import Broker, Client, SalesDashboard
+from account.models import Account, Broker, Client, Offer, SalesDashboard
 from asset.serializers import AssetSerializer
 from rest_framework import serializers
-from wallet.serializers import WalletSerializer
+from wallet.serializers import WalletRecordSerializer, WalletSerializer
 
 
 class AccountSerializer(serializers.ModelSerializer):
     wallet = WalletSerializer()
     owner = serializers.StringRelatedField()
+    wallet_records = WalletRecordSerializer(many=True)
+
+    class Meta:
+        model = Account
+        fields = ["id", "name", "owner", "cash_balance", "wallet", "wallet_records"]
 
 
 class BrokerSerializer(AccountSerializer):
     class Meta:
         model = Broker
-        fields = ["id", "name", "owner", "wallet"]
+        fields = ["id", "name", "owner", "cash_balance", "wallet"]
 
 
 class ClientSerializer(AccountSerializer):
     class Meta:
         model = Client
-        fields = ["id", "name", "owner", "wallet"]
+        fields = ["id", "name", "owner", "cash_balance", "wallet"]
 
 
 class SalesDashboardSerializer(serializers.ModelSerializer):
@@ -30,17 +35,10 @@ class SalesDashboardSerializer(serializers.ModelSerializer):
         fields = ["id", "asset", "count", "price", "broker"]
 
 
-# class SaleSerializer(serializers.ModelSerializer):
-#
-#     class Meta:
-#         model = SalesDashboard
-#         fields = ["count", "price"]
-
-
 class OfferSerializer(serializers.ModelSerializer):
-    deal = SalesDashboardSerializer()
-    client = ClientSerializer()
+    deal = SalesDashboardSerializer(required=False)
+    client = ClientSerializer(required=False)
 
     class Meta:
-        model = SalesDashboard
-        fields = ["id", "asset", "broker", "total_value", "timestamp", "deal"]
+        model = Offer
+        fields = ["id", "client", "count", "deal", "total_value", "timestamp"]

@@ -4,7 +4,7 @@ from decimal import Decimal
 
 import django.core.validators
 import django.db.models.deletion
-import utils.modules
+import utils.fields
 from django.conf import settings
 from django.db import migrations, models
 
@@ -35,7 +35,7 @@ class Migration(migrations.Migration):
                 ("name", models.CharField(max_length=50)),
                 (
                     "cash_balance",
-                    utils.modules.CountField(
+                    utils.fields.CountField(
                         decimal_places=4,
                         default=0,
                         max_digits=25,
@@ -110,7 +110,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "count",
-                    utils.modules.CountField(
+                    utils.fields.CountField(
                         decimal_places=4,
                         default=0,
                         max_digits=25,
@@ -121,7 +121,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "price",
-                    utils.modules.PriceField(
+                    utils.fields.PriceField(
                         decimal_places=6,
                         max_digits=20,
                         validators=[
@@ -159,7 +159,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "count",
-                    utils.modules.CountField(
+                    utils.fields.CountField(
                         decimal_places=4,
                         default=0,
                         max_digits=25,
@@ -170,7 +170,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "price",
-                    utils.modules.PriceField(
+                    utils.fields.PriceField(
                         decimal_places=6,
                         max_digits=20,
                         validators=[

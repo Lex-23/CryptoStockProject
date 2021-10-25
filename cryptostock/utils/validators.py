@@ -1,37 +1,31 @@
 import decimal
 
-from account.models import SalesDashboard
-from account.serializers import SalesDashboardSerializer
 from rest_framework.serializers import ValidationError
 
 
-def create_sale_object(serializer, asset, broker):
-    new_object = SalesDashboard.objects.create(
-        asset=asset,
-        broker=broker,
-        count=serializer.data["count"],
-        price=serializer.data["price"],
-    )
-    serializer_data = SalesDashboardSerializer(new_object).data
-    return serializer_data
+def update_cash_balance(client, broker, value):
+    client.cash_balance -= decimal.Decimal(value)
+    client.save()
+    broker.cash_balance += decimal.Decimal(value)
+    broker.save()
 
 
-def validate_price_type(asset):
-    try:
-        float(asset.price)
-    except ValueError as e:
-        raise ValidationError(["this price not numeric"]) from e
-
-
-def validate_price_positive(request):
-    if float(request.data["price"]) <= 0:
-        raise ValidationError(["price must be positive"])
+def update_deal(deal, count):
+    deal.count -= decimal.Decimal(count)
+    deal.save()
 
 
 def validate_is_broker(request):
     if not hasattr(request.user.account, "broker"):
         raise ValidationError(
             ["You are not a broker. You haven`t permissions for this operation."]
+        )
+
+
+def validate_is_client(request):
+    if not hasattr(request.user.account, "client"):
+        raise ValidationError(
+            ["You are not a client. You haven`t permissions for this operation."]
         )
 
 
@@ -55,3 +49,16 @@ def validate_asset_count(request, asset, broker):
 
     if key in data and sale_count > exists_count:
         raise ValidationError([f"You haven`t that much {asset.name}."])
+
+
+def validate_offer_count(serializer, deal):
+    offer_count = serializer.data["count"]
+    if decimal.Decimal(offer_count) > decimal.Decimal(deal.count):
+        raise ValidationError(
+            [f"Your offer count: {offer_count} is more then available for this sale."]
+        )
+
+
+def validate_cash_balance(account, deal_value):
+    if decimal.Decimal(account.cash_balance) < decimal.Decimal(deal_value):
+        raise ValidationError(["You don`t have enough funds for this operation."])

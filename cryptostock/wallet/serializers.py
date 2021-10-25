@@ -1,6 +1,6 @@
 from asset.serializers import AssetSerializer
 from rest_framework import serializers
-from wallet.models import Wallet
+from wallet.models import Wallet, WalletRecord
 
 
 class WalletSerializer(serializers.ModelSerializer):
@@ -10,9 +10,8 @@ class WalletSerializer(serializers.ModelSerializer):
 
 
 class WalletRecordSerializer(serializers.ModelSerializer):
-    assets = AssetSerializer()
-    wallet = WalletSerializer()
+    asset = AssetSerializer()
 
     class Meta:
-        model = Wallet
-        fields = ["id", "name", "assets"]
+        model = WalletRecord
+        fields = ["id", "asset", "count"]
