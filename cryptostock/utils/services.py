@@ -10,11 +10,6 @@ from wallet.models import WalletRecord
 def create_sale_object_serializer(count, price, asset, request) -> dict:
     """
     Validate request, create and serialize new object of SalesDashboard
-    :param count: asset count for new sale
-    :param price: asset price for new sale
-    :param asset: target asset object
-    :param request:
-    :return: serializer(new_sale).data
     """
     validators.validate_is_broker(request.user.account)
     broker = request.user.account.broker
@@ -32,11 +27,6 @@ def create_sale_object_serializer(count, price, asset, request) -> dict:
 def _broker_sale_asset(broker, deal, count, value):
     """
     Update broker`s cash_balance and wallet_record after offer
-    :param broker: broker object
-    :param deal: target sale
-    :param count: offer count
-    :param value: offer value
-    :return: None
     """
     broker_wallet_record = broker.wallet.wallet_record.get(asset=deal.asset)
     broker_wallet_record.count -= decimal.Decimal(count)
@@ -45,13 +35,7 @@ def _broker_sale_asset(broker, deal, count, value):
     broker.save()
 
 
-def _asset_exists_in_wallet(deal, client):
-    """
-    Check exists asset from target sale in client`s wallet
-    :param deal: target sale
-    :param client: client object
-    :return: bool
-    """
+def _is_asset_exists_in_wallet(deal, client):
     asset = deal.asset
     return client.wallet.wallet_record.filter(asset=asset).exists()
 
@@ -59,13 +43,8 @@ def _asset_exists_in_wallet(deal, client):
 def _client_buy_asset(client, deal, count, value):
     """
     Update clients`s cash_balance and wallet_record after offer
-    :param client: client object
-    :param deal: target sale
-    :param count: offer count
-    :param value: offer value
-    :return: None
     """
-    if _asset_exists_in_wallet(deal, client):
+    if _is_asset_exists_in_wallet(deal, client):
         client_wallet_record = client.wallet.wallet_record.get(asset=deal.asset)
         client_wallet_record.count += decimal.Decimal(count)
         client_wallet_record.save()
@@ -95,10 +74,6 @@ def deal_flow(client, deal, count, value):
 def offer_flow(offer_count, request, deal) -> dict:
     """
     Validate request, create and serialize new object of Offer
-    :param offer_count: count for offer
-    :param request:
-    :param deal: target sale
-    :return: serializer(new_offer).data
     """
     validators.validate_is_client(request.user.account)
     validators.validate_offer_count(offer_count, deal)

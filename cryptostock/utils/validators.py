@@ -35,15 +35,11 @@ def broker_validate(account, sale):
     validate_broker_owner_sale(broker, sale)
 
 
-def validate_asset_count(request_data, asset, broker):
-    key = "count"
-    if key in request_data:
-        sale_count = decimal.Decimal(request_data["count"])
-        exists_count = decimal.Decimal(
-            broker.wallet.wallet_record.get(asset=asset).count
-        )
-        if sale_count > exists_count:
-            raise ValidationError([f"You haven`t that much {asset.name}."])
+def validate_asset_count(count, asset, broker):
+    sale_count = decimal.Decimal(count)
+    exists_count = decimal.Decimal(broker.wallet.wallet_record.get(asset=asset).count)
+    if sale_count > exists_count:
+        raise ValidationError([f"You haven`t that much {asset.name}."])
 
 
 def validate_offer_count(offer_count, deal):
