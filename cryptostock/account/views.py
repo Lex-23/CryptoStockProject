@@ -6,73 +6,68 @@ from account.serializers import (
 )
 from asset.models import Asset
 from django.db import transaction
-from django.http import Http404
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from utils import validators
-from utils.services import create_sale_object, offer_flow
+from utils.services import create_sale_object_serializer, get_object, offer_flow
 
 
 class SalesListApiView(APIView):
-    def get_asset(self, pk):
-        try:
-            return Asset.objects.get(pk=pk)
-        except Asset.DoesNotExist:
-            raise Http404
-
     def get(self, request, format=None):
         sales = SalesDashboard.objects.all()
         serializer = SalesDashboardSerializer(sales, many=True)
         return Response(serializer.data)
 
-    def post(self, request, pk, format=None):
-        data = request.data
-        asset = self.get_asset(pk=pk)
-        new_sale = {"price": data["price"], "count": data["count"]}
-        serializer = SalesDashboardSerializer(data=new_sale)
-
-        if serializer.is_valid():
-            sale_object = create_sale_object(serializer, asset, request)
-            return Response(sale_object, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class SaleApiView(APIView):
-    def get_object(self, pk):
-        try:
-            return SalesDashboard.objects.get(pk=pk)
-        except SalesDashboard.DoesNotExist:
-            raise Http404
+    def get_sale(self, pk):
+        return get_object(SalesDashboard, pk)
+
+    def get_asset(self, pk):
+        return get_object(Asset, pk)
 
     def get(self, request, pk, format=None):
-        sale = self.get_object(pk)
+        sale = self.get_sale(pk)
         serializer = SalesDashboardSerializer(sale)
         return Response(serializer.data)
 
+    def post(self, request, pk, format=None):
+        asset = self.get_asset(pk=pk)
+        serializer = SalesDashboardSerializer(data=request.data)
+
+        if serializer.is_valid():
+            count, price = serializer.data["count"], serializer.data["price"]
+            sale_serializer = create_sale_object_serializer(
+                count, price, asset, request
+            )
+            return Response(sale_serializer, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     def patch(self, request, pk, format=None):
-        sale = self.get_object(pk)
+        sale = self.get_sale(pk)
         serializer = SalesDashboardSerializer(sale, data=request.data)
         if serializer.is_valid():
-            validators.broker_validate(request, sale)
-            validators.validate_asset_count(request, sale.asset, sale.broker)
+            account = request.user.account
+            validators.broker_validate(account, sale)
+            validators.validate_asset_count(request.data, sale.asset, sale.broker)
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk, format=None):
-        sale = self.get_object(pk)
-        validators.broker_validate(request, sale)
+        sale = self.get_sale(pk)
+
+        account = request.user.account
+        validators.broker_validate(account, sale)
+
         sale.delete()
         return Response({"status": "sale deleted"}, status=status.HTTP_204_NO_CONTENT)
 
 
 class OffersListApiView(APIView):
     def get_sale(self, pk):
-        try:
-            return SalesDashboard.objects.get(pk=pk)
-        except SalesDashboard.DoesNotExist:
-            raise Http404
+        return get_object(SalesDashboard, pk)
 
     def get(self, request, format=None):
         offers = Offer.objects.all()
@@ -81,14 +76,13 @@ class OffersListApiView(APIView):
 
     @transaction.atomic
     def post(self, request, pk, format=None):
-        data = request.data
         deal = self.get_sale(pk=pk)
-        offer_count = {"count": data["count"]}
-        serializer = OfferSerializer(data=offer_count)
+        serializer = OfferSerializer(data=request.data)
 
         if serializer.is_valid():
-            offer = offer_flow(serializer, request, deal)
-            return Response(offer, status=status.HTTP_201_CREATED)
+            offer_count = serializer.data["count"]
+            offer_serializer = offer_flow(offer_count, request, deal)
+            return Response(offer_serializer, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

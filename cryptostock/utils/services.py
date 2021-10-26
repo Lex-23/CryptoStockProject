@@ -2,21 +2,21 @@ import decimal
 
 from account.models import Offer, SalesDashboard
 from account.serializers import OfferSerializer, SalesDashboardSerializer
+from django.http import Http404
 from utils import validators
+from wallet.models import WalletRecord
 
 
-def create_sale_object(serializer, asset, request):
-    broker = request.user.account.broker
-
-    validators.validate_is_broker(request)
+def create_sale_object_serializer(count, price, asset, request):
+    account = request.user.account
+    validators.validate_is_broker(account)
+    broker = account.broker
     validators.validate_asset_exists(asset, broker)
-    validators.validate_asset_count(request, asset, broker)
+    data = request.data
+    validators.validate_asset_count(data, asset, broker)
 
     new_object = SalesDashboard.objects.create(
-        asset=asset,
-        broker=broker,
-        count=serializer.data["count"],
-        price=serializer.data["price"],
+        asset=asset, broker=broker, count=count, price=price
     )
     serializer_data = SalesDashboardSerializer(new_object).data
     return serializer_data
@@ -41,7 +41,7 @@ def _client_buy_asset(client, deal, count, value):
         client_wallet_record.count += decimal.Decimal(count)
         client_wallet_record.save()
     else:
-        client.wallet.wallet_record.create(asset=deal.asset, count=count)
+        WalletRecord.objects.create(asset=deal.asset, wallet=client.wallet, count=count)
     client.cash_balance -= decimal.Decimal(value)
     client.save()
 
@@ -63,13 +63,12 @@ def deal_flow(client, deal, count, value):
     _update_deal(deal, count)
 
 
-def offer_flow(serializer, request, deal):
-    client = request.user.account.client
-    offer_count = serializer.data["count"]
+def offer_flow(offer_count, request, deal):
+    account = request.user.account
+    validators.validate_is_client(account)
+    validators.validate_offer_count(offer_count, deal)
 
-    validators.validate_is_client(request)
-    validators.validate_offer_count(serializer, deal)
-
+    client = account.client
     offer = create_offer(client, deal, offer_count)
     deal_value = offer.total_value
     validators.validate_cash_balance(client, deal_value)
@@ -78,3 +77,10 @@ def offer_flow(serializer, request, deal):
     offer.save()
     serializer = OfferSerializer(offer)
     return serializer.data
+
+
+def get_object(pk, snippet):
+    try:
+        return snippet.objects.get(pk=pk)
+    except snippet.DoesNotExist:
+        raise Http404
