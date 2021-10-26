@@ -46,10 +46,9 @@ class SaleApiView(APIView):
 
     def patch(self, request, pk, format=None):
         sale = self.get_sale(pk)
-        serializer = SalesDashboardSerializer(sale, data=request.data)
+        serializer = SalesDashboardSerializer(sale, data=request.data, partial=True)
         if serializer.is_valid():
-            account = request.user.account
-            validators.broker_validate(account, sale)
+            validators.broker_validate(request.user.account, sale)
             validators.validate_asset_count(request.data, sale.asset, sale.broker)
             serializer.save()
             return Response(serializer.data)
@@ -57,10 +56,7 @@ class SaleApiView(APIView):
 
     def delete(self, request, pk, format=None):
         sale = self.get_sale(pk)
-
-        account = request.user.account
-        validators.broker_validate(account, sale)
-
+        validators.broker_validate(request.user.account, sale)
         sale.delete()
         return Response({"status": "sale deleted"}, status=status.HTTP_204_NO_CONTENT)
 
