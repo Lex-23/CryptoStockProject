@@ -1,5 +1,3 @@
-import decimal
-
 from asset.models import Asset
 from django.contrib.auth.models import User
 from django.db import models
@@ -64,4 +62,4 @@ class Offer(models.Model):
 
     @property
     def total_value(self):
-        return decimal.Decimal(self.count) * decimal.Decimal(self.price)
+        return self.count * self.price
