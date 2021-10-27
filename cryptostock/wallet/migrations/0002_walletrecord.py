@@ -5,6 +5,7 @@ from decimal import Decimal
 import django.core.validators
 import django.db.models.deletion
 import utils.fields
+
 from django.db import migrations, models
 
 
@@ -29,6 +30,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "count",
+                  
                     utils.fields.CountField(
                         decimal_places=4,
                         default=0,
