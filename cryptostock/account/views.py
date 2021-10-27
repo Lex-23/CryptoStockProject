@@ -36,24 +36,23 @@ class SaleApiView(APIView):
         asset = self.get_asset(pk=pk)
         serializer = SalesDashboardSerializer(data=request.data)
 
-        if serializer.is_valid():
-            count, price = serializer.data["count"], serializer.data["price"]
-            sale_data = create_sale_object_serializer(count, price, asset, request)
-            return Response(sale_data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        count, price = serializer.data["count"], serializer.data["price"]
+        sale_data = create_sale_object_serializer(count, price, asset, request)
+        return Response(sale_data, status=status.HTTP_201_CREATED)
 
     def patch(self, request, pk, format=None):
         sale = self.get_sale(pk)
         serializer = SalesDashboardSerializer(sale, data=request.data, partial=True)
-        if serializer.is_valid():
-            validators.broker_validate(request.user.account, sale)
-            if "count" in request.data:
-                validators.validate_asset_count(
-                    request.data["count"], sale.asset, sale.broker
-                )
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        validators.broker_validate(request.user.account, sale)
+
+        if "count" in request.data:
+            validators.validate_asset_count(
+                request.data["count"], sale.asset, sale.broker
+            )
+        serializer.save()
+        return Response(serializer.data)
 
     def delete(self, request, pk, format=None):
         sale = self.get_sale(pk)
@@ -75,12 +74,10 @@ class OffersListApiView(APIView):
     def post(self, request, pk, format=None):
         deal = self.get_sale(pk=pk)
         serializer = OfferSerializer(data=request.data)
-
-        if serializer.is_valid():
-            offer_count = serializer.data["count"]
-            offer_data = offer_flow(offer_count, request, deal)
-            return Response(offer_data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        offer_count = serializer.data["count"]
+        offer_data = offer_flow(offer_count, request, deal)
+        return Response(offer_data, status=status.HTTP_201_CREATED)
 
 
 class AccountApiView(APIView):

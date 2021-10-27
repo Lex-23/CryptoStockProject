@@ -4,8 +4,8 @@ from rest_framework_simplejwt import views as jwt_views
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/v1/", include("account.urls")),
-    path("api/v2/", include("market.urls")),
+    path("api/", include("account.urls")),
+    path("api/", include("market.urls")),
     path(
         "api/auth/", jwt_views.TokenObtainPairView.as_view(), name="token_obtain_pair"
     ),
