@@ -17,6 +17,7 @@ class SalesListApiView(APIView):
     def get(self, request, format=None):
         sales = SalesDashboard.objects.all()
         serializer = SalesDashboardSerializer(sales, many=True)
+        breakpoint()
         return Response(serializer.data)
 
 
@@ -45,7 +46,7 @@ class SaleApiView(APIView):
         sale = self.get_sale(pk)
         serializer = SalesDashboardSerializer(sale, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
-        validators.broker_validate(request.user.account, sale)
+        validators.broker_validate(request, sale)
 
         if "count" in request.data:
             validators.validate_asset_count(
@@ -58,7 +59,7 @@ class SaleApiView(APIView):
         sale = self.get_sale(pk)
         validators.broker_validate(request.user.account, sale)
         sale.delete()
-        return Response({"status": "sale deleted"}, status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class OffersListApiView(APIView):

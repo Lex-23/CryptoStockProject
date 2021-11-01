@@ -18,8 +18,16 @@ class Account(models.Model):
     def __str__(self):
         return f"{self.name} ({self.owner})"
 
+    @property
     def wallet_records(self):
         return self.wallet.wallet_record.all()
+
+    @property
+    def role(self):
+        if hasattr(self, "client"):
+            return "client"
+        elif hasattr(self, "broker"):
+            return "broker"
 
 
 class Broker(Account):

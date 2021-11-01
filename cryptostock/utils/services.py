@@ -11,11 +11,10 @@ def create_sale_object_serializer(count, price, asset, request) -> dict:
     """
     Validate request, create and serialize new object of SalesDashboard
     """
-    validators.validate_is_broker(request.user.account)
+    validators.validate_is_broker(request)
     broker = request.user.account.broker
     validators.validate_asset_exists(asset, broker)
-    data = request.data
-    validators.validate_asset_count(data, asset, broker)
+    validators.validate_asset_count(count, asset, broker)
 
     new_object = SalesDashboard.objects.create(
         asset=asset, broker=broker, count=count, price=price
@@ -75,7 +74,7 @@ def offer_flow(offer_count, request, deal) -> dict:
     """
     Validate request, create and serialize new object of Offer
     """
-    validators.validate_is_client(request.user.account)
+    validators.validate_is_client(request)
     validators.validate_offer_count(offer_count, deal)
 
     client = request.user.account.client

@@ -3,15 +3,15 @@ import decimal
 from rest_framework.serializers import ValidationError
 
 
-def validate_is_broker(account):
-    if not hasattr(account, "broker"):
+def validate_is_broker(request):
+    if request.auth["user_role"] != "broker":
         raise ValidationError(
             ["You are not a broker. You haven`t permissions for this operation."]
         )
 
 
-def validate_is_client(account):
-    if not hasattr(account, "client"):
+def validate_is_client(request):
+    if request.auth["user_role"] != "client":
         raise ValidationError(
             ["You are not a client. You haven`t permissions for this operation."]
         )
@@ -29,9 +29,9 @@ def validate_broker_owner_sale(broker, sale):
         )
 
 
-def broker_validate(account, sale):
-    validate_is_broker(account)
-    broker = account.broker
+def broker_validate(request, sale):
+    validate_is_broker(request)
+    broker = request.user.account.broker
     validate_broker_owner_sale(broker, sale)
 
 
