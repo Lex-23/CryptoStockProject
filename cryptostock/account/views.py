@@ -17,7 +17,6 @@ class SalesListApiView(APIView):
     def get(self, request, format=None):
         sales = SalesDashboard.objects.all()
         serializer = SalesDashboardSerializer(sales, many=True)
-        breakpoint()
         return Response(serializer.data)
 
 
