@@ -2,7 +2,6 @@ import decimal
 
 from account.models import Offer, SalesDashboard
 from account.serializers import OfferSerializer, SalesDashboardSerializer
-from django.http import Http404
 from utils import validators
 from wallet.models import WalletRecord
 
@@ -19,8 +18,9 @@ def create_sale_object_serializer(count, price, asset, request) -> dict:
     new_object = SalesDashboard.objects.create(
         asset=asset, broker=broker, count=count, price=price
     )
-    serializer_data = SalesDashboardSerializer(new_object).data
-    return serializer_data
+
+    serializer = SalesDashboardSerializer(new_object)
+    return serializer.data
 
 
 def _broker_sale_asset(broker, deal, count, value):
@@ -53,11 +53,6 @@ def _client_buy_asset(client, deal, count, value):
     client.save()
 
 
-def create_offer(client, deal, count):
-    offer = Offer(deal=deal, client=client, count=count)
-    return offer
-
-
 def _update_deal(deal, count):
     deal.count -= decimal.Decimal(count)
     deal.save()
@@ -78,7 +73,7 @@ def offer_flow(offer_count, request, deal) -> dict:
     validators.validate_offer_count(offer_count, deal)
 
     client = request.user.account.client
-    offer = create_offer(client, deal, offer_count)
+    offer = Offer(deal=deal, client=client, count=offer_count)
     deal_value = offer.total_value
     validators.validate_cash_balance(client, deal_value)
 
@@ -86,10 +81,3 @@ def offer_flow(offer_count, request, deal) -> dict:
     offer.save()
     serializer = OfferSerializer(offer)
     return serializer.data
-
-
-def get_object(snippet, pk):
-    try:
-        return snippet.objects.get(pk=pk)
-    except snippet.DoesNotExist:
-        raise Http404

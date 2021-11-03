@@ -1,4 +1,5 @@
 from account.models import Account, Broker, Client, Offer, SalesDashboard
+from asset.models import Asset
 from asset.serializers import AssetSerializer
 from rest_framework import serializers
 from wallet.serializers import WalletRecordSerializer, WalletSerializer
@@ -29,10 +30,19 @@ class ClientSerializer(AccountSerializer):
 class SalesDashboardSerializer(serializers.ModelSerializer):
     broker = BrokerSerializer(required=False)
     asset = AssetSerializer(required=False)
+    # asset = serializers.PrimaryKeyRelatedField(queryset=Asset.objects.all())
 
     class Meta:
         model = SalesDashboard
         fields = ["id", "asset", "count", "price", "broker"]
+
+
+class CreateSalesDashboardSerializer(serializers.ModelSerializer):
+    asset = serializers.PrimaryKeyRelatedField(queryset=Asset.objects.all())
+
+    class Meta:
+        model = SalesDashboard
+        fields = ["asset", "count", "price"]
 
 
 class OfferSerializer(serializers.ModelSerializer):
