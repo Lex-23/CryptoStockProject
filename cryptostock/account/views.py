@@ -23,23 +23,23 @@ class SalesListApiView(APIView):
     def post(self, request, format=None):
         serializer = CreateSalesDashboardSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        data = serializer.validated_data
-        count, price, asset = data["count"], data["price"], data["asset"]
-        sale_data = create_sale_object_serializer(count, price, asset, request)
+        sale_data = create_sale_object_serializer(
+            request=request, **serializer.validated_data
+        )
         return Response(sale_data, status=status.HTTP_201_CREATED)
 
 
 class SaleApiView(APIView):
-    def get_sale(self, pk):
+    def get_sales_dashboard(self, pk):
         return get_object_or_404(SalesDashboard, pk=pk)
 
     def get(self, request, pk, format=None):
-        sale = self.get_sale(pk)
+        sale = self.get_sales_dashboard(pk)
         serializer = SalesDashboardSerializer(sale)
         return Response(serializer.data)
 
     def patch(self, request, pk, format=None):
-        sale = self.get_sale(pk)
+        sale = self.get_sales_dashboard(pk)
         serializer = SalesDashboardSerializer(sale, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         validators.broker_validate(request, sale)
@@ -50,18 +50,13 @@ class SaleApiView(APIView):
         return Response(serializer.data)
 
     def delete(self, request, pk, format=None):
-        sale = self.get_sale(pk)
+        sale = self.get_sales_dashboard(pk)
         validators.broker_validate(request.user.account, sale)
         sale.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class OffersListApiView(APIView):
-    def get(self, request, format=None):
-        offers = Offer.objects.all()
-        serializer = OfferSerializer(offers, many=True)
-        return Response(serializer.data)
-
+class NewOfferApiView(APIView):
     @transaction.atomic
     def post(self, request, pk, format=None):
         deal = get_object_or_404(SalesDashboard, pk=pk)
@@ -70,6 +65,13 @@ class OffersListApiView(APIView):
         offer_count = serializer.validated_data["count"]
         offer_data = offer_flow(offer_count, request, deal)
         return Response(offer_data, status=status.HTTP_201_CREATED)
+
+
+class OffersListApiView(APIView):
+    def get(self, request, format=None):
+        offers = Offer.objects.all()
+        serializer = OfferSerializer(offers, many=True)
+        return Response(serializer.data)
 
 
 class OfferApiView(APIView):
