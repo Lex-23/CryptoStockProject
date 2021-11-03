@@ -30,7 +30,6 @@ class ClientSerializer(AccountSerializer):
 class SalesDashboardSerializer(serializers.ModelSerializer):
     broker = BrokerSerializer(required=False)
     asset = AssetSerializer(required=False)
-    # asset = serializers.PrimaryKeyRelatedField(queryset=Asset.objects.all())
 
     class Meta:
         model = SalesDashboard
@@ -38,7 +37,8 @@ class SalesDashboardSerializer(serializers.ModelSerializer):
 
 
 class CreateSalesDashboardSerializer(serializers.ModelSerializer):
-    asset = serializers.PrimaryKeyRelatedField(queryset=Asset.objects.all())
+    queryset = Asset.objects.all()
+    asset = serializers.PrimaryKeyRelatedField(queryset=queryset)
 
     class Meta:
         model = SalesDashboard
