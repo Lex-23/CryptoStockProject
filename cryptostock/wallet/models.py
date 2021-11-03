@@ -1,6 +1,6 @@
 from asset.models import Asset
 from django.db import models
-from utils.modules import CountField
+from utils.fields import CountField
 
 
 class Wallet(models.Model):

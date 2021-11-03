@@ -1,7 +1,7 @@
 from asset.models import Asset
 from django.contrib.auth.models import User
 from django.db import models
-from utils.modules import CountField, PriceField
+from utils.fields import CountField, PriceField
 from wallet.models import Wallet
 
 
@@ -17,6 +17,17 @@ class Account(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.owner})"
+
+    @property
+    def wallet_records(self):
+        return self.wallet.wallet_record.all()
+
+    @property
+    def role(self):
+        if hasattr(self, "client"):
+            return "client"
+        elif hasattr(self, "broker"):
+            return "broker"
 
 
 class Broker(Account):

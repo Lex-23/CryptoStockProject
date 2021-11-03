@@ -50,6 +50,7 @@ class OfferAdmin(admin.ModelAdmin):
         "broker",
         "timestamp",
         "total_value",
+        "deal_id",
     )
     list_editable = ("count",)
     search_fields = ("client", "asset")
