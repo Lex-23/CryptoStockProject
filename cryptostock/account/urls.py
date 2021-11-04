@@ -14,5 +14,5 @@ urlpatterns = [
     path("salesdashboard/<int:pk>/buy/", NewOfferApiView.as_view()),
     path("offers/", OffersListApiView.as_view()),
     path("offers/<int:pk>/", OfferApiView.as_view()),
-    path("account/", AccountApiView.as_view()),
+    path("account/", AccountApiView.as_view(), name="self_account"),
 ]
