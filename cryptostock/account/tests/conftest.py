@@ -6,36 +6,15 @@ from wallet.models import Wallet
 
 
 @pytest.fixture
-def first_user(db):
-    user = User.objects.create_user(
-        "tester1", "tester1@test.com", "SuperStrongPassword1"
-    )
+def user(db):
+    user = User.objects.create_user("tester", "tester@test.com", "SuperStrongPassword")
     return user
 
 
 @pytest.fixture
-def second_user(db):
-    user = User.objects.create_user(
-        "tester2", "tester2@test.com", "SuperStrongPassword2"
-    )
-    return user
-
-
-@pytest.fixture
-def first_user_account(first_user):
-    wallet = Wallet.objects.create(name="Test Wallet1")
-    account = Account.objects.create(
-        owner=first_user, name="Test account1", wallet=wallet
-    )
-    return account
-
-
-@pytest.fixture
-def second_user_account(second_user):
-    wallet = Wallet.objects.create(name="Test Wallet2")
-    account = Account.objects.create(
-        owner=second_user, name="Test account2", wallet=wallet
-    )
+def user_account(user):
+    wallet = Wallet.objects.create(name="Test Wallet")
+    account = Account.objects.create(owner=user, name="Test account", wallet=wallet)
     return account
 
 
@@ -45,12 +24,6 @@ def api_client():
 
 
 @pytest.fixture
-def auth_first_user(api_client, first_user):
-    api_client.force_authenticate(user=first_user)
-    return api_client
-
-
-@pytest.fixture
-def auth_second_user(api_client, second_user):
-    api_client.force_authenticate(user=second_user)
+def auth_user(api_client, user):
+    api_client.force_authenticate(user=user)
     return api_client
