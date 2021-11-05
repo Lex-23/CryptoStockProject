@@ -1,8 +1,9 @@
 #  for all api test cases api_client should be authenticated
 
 
-def test_get_data_self_account(first_user_account, auth_first_user):
+def test_get_account(first_user_account, auth_first_user):
     response = auth_first_user.get("/api/account/")
+    assert response.status_code == 200
     assert response.json() == {
         "id": first_user_account.id,
         "name": first_user_account.name,
@@ -16,10 +17,11 @@ def test_get_data_self_account(first_user_account, auth_first_user):
     }
 
 
-def test_user_not_get_another_account(
+def test_get_account_another_user(
     first_user_account, second_user_account, auth_second_user
 ):
     response = auth_second_user.get("/api/account/")
+    assert response.status_code == 200
     assert response.json() == {
         "id": second_user_account.id,
         "name": second_user_account.name,
@@ -31,3 +33,8 @@ def test_user_not_get_another_account(
         },
         "wallet_records": [],
     }
+
+
+def test_get_account_not_authenticated_user(api_client):
+    response = api_client.get("/api/account/")
+    assert response.status_code == 401
