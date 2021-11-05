@@ -40,14 +40,17 @@ def second_user_account(second_user):
 
 
 @pytest.fixture
-def auth_client1(first_user):
-    client = APIClient()
-    client.force_authenticate(user=first_user)
-    return client
+def api_client():
+    return APIClient()
 
 
 @pytest.fixture
-def auth_client2(second_user):
-    client = APIClient()
-    client.force_authenticate(user=second_user)
-    return client
+def auth_first_user(api_client, first_user):
+    api_client.force_authenticate(user=first_user)
+    return api_client
+
+
+@pytest.fixture
+def auth_second_user(api_client, second_user):
+    api_client.force_authenticate(user=second_user)
+    return api_client

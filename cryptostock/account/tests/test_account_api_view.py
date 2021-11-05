@@ -1,10 +1,8 @@
-def test_get_self_account(first_user_account, auth_client1):
-    response = (auth_client1.get("/api/account/")).json()
-    assert response["id"] == first_user_account.id
+#  for all api test cases api_client should be authenticated
 
 
-def test_data_get_self_account(first_user_account, auth_client1):
-    response = (auth_client1.get("/api/account/")).json()
+def test_get_data_self_account(first_user_account, auth_first_user):
+    response = auth_first_user.get("/api/account/")
     actual_data = {
         "id": first_user_account.id,
         "name": first_user_account.name,
@@ -16,13 +14,23 @@ def test_data_get_self_account(first_user_account, auth_client1):
         },
         "wallet_records": [],
     }
-    assert actual_data == response
+    assert actual_data == response.json()
     assert 0 == first_user_account.cash_balance
 
 
 def test_user_not_get_another_account(
-    first_user_account, second_user_account, auth_client2
+    first_user_account, second_user_account, auth_second_user
 ):
-    response = (auth_client2.get("/api/account/")).json()
-    assert response["id"] != first_user_account.id
-    assert response["id"] == second_user_account.id
+    response = auth_second_user.get("/api/account/")
+    actual_data = {
+        "id": second_user_account.id,
+        "name": second_user_account.name,
+        "owner": second_user_account.owner.username,
+        "cash_balance": "0.0000",
+        "wallet": {
+            "id": second_user_account.wallet.id,
+            "name": second_user_account.wallet.name,
+        },
+        "wallet_records": [],
+    }
+    assert actual_data == response.json()
