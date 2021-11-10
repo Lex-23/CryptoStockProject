@@ -9,7 +9,6 @@ def validate_is_broker(request):
 
 
 def validate_is_client(request):
-    breakpoint()
     if request.auth["user_role"] != "client":
         raise ValidationError(
             ["You are not a client. You haven`t permissions for this operation."]
