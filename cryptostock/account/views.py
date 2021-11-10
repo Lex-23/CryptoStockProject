@@ -16,11 +16,13 @@ from utils.services import create_sale_object_serializer, offer_flow
 
 class SalesListApiView(APIView):
     def get(self, request, format=None):
+        breakpoint()
         sales = SalesDashboard.objects.all()
         serializer = SalesDashboardSerializer(sales, many=True)
         return Response(serializer.data)
 
     def post(self, request, format=None):
+        # breakpoint()
         serializer = CreateSalesDashboardSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         sale_data = create_sale_object_serializer(
