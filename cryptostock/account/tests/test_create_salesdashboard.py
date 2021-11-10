@@ -30,7 +30,7 @@ def test_valid_create_sales_dashboard(auth_broker, asset_btc, broker_account):
     }
 
 
-def test_invalid_create_sales_dashboard_from_client(auth_client, asset_btc):
+def test_create_sales_dashboard_not_broker(auth_client, asset_btc):
     asset = asset_btc
     data = {"asset": asset.id, "count": 100.4444, "price": 500.555555}
     response = auth_client.post("/api/salesdashboard/", data=data)
@@ -40,7 +40,7 @@ def test_invalid_create_sales_dashboard_from_client(auth_client, asset_btc):
     ]
 
 
-def test_invalid_create_sales_dashboard_for_unexists_asset(auth_broker, asset_eth):
+def test_create_sales_dashboard_asset_not_exist(auth_broker, asset_eth):
     """test for case, when target asset is not exists in broker`s wallet"""
     asset = asset_eth
     data = {"asset": asset.id, "count": 100.4444, "price": 500.555555}
@@ -49,9 +49,7 @@ def test_invalid_create_sales_dashboard_for_unexists_asset(auth_broker, asset_et
     assert response.json() == [f"You haven't {asset.name} in your wallet."]
 
 
-def test_invalid_create_sales_dashboard_with_count_more_then_exists(
-    auth_broker, asset_btc, broker_account
-):
+def test_create_sales_dashboard_count_too_much(auth_broker, asset_btc, broker_account):
     """test for case, when asset count in input data more then asset count broker has"""
     asset = asset_btc
     data = {

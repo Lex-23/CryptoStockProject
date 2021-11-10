@@ -30,7 +30,7 @@ def user_two(db):
 
 
 @pytest.fixture
-def account_factory(db):
+def account_factory():
     def create_broker(user, wallet_name, account_name, user_model):
         # 'user_model' is the django model: Broker or Client
         wallet = Wallet.objects.create(name=wallet_name)
@@ -41,7 +41,7 @@ def account_factory(db):
 
 
 @pytest.fixture
-def asset_factory(db):
+def asset_factory():
     def create_asset(name, description="asset description"):
         asset = Asset.objects.create(name=name, description=description)
         return asset
@@ -50,7 +50,7 @@ def asset_factory(db):
 
 
 @pytest.fixture
-def wallet_record_factory(db):
+def wallet_record_factory():
     def create_wallet_record(asset, account, count):
         wallet = account.wallet
         wallet_record = WalletRecord.objects.create(
