@@ -3,7 +3,7 @@ import decimal
 from account.tests.factory import AssetFactory, WalletRecordFactory
 
 
-def test_valid_create_sales_dashboard(auth_broker, broker_account):
+def test_create_sales_dashboard(auth_broker, broker_account):
     wallet_record = WalletRecordFactory(wallet=broker_account.wallet)
     asset = wallet_record.asset
     asset_count_before_create = broker_account.wallet.wallet_record.get(
