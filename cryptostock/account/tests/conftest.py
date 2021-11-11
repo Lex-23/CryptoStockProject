@@ -1,7 +1,9 @@
+import factory
 import pytest
 from account.models import Broker, Client
 from asset.models import Asset
 from django.contrib.auth.models import User
+from factory.django import DjangoModelFactory
 from rest_framework.test import APIClient
 from utils.jwt_views import MyTokenObtainPairSerializer
 from wallet.models import Wallet, WalletRecord
@@ -41,27 +43,6 @@ def account_factory():
 
 
 @pytest.fixture
-def asset_factory():
-    def create_asset(name, description="asset description"):
-        asset = Asset.objects.create(name=name, description=description)
-        return asset
-
-    return create_asset
-
-
-@pytest.fixture
-def wallet_record_factory():
-    def create_wallet_record(asset, account, count):
-        wallet = account.wallet
-        wallet_record = WalletRecord.objects.create(
-            asset=asset, wallet=wallet, count=count
-        )
-        return wallet_record
-
-    return create_wallet_record
-
-
-@pytest.fixture
 def user_account(account_factory, user):
     return account_factory(
         user=user,
@@ -71,7 +52,7 @@ def user_account(account_factory, user):
     )
 
 
-@pytest.fixture
+@pytest.fixture(autouse=True)
 def broker_account(account_factory, user_one):
     return account_factory(
         user=user_one,
@@ -123,18 +104,18 @@ def auth_client(auth_factory, user_two):
     return auth_factory(user=user_two)
 
 
-@pytest.fixture
-def asset_btc(asset_factory):
-    return asset_factory(name="BTC")
+class AssetFactory(DjangoModelFactory):
+    class Meta:
+        model = Asset
+
+    name = "BTC"
+    description = "asset_description"
 
 
-@pytest.fixture
-def asset_eth(asset_factory):
-    return asset_factory(name="ETH")
+class WalletRecordFactory(DjangoModelFactory):
+    class Meta:
+        model = WalletRecord
 
-
-@pytest.fixture(autouse=True)
-def wallet_record_one_broker(
-    wallet_record_factory, asset_btc, broker_account, count=500
-):
-    return wallet_record_factory(asset=asset_btc, account=broker_account, count=count)
+    asset = factory.SubFactory(AssetFactory)
+    count = 500
+    wallet = factory.SubFactory(Wallet)

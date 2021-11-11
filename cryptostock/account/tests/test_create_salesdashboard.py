@@ -1,8 +1,11 @@
 import decimal
 
+from account.tests.conftest import AssetFactory, WalletRecordFactory
 
-def test_valid_create_sales_dashboard(auth_broker, asset_btc, broker_account):
-    asset = asset_btc
+
+def test_valid_create_sales_dashboard(auth_broker, broker_account):
+    wallet_record = WalletRecordFactory(wallet=broker_account.wallet)
+    asset = wallet_record.asset
     asset_count_before_create = broker_account.wallet.wallet_record.get(
         asset=asset
     ).count
@@ -30,8 +33,8 @@ def test_valid_create_sales_dashboard(auth_broker, asset_btc, broker_account):
     }
 
 
-def test_create_sales_dashboard_not_broker(auth_client, asset_btc):
-    asset = asset_btc
+def test_create_sales_dashboard_not_broker(auth_client):
+    asset = AssetFactory()
     data = {"asset": asset.id, "count": 100.4444, "price": 500.555555}
     response = auth_client.post("/api/salesdashboard/", data=data)
     assert response.status_code == 400
@@ -40,18 +43,19 @@ def test_create_sales_dashboard_not_broker(auth_client, asset_btc):
     ]
 
 
-def test_create_sales_dashboard_asset_not_exist(auth_broker, asset_eth):
+def test_create_sales_dashboard_asset_not_exist(auth_broker):
     """test for case, when target asset is not exists in broker`s wallet"""
-    asset = asset_eth
+    asset = AssetFactory(name="ETH")
     data = {"asset": asset.id, "count": 100.4444, "price": 500.555555}
     response = auth_broker.post("/api/salesdashboard/", data=data)
     assert response.status_code == 400
     assert response.json() == [f"You haven't {asset.name} in your wallet."]
 
 
-def test_create_sales_dashboard_count_too_much(auth_broker, asset_btc, broker_account):
+def test_create_sales_dashboard_count_too_much(auth_broker, broker_account):
     """test for case, when asset count in input data more then asset count broker has"""
-    asset = asset_btc
+    asset = AssetFactory()
+    WalletRecordFactory(wallet=broker_account.wallet, asset=asset)
     data = {
         "asset": asset.id,
         "count": broker_account.wallet.wallet_record.get(asset=asset).count
