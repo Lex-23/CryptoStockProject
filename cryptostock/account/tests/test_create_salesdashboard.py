@@ -39,7 +39,7 @@ def test_valid_create_sales_dashboard(auth_broker, broker_account):
 def test_create_sales_dashboard_not_broker(auth_client):
     asset = AssetFactory()
 
-    data = {"asset": asset.id, "count": 100.4444, "price": 500.555555}
+    data = {"asset": asset.id, "count": "100.4444", "price": "500.555555"}
     response = auth_client.post("/api/salesdashboard/", data=data)
 
     assert response.status_code == 400
@@ -52,7 +52,7 @@ def test_create_sales_dashboard_asset_not_exist(auth_broker):
     """test for case, when target asset is not exists in broker`s wallet"""
     asset = AssetFactory(name="ETH")
 
-    data = {"asset": asset.id, "count": 100.4444, "price": 500.555555}
+    data = {"asset": asset.id, "count": "100.4444", "price": "500.555555"}
     response = auth_broker.post("/api/salesdashboard/", data=data)
 
     assert response.status_code == 400
@@ -68,7 +68,7 @@ def test_create_sales_dashboard_count_too_much(auth_broker, broker_account):
         "asset": asset.id,
         "count": broker_account.wallet.wallet_record.get(asset=asset).count
         + decimal.Decimal("0.0001"),
-        "price": 500.555555,
+        "price": "500.555555",
     }
     response = auth_broker.post("/api/salesdashboard/", data=data)
 
