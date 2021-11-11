@@ -1,6 +1,6 @@
 import decimal
 
-from account.tests.conftest import AssetFactory, WalletRecordFactory
+from account.tests.factory import AssetFactory, WalletRecordFactory
 
 
 def test_valid_create_sales_dashboard(auth_broker, broker_account):

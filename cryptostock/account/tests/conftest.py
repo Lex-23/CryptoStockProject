@@ -1,12 +1,9 @@
-import factory
 import pytest
 from account.models import Broker, Client
-from asset.models import Asset
 from django.contrib.auth.models import User
-from factory.django import DjangoModelFactory
 from rest_framework.test import APIClient
 from utils.jwt_views import MyTokenObtainPairSerializer
-from wallet.models import Wallet, WalletRecord
+from wallet.models import Wallet
 
 
 @pytest.fixture
@@ -102,20 +99,3 @@ def auth_broker(auth_factory, user_one):
 @pytest.fixture
 def auth_client(auth_factory, user_two):
     return auth_factory(user=user_two)
-
-
-class AssetFactory(DjangoModelFactory):
-    class Meta:
-        model = Asset
-
-    name = "BTC"
-    description = "asset_description"
-
-
-class WalletRecordFactory(DjangoModelFactory):
-    class Meta:
-        model = WalletRecord
-
-    asset = factory.SubFactory(AssetFactory)
-    count = 500
-    wallet = factory.SubFactory(Wallet)
