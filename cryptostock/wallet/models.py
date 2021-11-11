@@ -14,7 +14,7 @@ class WalletRecord(models.Model):
     asset = models.ForeignKey(
         Asset, on_delete=models.CASCADE, related_name="wallet_record"
     )
-    count = CountField(default=0)
+    count = CountField()
     wallet = models.ForeignKey(
         Wallet, on_delete=models.CASCADE, related_name="wallet_record"
     )
