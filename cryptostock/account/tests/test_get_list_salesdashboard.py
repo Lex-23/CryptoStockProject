@@ -1,0 +1,55 @@
+from account.tests.factory import AssetFactory, SalesDashboardFactory
+
+
+def test_get_list_salesdashboard(auth_user, broker_account):
+    sale1 = SalesDashboardFactory(broker=broker_account)
+    sale2 = SalesDashboardFactory(broker=broker_account, asset=AssetFactory(name="ETH"))
+
+    response = auth_user.get("/api/salesdashboard/")
+
+    assert response.status_code == 200
+    assert response.json() == [
+        {
+            "id": sale1.id,
+            "asset": {
+                "id": sale1.asset.id,
+                "name": sale1.asset.name,
+                "description": sale1.asset.description,
+            },
+            "count": sale1.count,
+            "price": sale1.price,
+            "broker": {
+                "id": sale1.broker.id,
+                "name": sale1.broker.name,
+                "owner": sale1.broker.owner.username,
+                "wallet": {
+                    "id": sale1.broker.wallet.id,
+                    "name": sale1.broker.wallet.name,
+                },
+            },
+        },
+        {
+            "id": sale2.id,
+            "asset": {
+                "id": sale2.asset.id,
+                "name": sale2.asset.name,
+                "description": sale2.asset.description,
+            },
+            "count": sale2.count,
+            "price": sale2.price,
+            "broker": {
+                "id": sale2.broker.id,
+                "name": sale2.broker.name,
+                "owner": sale2.broker.owner.username,
+                "wallet": {
+                    "id": sale2.broker.wallet.id,
+                    "name": sale2.broker.wallet.name,
+                },
+            },
+        },
+    ]
+
+
+def test_get_list_salesdashboard_not_authenticated_user(api_client):
+    response = api_client.get("/api/salesdashboard/")
+    assert response.status_code == 401

@@ -1,4 +1,5 @@
 import factory
+from account.models import Broker, SalesDashboard
 from asset.models import Asset
 from factory.django import DjangoModelFactory
 from wallet.models import Wallet, WalletRecord
@@ -17,5 +18,15 @@ class WalletRecordFactory(DjangoModelFactory):
         model = WalletRecord
 
     asset = factory.SubFactory(AssetFactory)
-    count = 500
+    count = "500"
     wallet = factory.SubFactory(Wallet)
+
+
+class SalesDashboardFactory(DjangoModelFactory):
+    class Meta:
+        model = SalesDashboard
+
+    asset = factory.SubFactory(AssetFactory)
+    broker = factory.SubFactory(Broker)
+    count = "50.5555"
+    price = "200.777777"
