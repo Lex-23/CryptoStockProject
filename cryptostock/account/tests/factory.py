@@ -18,7 +18,7 @@ class WalletRecordFactory(DjangoModelFactory):
         model = WalletRecord
 
     asset = factory.SubFactory(AssetFactory)
-    count = "500"
+    count = "500.0000"
     wallet = factory.SubFactory(Wallet)
 
 
