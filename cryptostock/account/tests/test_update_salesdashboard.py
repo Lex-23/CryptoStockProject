@@ -1,5 +1,9 @@
 import pytest
-from account.tests.factory import SalesDashboardFactory, WalletRecordFactory
+from account.tests.factory import (
+    BrokerFactory,
+    SalesDashboardFactory,
+    WalletRecordFactory,
+)
 
 
 @pytest.mark.parametrize(
@@ -64,13 +68,12 @@ def test_update_sales_dashboard_not_broker(auth_client, broker_account):
     ]
 
 
-def test_update_not_own_sales_dashboard(auth_broker, another_broker_account):
-    wallet_record = WalletRecordFactory(
-        wallet=another_broker_account.wallet, count="1000.0000"
-    )
+def test_update_not_own_sales_dashboard(auth_broker):
+    another_broker = BrokerFactory()
+    wallet_record = WalletRecordFactory(wallet=another_broker.wallet, count="1000.0000")
     asset = wallet_record.asset
     sale = SalesDashboardFactory(
-        broker=another_broker_account, asset=asset, count="500.0000", price="345.543000"
+        broker=another_broker, asset=asset, count="500.0000", price="345.543000"
     )
     data = {"price": "452.000000"}
 
