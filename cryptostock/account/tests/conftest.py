@@ -29,14 +29,6 @@ def user_two(db):
 
 
 @pytest.fixture
-def user_three(db):
-    user = User.objects.create_user(
-        "tester3", "tester3@test.com", "SuperStrongPassword3"
-    )
-    return user
-
-
-@pytest.fixture
 def account_factory():
     def create_broker(user, wallet_name, account_name, user_model):
         # 'user_model' is the django model: Broker or Client
@@ -63,16 +55,6 @@ def broker_account(account_factory, user_one):
         user=user_one,
         wallet_name="Test Wallet broker",
         account_name="Test account broker",
-        user_model=Broker,
-    )
-
-
-@pytest.fixture(autouse=True)
-def another_broker_account(account_factory, user_three):
-    return account_factory(
-        user=user_three,
-        wallet_name="Test Wallet broker1",
-        account_name="Test account broker1",
         user_model=Broker,
     )
 
