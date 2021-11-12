@@ -11,10 +11,13 @@ from account.tests.factory import SalesDashboardFactory, WalletRecordFactory
     ],
 )
 def test_update_sales_dashboard(auth_broker, broker_account, data):
-    wallet_record = WalletRecordFactory(wallet=broker_account.wallet, count="1000")
+    wallet_record = WalletRecordFactory(wallet=broker_account.wallet, count="1000.0000")
     asset = wallet_record.asset
     sale = SalesDashboardFactory(
-        broker=broker_account, asset=asset, count="500.0000", price="345.543000"
+        broker=broker_account,
+        asset=wallet_record.asset,
+        count="500.0000",
+        price="345.543000",
     )
     asset_count_before_update = broker_account.wallet.wallet_record.get(
         asset=asset
@@ -43,3 +46,51 @@ def test_update_sales_dashboard(auth_broker, broker_account, data):
             "wallet": {"id": sale.broker.wallet.id, "name": sale.broker.wallet.name},
         },
     }
+
+
+def test_update_sales_dashboard_not_broker(auth_client, broker_account):
+    wallet_record = WalletRecordFactory(wallet=broker_account.wallet, count="1000.0000")
+    asset = wallet_record.asset
+    sale = SalesDashboardFactory(
+        broker=broker_account, asset=asset, count="500.0000", price="345.543000"
+    )
+    data = {"price": "452.000000"}
+
+    response = auth_client.patch(f"/api/salesdashboard/{sale.pk}/", data=data)
+
+    assert response.status_code == 400
+    assert response.json() == [
+        "You are not a broker. You haven`t permissions for this operation."
+    ]
+
+
+def test_update_not_own_sales_dashboard(auth_broker, another_broker_account):
+    wallet_record = WalletRecordFactory(
+        wallet=another_broker_account.wallet, count="1000.0000"
+    )
+    asset = wallet_record.asset
+    sale = SalesDashboardFactory(
+        broker=another_broker_account, asset=asset, count="500.0000", price="345.543000"
+    )
+    data = {"price": "452.000000"}
+
+    response = auth_broker.patch(f"/api/salesdashboard/{sale.pk}/", data=data)
+
+    assert response.status_code == 400
+    assert response.json() == [
+        "You haven`t permissions for this operation. This is not your sale."
+    ]
+
+
+def test_update_sales_dashboard_count_too_much(auth_broker, broker_account):
+    wallet_record = WalletRecordFactory(wallet=broker_account.wallet, count="1000.0000")
+    asset = wallet_record.asset
+    sale = SalesDashboardFactory(
+        broker=broker_account, asset=asset, count="500.0000", price="345.543000"
+    )
+    data = {"count": "1000.0001"}
+
+    response = auth_broker.patch(f"/api/salesdashboard/{sale.pk}/", data=data)
+
+    assert response.status_code == 400
+    assert response.json() == [f"You haven`t that much {asset.name}."]
