@@ -1,5 +1,5 @@
 import factory
-from account.models import Broker, SalesDashboard
+from account.models import Broker, Offer, SalesDashboard
 from asset.models import Asset
 from django.contrib.auth.models import User
 from factory import Faker
@@ -55,3 +55,10 @@ class SalesDashboardFactory(DjangoModelFactory):
     broker = factory.SubFactory(BrokerFactory)
     count = "50.5555"
     price = "200.777777"
+
+
+class OfferFactory(DjangoModelFactory):
+    class Meta:
+        model = Offer
+
+    deal = factory.SubFactory(SalesDashboardFactory)

@@ -30,10 +30,12 @@ def user_two(db):
 
 @pytest.fixture
 def account_factory():
-    def create_broker(user, wallet_name, account_name, user_model):
+    def create_broker(user, wallet_name, account_name, user_model, cash_balance):
         # 'user_model' is the django model: Broker or Client
         wallet = Wallet.objects.create(name=wallet_name)
-        broker = user_model.objects.create(owner=user, name=account_name, wallet=wallet)
+        broker = user_model.objects.create(
+            owner=user, name=account_name, wallet=wallet, cash_balance=cash_balance
+        )
         return broker
 
     return create_broker
@@ -56,6 +58,7 @@ def broker_account(account_factory, user_one):
         wallet_name="Test Wallet broker",
         account_name="Test account broker",
         user_model=Broker,
+        cash_balance="1000.0000",
     )
 
 
@@ -66,6 +69,7 @@ def client_account(account_factory, user_two):
         wallet_name="Test Wallet client",
         account_name="Test account client",
         user_model=Client,
+        cash_balance="10000.0000",
     )
 
 
