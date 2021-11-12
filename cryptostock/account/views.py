@@ -51,7 +51,8 @@ class SaleApiView(APIView):
 
     def delete(self, request, pk, format=None):
         sale = self.get_sales_dashboard(pk)
-        validators.broker_validate(request.user.account, sale)
+        validators.broker_validate(request, sale)
+
         sale.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
