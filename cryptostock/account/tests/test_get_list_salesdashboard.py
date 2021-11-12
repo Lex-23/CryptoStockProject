@@ -51,5 +51,5 @@ def test_get_list_salesdashboard(auth_user, broker_account):
 
 
 def test_get_list_salesdashboard_not_authenticated_user(api_client):
-    response = api_client.get("/api/account/")
+    response = api_client.get("/api/salesdashboard/")
     assert response.status_code == 401
