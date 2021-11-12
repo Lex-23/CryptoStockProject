@@ -2,6 +2,7 @@ import factory
 from account.models import Broker, SalesDashboard
 from asset.models import Asset
 from django.contrib.auth.models import User
+from factory import Faker
 from factory.django import DjangoModelFactory
 from wallet.models import Wallet, WalletRecord
 
@@ -37,9 +38,7 @@ class UserFactory(DjangoModelFactory):
     class Meta:
         model = User
 
-    username = "some_user"
-    email = "some_user@test.com"
-    password = "SomeStrongPassword"
+    username = Faker("first_name")
 
 
 class WalletFactory(DjangoModelFactory):
