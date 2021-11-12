@@ -15,25 +15,6 @@ class AssetFactory(DjangoModelFactory):
     description = "asset_description"
 
 
-class WalletRecordFactory(DjangoModelFactory):
-    class Meta:
-        model = WalletRecord
-
-    asset = factory.SubFactory(AssetFactory)
-    count = "500.0000"
-    wallet = factory.SubFactory(Wallet)
-
-
-class SalesDashboardFactory(DjangoModelFactory):
-    class Meta:
-        model = SalesDashboard
-
-    asset = factory.SubFactory(AssetFactory)
-    broker = factory.SubFactory(Broker)
-    count = "50.5555"
-    price = "200.777777"
-
-
 class UserFactory(DjangoModelFactory):
     class Meta:
         model = User
@@ -48,6 +29,15 @@ class WalletFactory(DjangoModelFactory):
     name = "Wallet name"
 
 
+class WalletRecordFactory(DjangoModelFactory):
+    class Meta:
+        model = WalletRecord
+
+    asset = factory.SubFactory(AssetFactory)
+    count = "500.0000"
+    wallet = factory.SubFactory(WalletFactory)
+
+
 class BrokerFactory(DjangoModelFactory):
     class Meta:
         model = Broker
@@ -55,3 +45,13 @@ class BrokerFactory(DjangoModelFactory):
     owner = factory.SubFactory(UserFactory)
     name = "Another broker"
     wallet = factory.SubFactory(WalletFactory)
+
+
+class SalesDashboardFactory(DjangoModelFactory):
+    class Meta:
+        model = SalesDashboard
+
+    asset = factory.SubFactory(AssetFactory)
+    broker = factory.SubFactory(BrokerFactory)
+    count = "50.5555"
+    price = "200.777777"
