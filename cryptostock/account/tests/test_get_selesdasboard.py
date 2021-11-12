@@ -1,11 +1,10 @@
 from account.tests.factory import SalesDashboardFactory
 
 
-def test_get_salesdashboard(auth_user, broker_account):
+def test_get_sales_dashboard(auth_user, broker_account):
     sale = SalesDashboardFactory(broker=broker_account)
-    pk = sale.id
 
-    response = auth_user.get(f"/api/salesdashboard/{pk}/")
+    response = auth_user.get(f"/api/salesdashboard/{sale.id}/")
 
     assert response.status_code == 200
     assert response.json() == {
@@ -28,7 +27,6 @@ def test_get_salesdashboard(auth_user, broker_account):
 
 def test_get_salesdashboard_not_authenticated_user(api_client, broker_account):
     sale = SalesDashboardFactory(broker=broker_account)
-    pk = sale.id
+    response = api_client.get(f"/api/salesdashboard/{sale.id}/")
 
-    response = api_client.get(f"/api/salesdashboard/{pk}/")
     assert response.status_code == 401
