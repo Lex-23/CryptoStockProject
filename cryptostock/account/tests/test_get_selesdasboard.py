@@ -25,8 +25,8 @@ def test_get_sales_dashboard(auth_user, broker_account):
     }
 
 
-def test_get_salesdashboard_not_authenticated_user(api_client, broker_account):
+def test_get_sales_dashboard_not_authenticated_user(api_client, broker_account):
     sale = SalesDashboardFactory(broker=broker_account)
-
     response = api_client.get(f"/api/salesdashboard/{sale.id}/")
+
     assert response.status_code == 401

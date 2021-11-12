@@ -1,7 +1,7 @@
 from account.tests.factory import AssetFactory, SalesDashboardFactory
 
 
-def test_get_list_salesdashboard(auth_user, broker_account):
+def test_get_list_sales_dashboard(auth_user, broker_account):
     sale1 = SalesDashboardFactory(broker=broker_account)
     sale2 = SalesDashboardFactory(broker=broker_account, asset=AssetFactory(name="ETH"))
 
@@ -50,6 +50,6 @@ def test_get_list_salesdashboard(auth_user, broker_account):
     ]
 
 
-def test_get_list_salesdashboard_not_authenticated_user(api_client):
+def test_get_list_sales_dashboard_not_authenticated_user(api_client):
     response = api_client.get("/api/salesdashboard/")
     assert response.status_code == 401
