@@ -13,7 +13,7 @@ class Account(models.Model):
     wallet = models.OneToOneField(
         Wallet, on_delete=models.CASCADE, related_name="account"
     )
-    cash_balance = CountField(default=0)
+    cash_balance = CountField()
 
     def __str__(self):
         return f"{self.name} ({self.owner})"
