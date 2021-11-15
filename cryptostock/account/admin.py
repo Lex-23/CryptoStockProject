@@ -14,7 +14,7 @@ class OfferInline(admin.TabularInline):
 
 class AccountAdmin(admin.ModelAdmin):
     fields = ("owner", "name", "wallet", "cash_balance")
-    search_fields = ("owner", "name")
+    search_fields = ("owner__username", "name")
     list_display = ("id", "owner", "name", "wallet", "cash_balance")
     list_editable = ("cash_balance",)
 
@@ -34,7 +34,7 @@ class SalesDashboardAdmin(admin.ModelAdmin):
     fields = ("asset", "count", "price", "broker")
     list_display = ("id", "asset", "count", "price", "broker")
     list_editable = ("count", "price")
-    search_fields = ("asset", "broker")
+    search_fields = ("asset__name", "broker__name")
     list_filter = ("asset", "broker")
 
 
@@ -52,8 +52,7 @@ class OfferAdmin(admin.ModelAdmin):
         "total_value",
         "deal_id",
     )
-    search_fields = ("client", "asset")
-    list_filter = ("client",)
+    search_fields = ("client__name", "deal__asset__name", "deal__broker__name")
 
     def has_add_permission(self, request, obj=None):
         return False
