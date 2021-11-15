@@ -1,15 +1,16 @@
+import pytest
+from account.models import SalesDashboard
 from account.tests.factory import BrokerFactory, SalesDashboardFactory
+from django.core.exceptions import ObjectDoesNotExist
 
 
 def test_delete_sales_dashboard(auth_broker, broker_account):
     sale = SalesDashboardFactory(broker=broker_account)
 
     response = auth_broker.delete(f"/api/salesdashboard/{sale.id}/")
-    response1 = auth_broker.get(f"/api/salesdashboard/{sale.id}/")
-
+    with pytest.raises(ObjectDoesNotExist, match=r".* does not exist."):
+        SalesDashboard.objects.get(id=sale.id)
     assert response.status_code == 204
-    assert response1.status_code == 404
-    assert response1.json() == {"detail": "Not found."}
 
 
 def test_delete_sales_dashboard_not_broker(auth_client, broker_account):
