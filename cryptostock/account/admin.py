@@ -52,6 +52,8 @@ class OfferAdmin(admin.ModelAdmin):
         "total_value",
         "deal_id",
     )
-    list_editable = ("count",)
     search_fields = ("client", "asset")
     list_filter = ("client",)
+
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)

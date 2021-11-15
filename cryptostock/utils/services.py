@@ -1,5 +1,3 @@
-import decimal
-
 from account.models import Offer, SalesDashboard
 from account.serializers import OfferSerializer, SalesDashboardSerializer
 from utils import validators
@@ -28,9 +26,9 @@ def _broker_sale_asset(broker, deal, count, value):
     Update broker`s cash_balance and wallet_record after offer
     """
     broker_wallet_record = broker.wallet.wallet_record.get(asset=deal.asset)
-    broker_wallet_record.count -= decimal.Decimal(count)
+    broker_wallet_record.count -= count
     broker_wallet_record.save()
-    broker.cash_balance += decimal.Decimal(value)
+    broker.cash_balance += value
     broker.save()
 
 
@@ -45,16 +43,16 @@ def _client_buy_asset(client, deal, count, value):
     """
     if _is_asset_exists_in_wallet(deal, client):
         client_wallet_record = client.wallet.wallet_record.get(asset=deal.asset)
-        client_wallet_record.count += decimal.Decimal(count)
+        client_wallet_record.count += count
         client_wallet_record.save()
     else:
         WalletRecord.objects.create(asset=deal.asset, wallet=client.wallet, count=count)
-    client.cash_balance -= decimal.Decimal(value)
+    client.cash_balance -= value
     client.save()
 
 
 def _update_deal(deal, count):
-    deal.count -= decimal.Decimal(count)
+    deal.count -= count
     deal.save()
 
 
