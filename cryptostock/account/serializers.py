@@ -48,6 +48,7 @@ class CreateSalesDashboardSerializer(serializers.ModelSerializer):
 class OfferSerializer(serializers.ModelSerializer):
     deal = SalesDashboardSerializer(required=False)
     client = ClientSerializer(required=False)
+    timestamp = serializers.DateTimeField(required=False)
 
     class Meta:
         model = Offer

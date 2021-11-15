@@ -96,6 +96,7 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.BasicAuthentication",
     ],
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
+    "DATETIME_FORMAT": "%Y-%m-%d %H:%M:%S",
 }
 
 
