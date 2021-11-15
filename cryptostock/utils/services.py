@@ -1,3 +1,5 @@
+import decimal
+
 from account.models import Offer, SalesDashboard
 from account.serializers import OfferSerializer, SalesDashboardSerializer
 from utils import validators
@@ -72,7 +74,7 @@ def offer_flow(offer_count, request, deal) -> dict:
 
     client = request.user.account.client
     offer = Offer(deal=deal, client=client, count=offer_count)
-    deal_value = offer.total_value
+    deal_value = decimal.Decimal(offer.total_value)
     validators.validate_cash_balance(client, deal_value)
 
     deal_flow(client, deal, offer_count, deal_value)

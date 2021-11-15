@@ -1,5 +1,6 @@
 import decimal
 
+from account.models import SalesDashboard
 from account.tests.factory import AssetFactory, WalletRecordFactory
 
 
@@ -13,6 +14,7 @@ def test_create_sales_dashboard(auth_broker, broker_account):
     data = {"asset": asset.id, "count": "100.4444", "price": "500.555555"}
     response = auth_broker.post("/api/salesdashboard/", data=data)
 
+    created_sale = SalesDashboard.objects.all().last()
     asset_count_after_create = broker_account.wallet.wallet_record.get(
         asset=asset
     ).count
@@ -20,7 +22,7 @@ def test_create_sales_dashboard(auth_broker, broker_account):
     assert response.status_code == 201
     assert asset_count_after_create == asset_count_before_create
     assert response.json() == {
-        "id": 1,
+        "id": created_sale.id,
         "asset": {"id": asset.id, "name": asset.name, "description": asset.description},
         "count": data["count"],
         "price": data["price"],

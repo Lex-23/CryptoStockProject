@@ -30,19 +30,20 @@ def user_two(db):
 
 @pytest.fixture
 def account_factory():
-    def create_broker(user, wallet_name, account_name, user_model, cash_balance):
+    def create_account(user, wallet_name, account_name, user_model, **cash_balance):
         # 'user_model' is the django model: Broker or Client
         wallet = Wallet.objects.create(name=wallet_name)
-        broker = user_model.objects.create(
-            owner=user, name=account_name, wallet=wallet, cash_balance=cash_balance
+        account = user_model.objects.create(
+            owner=user, name=account_name, wallet=wallet, **cash_balance
         )
-        return broker
+        return account
 
-    return create_broker
+    return create_account
 
 
 @pytest.fixture
 def user_account(account_factory, user):
+    """Simulate simple new user, who just now registered in app"""
     return account_factory(
         user=user,
         wallet_name="Test empty wallet",
