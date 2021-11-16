@@ -14,8 +14,8 @@ def test_get_sales_dashboard(auth_user, broker_account):
             "name": sale.asset.name,
             "description": sale.asset.description,
         },
-        "count": sale.count,
-        "price": sale.price,
+        "count": f"{sale.count}",
+        "price": f"{sale.price}",
         "broker": {
             "id": sale.broker.id,
             "name": sale.broker.name,

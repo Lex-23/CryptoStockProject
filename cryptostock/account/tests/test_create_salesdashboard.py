@@ -1,4 +1,4 @@
-import decimal
+import decimal as d
 
 from account.models import SalesDashboard
 from account.tests.factory import AssetFactory, WalletRecordFactory
@@ -69,7 +69,7 @@ def test_create_sales_dashboard_count_too_much(auth_broker, broker_account):
     data = {
         "asset": asset.id,
         "count": broker_account.wallet.wallet_record.get(asset=asset).count
-        + decimal.Decimal("0.0001"),
+        + d.Decimal("0.0001"),
         "price": "500.555555",
     }
     response = auth_broker.post("/api/salesdashboard/", data=data)

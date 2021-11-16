@@ -49,6 +49,9 @@ class OfferSerializer(serializers.ModelSerializer):
     deal = SalesDashboardSerializer(required=False)
     client = ClientSerializer(required=False)
     timestamp = serializers.DateTimeField(required=False)
+    total_value = serializers.DecimalField(
+        required=False, max_digits=30, decimal_places=4
+    )
 
     class Meta:
         model = Offer

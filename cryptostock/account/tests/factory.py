@@ -1,5 +1,7 @@
+import decimal
+
 import factory
-from account.models import Broker, Offer, SalesDashboard
+from account.models import Broker, Client, Offer, SalesDashboard
 from asset.models import Asset
 from django.contrib.auth.models import User
 from factory import Faker
@@ -47,14 +49,23 @@ class BrokerFactory(DjangoModelFactory):
     wallet = factory.SubFactory(WalletFactory)
 
 
+class ClientFactory(DjangoModelFactory):
+    class Meta:
+        model = Client
+
+    owner = factory.SubFactory(UserFactory)
+    name = "Another client"
+    wallet = factory.SubFactory(WalletFactory)
+
+
 class SalesDashboardFactory(DjangoModelFactory):
     class Meta:
         model = SalesDashboard
 
     asset = factory.SubFactory(AssetFactory)
     broker = factory.SubFactory(BrokerFactory)
-    count = "50.5555"
-    price = "200.777777"
+    count = decimal.Decimal("50.5555")
+    price = decimal.Decimal("200.777777")
 
 
 class OfferFactory(DjangoModelFactory):
@@ -62,3 +73,4 @@ class OfferFactory(DjangoModelFactory):
         model = Offer
 
     deal = factory.SubFactory(SalesDashboardFactory)
+    client = factory.SubFactory(ClientFactory)

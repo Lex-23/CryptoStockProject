@@ -1,3 +1,5 @@
+import decimal
+
 from asset.models import Asset
 from django.contrib.auth.models import User
 from django.db import models
@@ -70,4 +72,6 @@ class Offer(models.Model):
 
     @property
     def total_value(self):
-        return f"{round((self.count * self.price), 4)}"
+        return decimal.Decimal(self.count * self.price).quantize(
+            decimal.Decimal("0.0001"), rounding=decimal.ROUND_UP
+        )

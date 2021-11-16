@@ -1,3 +1,5 @@
+import decimal as d
+
 import pytest
 from account.tests.factory import (
     BrokerFactory,
@@ -15,13 +17,15 @@ from account.tests.factory import (
     ],
 )
 def test_update_sales_dashboard(auth_broker, broker_account, data):
-    wallet_record = WalletRecordFactory(wallet=broker_account.wallet, count="1000.0000")
+    wallet_record = WalletRecordFactory(
+        wallet=broker_account.wallet, count=d.Decimal("1000.0000")
+    )
     asset = wallet_record.asset
     sale = SalesDashboardFactory(
         broker=broker_account,
         asset=wallet_record.asset,
-        count="500.0000",
-        price="345.543000",
+        count=d.Decimal("500.0000"),
+        price=d.Decimal("345.543000"),
     )
     asset_count_before_update = broker_account.wallet.wallet_record.get(
         asset=asset
@@ -41,8 +45,8 @@ def test_update_sales_dashboard(auth_broker, broker_account, data):
             "name": sale.asset.name,
             "description": sale.asset.description,
         },
-        "count": data.get("count", sale.count),
-        "price": data.get("price", sale.price),
+        "count": data.get("count", f"{sale.count}"),
+        "price": data.get("price", f"{sale.price}"),
         "broker": {
             "id": sale.broker.id,
             "name": sale.broker.name,
@@ -53,10 +57,15 @@ def test_update_sales_dashboard(auth_broker, broker_account, data):
 
 
 def test_update_sales_dashboard_not_broker(auth_client, broker_account):
-    wallet_record = WalletRecordFactory(wallet=broker_account.wallet, count="1000.0000")
+    wallet_record = WalletRecordFactory(
+        wallet=broker_account.wallet, count=d.Decimal("1000.0000")
+    )
     asset = wallet_record.asset
     sale = SalesDashboardFactory(
-        broker=broker_account, asset=asset, count="500.0000", price="345.543000"
+        broker=broker_account,
+        asset=asset,
+        count=d.Decimal("500.0000"),
+        price=d.Decimal("345.543000"),
     )
     data = {"price": "452.000000"}
 
@@ -70,10 +79,15 @@ def test_update_sales_dashboard_not_broker(auth_client, broker_account):
 
 def test_update_not_own_sales_dashboard(auth_broker):
     another_broker = BrokerFactory()
-    wallet_record = WalletRecordFactory(wallet=another_broker.wallet, count="1000.0000")
+    wallet_record = WalletRecordFactory(
+        wallet=another_broker.wallet, count=d.Decimal("1000.0000")
+    )
     asset = wallet_record.asset
     sale = SalesDashboardFactory(
-        broker=another_broker, asset=asset, count="500.0000", price="345.543000"
+        broker=another_broker,
+        asset=asset,
+        count=d.Decimal("500.0000"),
+        price=d.Decimal("345.543000"),
     )
     data = {"price": "452.000000"}
 
@@ -86,10 +100,15 @@ def test_update_not_own_sales_dashboard(auth_broker):
 
 
 def test_update_sales_dashboard_count_too_much(auth_broker, broker_account):
-    wallet_record = WalletRecordFactory(wallet=broker_account.wallet, count="1000.0000")
+    wallet_record = WalletRecordFactory(
+        wallet=broker_account.wallet, count=d.Decimal("1000.0000")
+    )
     asset = wallet_record.asset
     sale = SalesDashboardFactory(
-        broker=broker_account, asset=asset, count="500.0000", price="345.543000"
+        broker=broker_account,
+        asset=asset,
+        count=d.Decimal("500.0000"),
+        price=d.Decimal("345.543000"),
     )
     data = {"count": "1000.0001"}
 
