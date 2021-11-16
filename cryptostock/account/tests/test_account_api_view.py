@@ -1,7 +1,6 @@
 def test_get_account_new_user(user_account, auth_user):
     #  for api test client should be authenticated
     response = auth_user.get("/api/account/")
-
     assert response.status_code == 200
     assert response.json() == {
         "id": user_account.id,

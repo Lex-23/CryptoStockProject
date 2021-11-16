@@ -1,3 +1,5 @@
+import decimal
+
 from asset.models import Asset
 from django.contrib.auth.models import User
 from django.db import models
@@ -13,7 +15,7 @@ class Account(models.Model):
     wallet = models.OneToOneField(
         Wallet, on_delete=models.CASCADE, related_name="account"
     )
-    cash_balance = CountField()
+    cash_balance = CountField(max_digits=30)
 
     def __str__(self):
         return f"{self.name} ({self.owner})"
@@ -70,4 +72,7 @@ class Offer(models.Model):
 
     @property
     def total_value(self):
-        return self.count * self.price
+        decimal.getcontext().prec = 24
+        return (self.count * self.price).quantize(
+            decimal.Decimal("0.0001"), rounding=decimal.ROUND_UP
+        )

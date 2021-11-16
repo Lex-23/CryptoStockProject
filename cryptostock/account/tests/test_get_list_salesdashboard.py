@@ -16,8 +16,8 @@ def test_get_list_sales_dashboard(auth_user, broker_account):
                 "name": sale1.asset.name,
                 "description": sale1.asset.description,
             },
-            "count": sale1.count,
-            "price": sale1.price,
+            "count": f"{sale1.count}",
+            "price": f"{sale1.price}",
             "broker": {
                 "id": sale1.broker.id,
                 "name": sale1.broker.name,
@@ -35,8 +35,8 @@ def test_get_list_sales_dashboard(auth_user, broker_account):
                 "name": sale2.asset.name,
                 "description": sale2.asset.description,
             },
-            "count": sale2.count,
-            "price": sale2.price,
+            "count": f"{sale2.count}",
+            "price": f"{sale2.price}",
             "broker": {
                 "id": sale2.broker.id,
                 "name": sale2.broker.name,

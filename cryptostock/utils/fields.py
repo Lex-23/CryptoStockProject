@@ -7,7 +7,7 @@ from django.db import models
 class PriceField(models.DecimalField):
     """default field for price"""
 
-    MAX_DIGITS = 20
+    MAX_DIGITS = 16
     DECIMAL_PLACES = 6
     VALIDATORS = [MinValueValidator(decimal.Decimal("0.000001"))]
 
@@ -21,7 +21,7 @@ class PriceField(models.DecimalField):
 class CountField(models.DecimalField):
     """default field for count asset"""
 
-    MAX_DIGITS = 25
+    MAX_DIGITS = 14
     DECIMAL_PLACES = 4
     VALIDATORS = [MinValueValidator(decimal.Decimal("0.0001"))]
     DEFAULT = 0

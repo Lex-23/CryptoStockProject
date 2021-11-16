@@ -1,5 +1,7 @@
+import decimal
+
 import factory
-from account.models import Broker, SalesDashboard
+from account.models import Broker, Client, Offer, SalesDashboard
 from asset.models import Asset
 from django.contrib.auth.models import User
 from factory import Faker
@@ -13,25 +15,6 @@ class AssetFactory(DjangoModelFactory):
 
     name = "BTC"
     description = "asset_description"
-
-
-class WalletRecordFactory(DjangoModelFactory):
-    class Meta:
-        model = WalletRecord
-
-    asset = factory.SubFactory(AssetFactory)
-    count = "500.0000"
-    wallet = factory.SubFactory(Wallet)
-
-
-class SalesDashboardFactory(DjangoModelFactory):
-    class Meta:
-        model = SalesDashboard
-
-    asset = factory.SubFactory(AssetFactory)
-    broker = factory.SubFactory(Broker)
-    count = "50.5555"
-    price = "200.777777"
 
 
 class UserFactory(DjangoModelFactory):
@@ -48,6 +31,15 @@ class WalletFactory(DjangoModelFactory):
     name = "Wallet name"
 
 
+class WalletRecordFactory(DjangoModelFactory):
+    class Meta:
+        model = WalletRecord
+
+    asset = factory.SubFactory(AssetFactory)
+    count = "500.0000"
+    wallet = factory.SubFactory(WalletFactory)
+
+
 class BrokerFactory(DjangoModelFactory):
     class Meta:
         model = Broker
@@ -55,3 +47,30 @@ class BrokerFactory(DjangoModelFactory):
     owner = factory.SubFactory(UserFactory)
     name = "Another broker"
     wallet = factory.SubFactory(WalletFactory)
+
+
+class ClientFactory(DjangoModelFactory):
+    class Meta:
+        model = Client
+
+    owner = factory.SubFactory(UserFactory)
+    name = "Another client"
+    wallet = factory.SubFactory(WalletFactory)
+
+
+class SalesDashboardFactory(DjangoModelFactory):
+    class Meta:
+        model = SalesDashboard
+
+    asset = factory.SubFactory(AssetFactory)
+    broker = factory.SubFactory(BrokerFactory)
+    count = decimal.Decimal("50.5555")
+    price = decimal.Decimal("200.777777")
+
+
+class OfferFactory(DjangoModelFactory):
+    class Meta:
+        model = Offer
+
+    deal = factory.SubFactory(SalesDashboardFactory)
+    client = factory.SubFactory(ClientFactory)

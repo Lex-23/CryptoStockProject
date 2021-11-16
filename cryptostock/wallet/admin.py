@@ -10,8 +10,9 @@ class WalletRecordInline(admin.TabularInline):
 @admin.register(WalletRecord)
 class WalletRecordAdmin(admin.ModelAdmin):
     fields = ("asset", "count", "wallet")
-    search_fields = ("wallet", "asset")
+    search_fields = ("wallet__name", "asset__name", "wallet__account__name")
     list_display = ("id", "asset", "count", "wallet")
+    list_filter = ("wallet__account",)
 
 
 @admin.register(Wallet)

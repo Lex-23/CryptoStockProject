@@ -1,3 +1,5 @@
+import decimal
+
 import pytest
 from account.models import Broker, Client
 from django.contrib.auth.models import User
@@ -30,17 +32,20 @@ def user_two(db):
 
 @pytest.fixture
 def account_factory():
-    def create_broker(user, wallet_name, account_name, user_model):
+    def create_account(user, wallet_name, account_name, user_model, **kwargs):
         # 'user_model' is the django model: Broker or Client
         wallet = Wallet.objects.create(name=wallet_name)
-        broker = user_model.objects.create(owner=user, name=account_name, wallet=wallet)
-        return broker
+        account = user_model.objects.create(
+            owner=user, name=account_name, wallet=wallet, **kwargs
+        )
+        return account
 
-    return create_broker
+    return create_account
 
 
 @pytest.fixture
 def user_account(account_factory, user):
+    """Simulate simple new user, who just now registered in app"""
     return account_factory(
         user=user,
         wallet_name="Test empty wallet",
@@ -56,6 +61,7 @@ def broker_account(account_factory, user_one):
         wallet_name="Test Wallet broker",
         account_name="Test account broker",
         user_model=Broker,
+        cash_balance=decimal.Decimal("1000.0000"),
     )
 
 
@@ -66,6 +72,7 @@ def client_account(account_factory, user_two):
         wallet_name="Test Wallet client",
         account_name="Test account client",
         user_model=Client,
+        cash_balance=decimal.Decimal("10000.0000"),
     )
 
 
