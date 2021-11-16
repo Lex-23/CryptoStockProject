@@ -72,6 +72,6 @@ class Offer(models.Model):
 
     @property
     def total_value(self):
-        return decimal.Decimal(self.count * self.price).quantize(
+        return (self.count * self.price).quantize(
             decimal.Decimal("0.0001"), rounding=decimal.ROUND_UP
         )
