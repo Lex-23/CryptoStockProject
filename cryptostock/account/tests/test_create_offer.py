@@ -119,7 +119,6 @@ def test_create_offer_not_client(auth_broker):
 
 def test_create_offer_count_too_much(auth_client):
     sale = SalesDashboardFactory(count="5.0000")
-
     data = {"count": "5.0001"}
 
     response = auth_client.post(f"/api/salesdashboard/{sale.id}/buy/", data=data)
