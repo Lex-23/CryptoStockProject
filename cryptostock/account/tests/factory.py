@@ -74,3 +74,4 @@ class OfferFactory(DjangoModelFactory):
 
     deal = factory.SubFactory(SalesDashboardFactory)
     client = factory.SubFactory(ClientFactory)
+    count = decimal.Decimal("10.5555")
