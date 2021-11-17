@@ -69,15 +69,20 @@ class NewOfferApiView(APIView):
 
 
 class OffersListApiView(APIView):
+    def get_queryset(self):
+        return get_offers(self)
+
     def get(self, request, format=None):
-        offers = get_offers(request)
-        serializer = OfferSerializer(offers, many=True)
+        serializer = OfferSerializer(self.get_queryset(), many=True)
         return Response(serializer.data)
 
 
 class OfferApiView(APIView):
+    def get_queryset(self):
+        return get_offers(self)
+
     def get(self, request, pk, format=None):
-        offer = get_object_or_404(get_offers(request), pk=pk)
+        offer = get_object_or_404(self.get_queryset(), pk=pk)
         serializer = OfferSerializer(offer)
         return Response(serializer.data)
 
