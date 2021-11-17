@@ -1,4 +1,4 @@
-from account.models import Offer, SalesDashboard
+from account.models import SalesDashboard
 from account.serializers import (
     AccountSerializer,
     CreateSalesDashboardSerializer,
@@ -11,7 +11,7 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from utils import validators
-from utils.services import create_sale_object_serializer, offer_flow
+from utils.services import create_sale_object_serializer, get_offers, offer_flow
 
 
 class SalesListApiView(APIView):
@@ -69,15 +69,20 @@ class NewOfferApiView(APIView):
 
 
 class OffersListApiView(APIView):
+    def get_queryset(self):
+        return get_offers(self)
+
     def get(self, request, format=None):
-        offers = Offer.objects.all()
-        serializer = OfferSerializer(offers, many=True)
+        serializer = OfferSerializer(self.get_queryset(), many=True)
         return Response(serializer.data)
 
 
 class OfferApiView(APIView):
+    def get_queryset(self):
+        return get_offers(self)
+
     def get(self, request, pk, format=None):
-        offer = get_object_or_404(Offer, pk=pk)
+        offer = get_object_or_404(self.get_queryset(), pk=pk)
         serializer = OfferSerializer(offer)
         return Response(serializer.data)
 

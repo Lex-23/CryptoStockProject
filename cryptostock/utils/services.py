@@ -81,3 +81,10 @@ def offer_flow(offer_count, request, deal) -> dict:
     offer.save()
     serializer = OfferSerializer(offer)
     return serializer.data
+
+
+def get_offers(self):
+    if self.request.auth["user_role"] == "client":
+        return Offer.objects.filter(client__id=self.request.user.account.id)
+    elif self.request.auth["user_role"] == "broker":
+        return Offer.objects.filter(deal__broker__id=self.request.user.account.id)
