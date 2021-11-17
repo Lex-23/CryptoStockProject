@@ -12,7 +12,7 @@ urlpatterns = [
     path("salesdashboard/", SalesListApiView.as_view()),
     path("salesdashboard/<int:pk>/", SaleApiView.as_view()),
     path("salesdashboard/<int:pk>/buy/", NewOfferApiView.as_view()),
-    path("offers/", OffersListApiView.as_view()),
-    path("offers/<int:pk>/", OfferApiView.as_view()),
+    path("offer/", OffersListApiView.as_view()),
+    path("offer/<int:pk>/", OfferApiView.as_view()),
     path("account/", AccountApiView.as_view()),
 ]
