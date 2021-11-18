@@ -1,3 +1,4 @@
+import debug_toolbar
 from django.contrib import admin
 from django.urls import include, path
 from utils import jwt_views
@@ -14,4 +15,5 @@ urlpatterns = [
         jwt_views.MyTokenObtainPairView.as_view(),
         name="token_refresh",
     ),
+    path("__debug__/", include(debug_toolbar.urls)),
 ]
