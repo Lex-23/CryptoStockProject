@@ -7,6 +7,8 @@ from account.tests.factory import (
     OfferFactory,
     SalesDashboardFactory,
 )
+from django.db import connection
+from django.test.utils import CaptureQueriesContext
 
 from cryptostock.settings import REST_FRAMEWORK as DRF
 
@@ -18,7 +20,6 @@ def test_client_get_list_offers(auth_client, client_account):
     OfferFactory(deal=sale, client=ClientFactory())
 
     response = auth_client.get("/api/offer/")
-
     assert response.status_code == 200
     assert Offer.objects.count() == 3
     assert len(response.json()) == 2
@@ -175,6 +176,35 @@ def test_broker_get_list_offers(auth_broker, broker_account):
             "timestamp": f"{offer2.timestamp.strftime(format=DRF['DATETIME_FORMAT'])}",
         },
     ]
+
+
+def test_get_list_offers_db_calls_from_client(auth_client, client_account):
+    OfferFactory.create_batch(100, client=client_account)
+    with CaptureQueriesContext(connection) as query_context:
+        response = auth_client.get("/api/offer/")
+    assert response.status_code == 200
+    assert len(query_context) == 5
+
+    OfferFactory.create_batch(1000, client=client_account)
+    with CaptureQueriesContext(connection) as query_context:
+        response = auth_client.get("/api/offer/")
+    assert response.status_code == 200
+    assert len(query_context) == 5
+
+
+def test_get_list_offers_db_calls_from_broker(auth_broker, broker_account):
+    sale = SalesDashboardFactory(broker=broker_account)
+    OfferFactory.create_batch(100, deal=sale)
+    with CaptureQueriesContext(connection) as query_context:
+        response = auth_broker.get("/api/offer/")
+    assert response.status_code == 200
+    assert len(query_context) == 5
+
+    OfferFactory.create_batch(1000, deal=sale)
+    with CaptureQueriesContext(connection) as query_context:
+        response = auth_broker.get("/api/offer/")
+    assert response.status_code == 200
+    assert len(query_context) == 5
 
 
 def test_get_list_offers_not_authenticated_user(api_client):

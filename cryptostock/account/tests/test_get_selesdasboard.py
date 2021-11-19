@@ -1,12 +1,16 @@
 from account.tests.factory import SalesDashboardFactory
+from django.db import connection
+from django.test.utils import CaptureQueriesContext
 
 
 def test_get_sales_dashboard(auth_user, broker_account):
     sale = SalesDashboardFactory(broker=broker_account)
 
-    response = auth_user.get(f"/api/salesdashboard/{sale.id}/")
+    with CaptureQueriesContext(connection) as query_context:
+        response = auth_user.get(f"/api/salesdashboard/{sale.id}/")
 
     assert response.status_code == 200
+    assert len(query_context) == 2
     assert response.json() == {
         "id": sale.id,
         "asset": {

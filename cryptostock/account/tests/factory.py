@@ -4,7 +4,6 @@ import factory
 from account.models import Broker, Client, Offer, SalesDashboard
 from asset.models import Asset
 from django.contrib.auth.models import User
-from factory import Faker
 from factory.django import DjangoModelFactory
 from wallet.models import Wallet, WalletRecord
 
@@ -21,7 +20,8 @@ class UserFactory(DjangoModelFactory):
     class Meta:
         model = User
 
-    username = Faker("first_name")
+    # username = Faker("first_name")
+    username = factory.Sequence(lambda n: f"user#{n:03}")
 
 
 class WalletFactory(DjangoModelFactory):

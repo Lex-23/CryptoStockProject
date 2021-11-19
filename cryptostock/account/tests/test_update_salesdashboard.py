@@ -6,17 +6,19 @@ from account.tests.factory import (
     SalesDashboardFactory,
     WalletRecordFactory,
 )
+from django.db import connection
+from django.test.utils import CaptureQueriesContext
 
 
 @pytest.mark.parametrize(
-    "data",
+    "data,query_count",
     [
-        {"count": "615.0000", "price": "250.485967"},
-        {"count": "700.4558"},
-        {"price": "525.455808"},
+        ({"count": "615.0000", "price": "250.485967"}, 7),
+        ({"count": "700.4558"}, 7),
+        ({"price": "525.455808"}, 6),
     ],
 )
-def test_update_sales_dashboard(auth_broker, broker_account, data):
+def test_update_sales_dashboard(auth_broker, broker_account, data, query_count):
     wallet_record = WalletRecordFactory(
         wallet=broker_account.wallet, count=d.Decimal("1000.0000")
     )
@@ -31,12 +33,14 @@ def test_update_sales_dashboard(auth_broker, broker_account, data):
         asset=asset
     ).count
 
-    response = auth_broker.patch(f"/api/salesdashboard/{sale.pk}/", data=data)
+    with CaptureQueriesContext(connection) as query_context:
+        response = auth_broker.patch(f"/api/salesdashboard/{sale.pk}/", data=data)
     asset_count_after_update = broker_account.wallet.wallet_record.get(
         asset=asset
     ).count
 
     assert response.status_code == 200
+    assert len(query_context) == query_count
     assert asset_count_after_update == asset_count_before_update
     assert response.json() == {
         "id": sale.id,

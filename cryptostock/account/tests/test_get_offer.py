@@ -1,4 +1,6 @@
 from account.tests.factory import OfferFactory, SalesDashboardFactory
+from django.db import connection
+from django.test.utils import CaptureQueriesContext
 
 from cryptostock.settings import REST_FRAMEWORK as DRF
 
@@ -6,9 +8,11 @@ from cryptostock.settings import REST_FRAMEWORK as DRF
 def test_client_get_offer(auth_client, client_account):
     offer = OfferFactory(client=client_account)
 
-    response = auth_client.get(f"/api/offer/{offer.id}/")
+    with CaptureQueriesContext(connection) as query_context:
+        response = auth_client.get(f"/api/offer/{offer.id}/")
 
     assert response.status_code == 200
+    assert len(query_context) == 5
     assert response.json() == {
         "id": offer.id,
         "client": {
@@ -55,9 +59,11 @@ def test_broker_get_offer(auth_broker, broker_account):
     sale = SalesDashboardFactory(broker=broker_account)
     offer = OfferFactory(deal=sale)
 
-    response = auth_broker.get(f"/api/offer/{offer.id}/")
+    with CaptureQueriesContext(connection) as query_context:
+        response = auth_broker.get(f"/api/offer/{offer.id}/")
 
     assert response.status_code == 200
+    assert len(query_context) == 5
     assert response.json() == {
         "id": offer.id,
         "client": {
