@@ -20,7 +20,6 @@ class UserFactory(DjangoModelFactory):
     class Meta:
         model = User
 
-    # username = Faker("first_name")
     username = factory.Sequence(lambda n: f"user#{n:03}")
 
 
