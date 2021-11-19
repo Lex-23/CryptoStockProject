@@ -13,7 +13,7 @@ class AssetFactory(DjangoModelFactory):
     class Meta:
         model = Asset
 
-    name = "BTC"
+    name = factory.Sequence(lambda n: f"asset#{n:03}")
     description = "asset_description"
 
 

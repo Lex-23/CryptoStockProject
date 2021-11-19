@@ -7,17 +7,25 @@ from rest_framework.test import APIClient
 from utils.jwt_views import MyTokenObtainPairSerializer
 from wallet.models import Wallet
 
+TEST_USERS_PASSWORDS = {
+    "user": "SuperStrongPassword",
+    "user_one": "SuperStrongPassword1",
+    "user_two": "SuperStrongPassword2",
+}
+
 
 @pytest.fixture
 def user(db):
-    user = User.objects.create_user("tester", "tester@test.com", "SuperStrongPassword")
+    user = User.objects.create_user(
+        "tester", "tester@test.com", TEST_USERS_PASSWORDS["user"]
+    )
     return user
 
 
 @pytest.fixture
 def user_one(db):
     user = User.objects.create_user(
-        "tester1", "tester1@test.com", "SuperStrongPassword1"
+        "tester1", "tester1@test.com", TEST_USERS_PASSWORDS["user_one"]
     )
     return user
 
@@ -25,7 +33,7 @@ def user_one(db):
 @pytest.fixture
 def user_two(db):
     user = User.objects.create_user(
-        "tester2", "tester2@test.com", "SuperStrongPassword2"
+        "tester2", "tester2@test.com", TEST_USERS_PASSWORDS["user_two"]
     )
     return user
 
