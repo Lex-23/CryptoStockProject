@@ -7,13 +7,11 @@ def test_jwt_auth(user_one, auth_broker):
     auth_broker.logout()
 
     response = auth_broker.post("/api/auth/", data=data)
-    token = MyTokenObtainPairSerializer.get_token(user_one)
 
     assert response.status_code == 200
     assert "refresh" in response.json().keys() and "access" in response.json().keys()
     assert response.json()["refresh"] != response.json()["access"]
     assert len(response.json().keys()) == 2
-    assert token["user_role"] == "broker"
 
 
 def test_jwt_auth_refresh(user_two, auth_client):
