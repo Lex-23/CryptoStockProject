@@ -28,6 +28,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = os.environ["CRYPTOSTOCK_ALLOWED_HOSTS"].split(",")
 
+INTERNAL_IPS = os.environ["CRYPTOSTOCK_INTERNAL_IPS"].split(",")
+
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -37,6 +40,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "debug_toolbar",
     "rest_framework",
     "rest_framework_simplejwt",
     "market",
@@ -46,6 +50,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",

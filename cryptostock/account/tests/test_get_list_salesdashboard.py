@@ -1,4 +1,6 @@
 from account.tests.factory import AssetFactory, SalesDashboardFactory
+from django.db import connection
+from django.test.utils import CaptureQueriesContext
 
 
 def test_get_list_sales_dashboard(auth_user, broker_account):
@@ -48,6 +50,24 @@ def test_get_list_sales_dashboard(auth_user, broker_account):
             },
         },
     ]
+
+
+def test_get_list_sales_dashboard_db_calls(auth_user, broker_account):
+    SalesDashboardFactory.create_batch(100, broker=broker_account)
+
+    with CaptureQueriesContext(connection) as query_context:
+        response = auth_user.get("/api/salesdashboard/")
+
+    assert response.status_code == 200
+    assert len(query_context) == 2
+
+    SalesDashboardFactory.create_batch(1000, broker=broker_account)
+
+    with CaptureQueriesContext(connection) as query_context:
+        response = auth_user.get("/api/salesdashboard/")
+
+    assert response.status_code == 200
+    assert len(query_context) == 2
 
 
 def test_get_list_sales_dashboard_not_authenticated_user(api_client):

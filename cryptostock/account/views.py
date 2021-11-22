@@ -11,12 +11,22 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from utils import validators
-from utils.services import create_sale_object_serializer, get_offers, offer_flow
+from utils.services import (
+    create_sale_object_serializer,
+    get_offers_with_related_items,
+    offer_flow,
+)
 
 
 class SalesListApiView(APIView):
     def get(self, request, format=None):
-        sales = SalesDashboard.objects.all()
+        sales = (
+            SalesDashboard.objects.select_related(
+                "asset", "broker__owner", "broker__wallet"
+            )
+            .prefetch_related("asset__wallet_record")
+            .all()
+        )
         serializer = SalesDashboardSerializer(sales, many=True)
         return Response(serializer.data)
 
@@ -31,7 +41,14 @@ class SalesListApiView(APIView):
 
 class SaleApiView(APIView):
     def get_sales_dashboard(self, pk):
-        return get_object_or_404(SalesDashboard, pk=pk)
+        return get_object_or_404(
+            queryset=SalesDashboard.objects.select_related(
+                "asset", "broker__owner", "broker__wallet"
+            )
+            .prefetch_related("asset__wallet_record")
+            .all(),
+            pk=pk,
+        )
 
     def get(self, request, pk, format=None):
         sale = self.get_sales_dashboard(pk)
@@ -50,7 +67,12 @@ class SaleApiView(APIView):
         return Response(serializer.data)
 
     def delete(self, request, pk, format=None):
-        sale = self.get_sales_dashboard(pk)
+        sale = get_object_or_404(
+            queryset=SalesDashboard.objects.select_related(
+                "broker__owner", "broker__wallet", "asset"
+            ).all(),
+            pk=pk,
+        )
         validators.broker_validate(request, sale)
 
         sale.delete()
@@ -70,7 +92,7 @@ class NewOfferApiView(APIView):
 
 class OffersListApiView(APIView):
     def get_queryset(self):
-        return get_offers(self)
+        return get_offers_with_related_items(self.request)
 
     def get(self, request, format=None):
         serializer = OfferSerializer(self.get_queryset(), many=True)
@@ -79,7 +101,7 @@ class OffersListApiView(APIView):
 
 class OfferApiView(APIView):
     def get_queryset(self):
-        return get_offers(self)
+        return get_offers_with_related_items(self.request)
 
     def get(self, request, pk, format=None):
         offer = get_object_or_404(self.get_queryset(), pk=pk)

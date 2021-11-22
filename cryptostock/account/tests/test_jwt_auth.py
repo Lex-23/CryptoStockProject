@@ -12,6 +12,8 @@ def test_jwt_auth(user_one, auth_broker):
     assert response.status_code == 200
     assert "refresh" in response.json().keys() and "access" in response.json().keys()
     assert token["user_role"] == "broker"
+    assert response.json()["refresh"] != response.json()["access"]
+    assert len(response.json()) == 2
 
 
 def test_jwt_auth_refresh(user_two, auth_client):
@@ -27,6 +29,7 @@ def test_jwt_auth_refresh(user_two, auth_client):
 
     assert response.status_code == 200
     assert "refresh" in response.json().keys() and "access" in response.json().keys()
+    assert len(response.json().keys()) == 2
     assert token["user_role"] == "client"
     assert response.json()["access"] != token_obtain_pair["access"]
     assert response.json()["refresh"] != token_obtain_pair["refresh"]

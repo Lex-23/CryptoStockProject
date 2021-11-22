@@ -83,8 +83,24 @@ def offer_flow(offer_count, request, deal) -> dict:
     return serializer.data
 
 
-def get_offers(self):
-    if self.request.auth["user_role"] == "client":
-        return Offer.objects.filter(client__id=self.request.user.account.id)
-    elif self.request.auth["user_role"] == "broker":
-        return Offer.objects.filter(deal__broker__id=self.request.user.account.id)
+def _get_offers(request):
+    if request.auth["user_role"] == "client":
+        return Offer.objects.filter(client_id=request.user.account.client.id)
+    elif request.auth["user_role"] == "broker":
+        return Offer.objects.filter(deal__broker__id=request.user.account.broker.id)
+
+
+def get_offers_with_related_items(request):
+    return (
+        _get_offers(request)
+        .prefetch_related("deal__asset__wallet_record")
+        .select_related(
+            "deal__asset",
+            "deal__broker__owner",
+            "deal__broker__wallet",
+            "client__owner",
+            "client__wallet",
+        )
+        .all()
+        .order_by("id")
+    )

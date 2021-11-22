@@ -51,7 +51,7 @@ def account_factory():
     return create_account
 
 
-@pytest.fixture
+@pytest.fixture(autouse=True)
 def user_account(account_factory, user):
     """Simulate simple new user, who just now registered in app"""
     return account_factory(
