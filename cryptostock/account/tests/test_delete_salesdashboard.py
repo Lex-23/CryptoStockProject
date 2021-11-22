@@ -8,13 +8,21 @@ from django.test.utils import CaptureQueriesContext
 def test_delete_sales_dashboard(auth_broker, broker_account):
     sale = SalesDashboardFactory(broker=broker_account)
 
-    with CaptureQueriesContext(connection) as query_context:
-        response = auth_broker.delete(f"/api/salesdashboard/{sale.id}/")
+    response = auth_broker.delete(f"/api/salesdashboard/{sale.id}/")
     with pytest.raises(
         SalesDashboard.DoesNotExist,
         match="SalesDashboard matching query does not exist.",
     ):
         SalesDashboard.objects.get(id=sale.id)
+
+    assert response.status_code == 204
+
+
+def test_delete_sales_dashboard_db_calls(auth_broker, broker_account):
+    sale = SalesDashboardFactory(broker=broker_account)
+
+    with CaptureQueriesContext(connection) as query_context:
+        response = auth_broker.delete(f"/api/salesdashboard/{sale.id}/")
 
     assert response.status_code == 204
     assert len(query_context) == 7

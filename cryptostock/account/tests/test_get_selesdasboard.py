@@ -6,11 +6,9 @@ from django.test.utils import CaptureQueriesContext
 def test_get_sales_dashboard(auth_user, broker_account):
     sale = SalesDashboardFactory(broker=broker_account)
 
-    with CaptureQueriesContext(connection) as query_context:
-        response = auth_user.get(f"/api/salesdashboard/{sale.id}/")
+    response = auth_user.get(f"/api/salesdashboard/{sale.id}/")
 
     assert response.status_code == 200
-    assert len(query_context) == 2
     assert response.json() == {
         "id": sale.id,
         "asset": {
@@ -27,6 +25,16 @@ def test_get_sales_dashboard(auth_user, broker_account):
             "wallet": {"id": sale.broker.wallet.id, "name": sale.broker.wallet.name},
         },
     }
+
+
+def test_get_sales_dashboard_db_calls(auth_user, broker_account):
+    sale = SalesDashboardFactory(broker=broker_account)
+
+    with CaptureQueriesContext(connection) as query_context:
+        response = auth_user.get(f"/api/salesdashboard/{sale.id}/")
+
+    assert response.status_code == 200
+    assert len(query_context) == 2
 
 
 def test_get_sales_dashboard_not_authenticated_user(api_client, broker_account):

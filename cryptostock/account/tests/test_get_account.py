@@ -4,10 +4,9 @@ from django.test.utils import CaptureQueriesContext
 
 def test_get_account_new_user(user_account, auth_user):
     #  for api test client should be authenticated
-    with CaptureQueriesContext(connection) as query_context:
-        response = auth_user.get("/api/account/")
+    response = auth_user.get("/api/account/")
+
     assert response.status_code == 200
-    assert len(query_context) == 1
     assert response.json() == {
         "id": user_account.id,
         "name": user_account.name,
@@ -16,6 +15,14 @@ def test_get_account_new_user(user_account, auth_user):
         "wallet": {"id": user_account.wallet.id, "name": user_account.wallet.name},
         "wallet_records": [],
     }
+
+
+def test_get_account_new_user_db_calls(auth_user):
+    #  for api test client should be authenticated
+    with CaptureQueriesContext(connection) as query_context:
+        response = auth_user.get("/api/account/")
+    assert response.status_code == 200
+    assert len(query_context) == 1
 
 
 def test_get_account_not_authenticated_user(api_client):
