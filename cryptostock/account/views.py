@@ -67,7 +67,12 @@ class SaleApiView(APIView):
         return Response(serializer.data)
 
     def delete(self, request, pk, format=None):
-        sale = self.get_sales_dashboard(pk)
+        sale = get_object_or_404(
+            queryset=SalesDashboard.objects.select_related(
+                "broker__owner", "broker__wallet", "asset"
+            ).all(),
+            pk=pk,
+        )
         validators.broker_validate(request, sale)
 
         sale.delete()

@@ -23,9 +23,8 @@ def test_delete_sales_dashboard_db_calls(auth_broker, broker_account):
 
     with CaptureQueriesContext(connection) as query_context:
         response = auth_broker.delete(f"/api/salesdashboard/{sale.id}/")
-
     assert response.status_code == 204
-    assert len(query_context) == 7
+    assert len(query_context) == 5
 
 
 def test_delete_sales_dashboard_not_broker(auth_client, broker_account):

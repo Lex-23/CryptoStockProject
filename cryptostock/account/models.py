@@ -52,9 +52,9 @@ class SalesDashboard(models.Model):
 
 class Offer(models.Model):
     deal = models.ForeignKey(
-        SalesDashboard, on_delete=models.CASCADE, related_name="offer"
+        SalesDashboard, on_delete=models.DO_NOTHING, related_name="offer"
     )
-    client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    client = models.ForeignKey(Client, on_delete=models.DO_NOTHING)
     count = CountField()
     timestamp = models.DateTimeField(auto_now=True)
 
