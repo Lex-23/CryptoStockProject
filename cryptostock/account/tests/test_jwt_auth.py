@@ -13,7 +13,7 @@ def test_jwt_auth(user_one, auth_broker):
     assert "refresh" in response.json().keys() and "access" in response.json().keys()
     assert token["user_role"] == "broker"
     assert response.json()["refresh"] != response.json()["access"]
-    assert len(response.json().keys()) == 2
+    assert len(response.json()) == 2
 
 
 def test_jwt_auth_refresh(user_two, auth_client):

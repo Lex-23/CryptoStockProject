@@ -13,8 +13,8 @@ from rest_framework.views import APIView
 from utils import validators
 from utils.services import (
     create_sale_object_serializer,
+    get_offers_with_related_items,
     offer_flow,
-    optimized_get_offers,
 )
 
 
@@ -87,7 +87,7 @@ class NewOfferApiView(APIView):
 
 class OffersListApiView(APIView):
     def get_queryset(self):
-        return optimized_get_offers(self.request)
+        return get_offers_with_related_items(self.request)
 
     def get(self, request, format=None):
         serializer = OfferSerializer(self.get_queryset(), many=True)
@@ -96,7 +96,7 @@ class OffersListApiView(APIView):
 
 class OfferApiView(APIView):
     def get_queryset(self):
-        return optimized_get_offers(self.request)
+        return get_offers_with_related_items(self.request)
 
     def get(self, request, pk, format=None):
         offer = get_object_or_404(self.get_queryset(), pk=pk)

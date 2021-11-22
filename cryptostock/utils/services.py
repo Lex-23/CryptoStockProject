@@ -90,7 +90,7 @@ def _get_offers(request):
         return Offer.objects.filter(deal__broker__id=request.user.account.broker.id)
 
 
-def optimized_get_offers(request):
+def get_offers_with_related_items(request):
     return (
         _get_offers(request)
         .prefetch_related("deal__asset__wallet_record")
