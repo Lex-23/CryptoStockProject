@@ -1,3 +1,4 @@
+import pytest
 from account.tests.factory import AssetFactory, SalesDashboardFactory
 from django.db import connection
 from django.test.utils import CaptureQueriesContext
@@ -7,10 +8,10 @@ def test_get_list_sales_dashboard(auth_user, broker_account):
     sale1 = SalesDashboardFactory(broker=broker_account)
     sale2 = SalesDashboardFactory(broker=broker_account, asset=AssetFactory(name="ETH"))
 
-    response = auth_user.get("/api/salesdashboard/")
+    response = auth_user.get("/api/salesdashboard/?limit=10")
 
     assert response.status_code == 200
-    assert response.json() == [
+    assert response.json()["results"] == [
         {
             "id": sale1.id,
             "asset": {
@@ -56,20 +57,54 @@ def test_get_list_sales_dashboard_db_calls(auth_user, broker_account):
     SalesDashboardFactory.create_batch(100, broker=broker_account)
 
     with CaptureQueriesContext(connection) as query_context:
-        response = auth_user.get("/api/salesdashboard/")
+        response = auth_user.get("/api/salesdashboard/?limit=10")
 
     assert response.status_code == 200
-    assert len(query_context) == 2
+    assert len(query_context) == 3
 
     SalesDashboardFactory.create_batch(1000, broker=broker_account)
 
     with CaptureQueriesContext(connection) as query_context:
-        response = auth_user.get("/api/salesdashboard/")
+        response = auth_user.get("/api/salesdashboard/?limit=1000")
 
     assert response.status_code == 200
-    assert len(query_context) == 2
+    assert len(query_context) == 3
+
+
+@pytest.mark.parametrize(
+    "count,limit,offset", [(50, 1, 0), (100, 10, 0), (1000, 10, 2)]
+)
+def test_get_list_sales_dashboard_pagination_check_limit(
+    auth_user, count, limit, offset
+):
+    SalesDashboardFactory.create_batch(count)
+
+    response = auth_user.get(f"/api/salesdashboard/?limit={limit}&offset={offset}")
+
+    assert response.status_code == 200
+    assert len(response.json()) == 4
+    assert tuple(response.json().keys()) == ("count", "next", "previous", "results")
+    assert response.json()["count"] == count
+    assert len(response.json()["results"]) == limit
+
+
+@pytest.mark.parametrize("limit,offset1,offset2", [(10, 0, 10), (20, 20, 40)])
+def test_get_list_sales_dashboard_pagination_check_offset(
+    auth_user, limit, offset1, offset2
+):
+    SalesDashboardFactory.create_batch(100)
+
+    response = auth_user.get(f"/api/salesdashboard/?limit={limit}&offset={offset1}")
+
+    assert response.status_code == 200
+    sale1_id = response.json()["results"][0]["id"]
+
+    response = auth_user.get(f"/api/salesdashboard/?limit={limit}&offset={offset2}")
+
+    assert response.status_code == 200
+    assert response.json()["results"][0]["id"] == sale1_id + (offset2 - offset1)
 
 
 def test_get_list_sales_dashboard_not_authenticated_user(api_client):
-    response = api_client.get("/api/salesdashboard/")
+    response = api_client.get("/api/salesdashboard/?limit=10")
     assert response.status_code == 401

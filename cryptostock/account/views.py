@@ -8,6 +8,7 @@ from account.serializers import (
 from django.db import transaction
 from rest_framework import status
 from rest_framework.generics import get_object_or_404
+from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from utils import validators
@@ -18,7 +19,7 @@ from utils.services import (
 )
 
 
-class SalesListApiView(APIView):
+class SalesListApiView(APIView, LimitOffsetPagination):
     def get(self, request, format=None):
         sales = (
             SalesDashboard.objects.select_related(
@@ -27,8 +28,9 @@ class SalesListApiView(APIView):
             .prefetch_related("asset__wallet_record")
             .all()
         )
-        serializer = SalesDashboardSerializer(sales, many=True)
-        return Response(serializer.data)
+        results = self.paginate_queryset(sales, request, view=self)
+        serializer = SalesDashboardSerializer(results, many=True)
+        return self.get_paginated_response(serializer.data)
 
     def post(self, request, format=None):
         serializer = CreateSalesDashboardSerializer(data=request.data)
@@ -90,13 +92,14 @@ class NewOfferApiView(APIView):
         return Response(offer_data, status=status.HTTP_201_CREATED)
 
 
-class OffersListApiView(APIView):
+class OffersListApiView(APIView, LimitOffsetPagination):
     def get_queryset(self):
         return get_offers_with_related_items(self.request)
 
     def get(self, request, format=None):
-        serializer = OfferSerializer(self.get_queryset(), many=True)
-        return Response(serializer.data)
+        results = self.paginate_queryset(self.get_queryset(), request, view=self)
+        serializer = OfferSerializer(results, many=True)
+        return self.get_paginated_response(serializer.data)
 
 
 class OfferApiView(APIView):
