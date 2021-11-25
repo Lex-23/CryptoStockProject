@@ -82,7 +82,6 @@ def test_get_list_sales_dashboard_pagination_check_limit(
     response = auth_user.get(f"/api/salesdashboard/?limit={limit}&offset={offset}")
 
     assert response.status_code == 200
-    assert len(response.json()) == 4
     assert tuple(response.json().keys()) == ("count", "next", "previous", "results")
     assert response.json()["count"] == count
     assert len(response.json()["results"]) == limit
@@ -97,12 +96,12 @@ def test_get_list_sales_dashboard_pagination_check_offset(
     response = auth_user.get(f"/api/salesdashboard/?limit={limit}&offset={offset1}")
 
     assert response.status_code == 200
-    sale1_id = response.json()["results"][0]["id"]
+    sale_id = response.json()["results"][0]["id"]
 
     response = auth_user.get(f"/api/salesdashboard/?limit={limit}&offset={offset2}")
 
     assert response.status_code == 200
-    assert response.json()["results"][0]["id"] == sale1_id + (offset2 - offset1)
+    assert response.json()["results"][0]["id"] == sale_id + (offset2 - offset1)
 
 
 def test_get_list_sales_dashboard_not_authenticated_user(api_client):
