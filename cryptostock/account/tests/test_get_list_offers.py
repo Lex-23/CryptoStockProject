@@ -20,7 +20,7 @@ def test_client_get_list_offers(auth_client, client_account):
     offer2 = OfferFactory(deal=sale, count=d.Decimal("30.0456"), client=offer1.client)
     OfferFactory(deal=sale, client=ClientFactory())
 
-    response = auth_client.get("/api/offer/?limit=10")
+    response = auth_client.get("/api/offer/")
 
     assert response.status_code == 200
     assert Offer.objects.count() == 3
@@ -103,7 +103,7 @@ def test_broker_get_list_offers(auth_broker, broker_account):
     offer2 = OfferFactory(deal=sale, count=d.Decimal("30.0456"))
     OfferFactory()
 
-    response = auth_broker.get("/api/offer/?limit=10")
+    response = auth_broker.get("/api/offer/")
     assert response.status_code == 200
     assert Offer.objects.count() == 3
     assert len(response.json()["results"]) == 2
@@ -183,7 +183,7 @@ def test_get_list_offers_db_calls_from_client(auth_client, client_account):
     OfferFactory.create_batch(100, client=client_account)
 
     with CaptureQueriesContext(connection) as query_context:
-        response = auth_client.get("/api/offer/?limit=100")
+        response = auth_client.get("/api/offer/")
 
     assert response.status_code == 200
     assert len(query_context) == 6
@@ -191,7 +191,7 @@ def test_get_list_offers_db_calls_from_client(auth_client, client_account):
     OfferFactory.create_batch(1000, client=client_account)
 
     with CaptureQueriesContext(connection) as query_context:
-        response = auth_client.get("/api/offer/?limit=1000")
+        response = auth_client.get("/api/offer/")
 
     assert response.status_code == 200
     assert len(query_context) == 6
@@ -251,5 +251,5 @@ def test_get_offers_pagination_check_offset(
 
 
 def test_get_list_offers_not_authenticated_user(api_client):
-    response = api_client.get("/api/offer/?limit=10")
+    response = api_client.get("/api/offer/")
     assert response.status_code == 401
