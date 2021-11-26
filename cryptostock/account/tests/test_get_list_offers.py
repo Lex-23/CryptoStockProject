@@ -207,7 +207,7 @@ def test_get_list_offers_db_calls_from_broker(auth_broker, broker_account):
     assert response.status_code == 200
     assert len(query_context) == 6
 
-    OfferFactory.create_batch(1000, deal=sale)
+    OfferFactory.create_batch(300, deal=sale)
 
     with CaptureQueriesContext(connection) as query_context:
         response = auth_broker.get("/api/offer/")
@@ -227,7 +227,7 @@ def test_get_offers_pagination_check_limit(
     response = auth_client.get(f"/api/offer/?limit={limit}&offset={offset}")
 
     assert response.status_code == 200
-    assert tuple(response.json().keys()) == ("count", "next", "previous", "results")
+    assert response.json().keys() == {"count", "next", "previous", "results"}
     assert response.json()["count"] == count
     assert len(response.json()["results"]) == limit
 

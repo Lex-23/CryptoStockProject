@@ -62,7 +62,7 @@ def test_get_list_sales_dashboard_db_calls(auth_user, broker_account):
     assert response.status_code == 200
     assert len(query_context) == 3
 
-    SalesDashboardFactory.create_batch(1000, broker=broker_account)
+    SalesDashboardFactory.create_batch(300, broker=broker_account)
 
     with CaptureQueriesContext(connection) as query_context:
         response = auth_user.get("/api/salesdashboard/")
@@ -82,7 +82,7 @@ def test_get_list_sales_dashboard_pagination_check_limit(
     response = auth_user.get(f"/api/salesdashboard/?limit={limit}&offset={offset}")
 
     assert response.status_code == 200
-    assert tuple(response.json().keys()) == ("count", "next", "previous", "results")
+    assert response.json().keys() == {"count", "next", "previous", "results"}
     assert response.json()["count"] == count
     assert len(response.json()["results"]) == limit
 
