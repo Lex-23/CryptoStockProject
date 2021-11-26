@@ -1,5 +1,6 @@
 import decimal as d
 
+import pytest
 from account.models import Offer
 from account.tests.factory import (
     AssetFactory,
@@ -23,8 +24,8 @@ def test_client_get_list_offers(auth_client, client_account):
 
     assert response.status_code == 200
     assert Offer.objects.count() == 3
-    assert len(response.json()) == 2
-    assert response.json() == [
+    assert len(response.json()["results"]) == 2
+    assert response.json()["results"] == [
         {
             "id": offer1.id,
             "client": {
@@ -103,11 +104,10 @@ def test_broker_get_list_offers(auth_broker, broker_account):
     OfferFactory()
 
     response = auth_broker.get("/api/offer/")
-
     assert response.status_code == 200
     assert Offer.objects.count() == 3
-    assert len(response.json()) == 2
-    assert response.json() == [
+    assert len(response.json()["results"]) == 2
+    assert response.json()["results"] == [
         {
             "id": offer1.id,
             "client": {
@@ -186,7 +186,7 @@ def test_get_list_offers_db_calls_from_client(auth_client, client_account):
         response = auth_client.get("/api/offer/")
 
     assert response.status_code == 200
-    assert len(query_context) == 5
+    assert len(query_context) == 6
 
     OfferFactory.create_batch(1000, client=client_account)
 
@@ -194,7 +194,7 @@ def test_get_list_offers_db_calls_from_client(auth_client, client_account):
         response = auth_client.get("/api/offer/")
 
     assert response.status_code == 200
-    assert len(query_context) == 5
+    assert len(query_context) == 6
 
 
 def test_get_list_offers_db_calls_from_broker(auth_broker, broker_account):
@@ -205,15 +205,48 @@ def test_get_list_offers_db_calls_from_broker(auth_broker, broker_account):
         response = auth_broker.get("/api/offer/")
 
     assert response.status_code == 200
-    assert len(query_context) == 5
+    assert len(query_context) == 6
 
-    OfferFactory.create_batch(1000, deal=sale)
+    OfferFactory.create_batch(300, deal=sale)
 
     with CaptureQueriesContext(connection) as query_context:
         response = auth_broker.get("/api/offer/")
 
     assert response.status_code == 200
-    assert len(query_context) == 5
+    assert len(query_context) == 6
+
+
+@pytest.mark.parametrize(
+    "count,limit,offset", [(50, 1, 0), (100, 10, 0), (1000, 10, 2)]
+)
+def test_get_offers_pagination_check_limit(
+    auth_client, client_account, count, limit, offset
+):
+    OfferFactory.create_batch(count, client=client_account)
+
+    response = auth_client.get(f"/api/offer/?limit={limit}&offset={offset}")
+
+    assert response.status_code == 200
+    assert response.json().keys() == {"count", "next", "previous", "results"}
+    assert response.json()["count"] == count
+    assert len(response.json()["results"]) == limit
+
+
+@pytest.mark.parametrize("limit,offset1,offset2", [(10, 0, 10), (20, 20, 40)])
+def test_get_offers_pagination_check_offset(
+    auth_client, client_account, limit, offset1, offset2
+):
+    OfferFactory.create_batch(100, client=client_account)
+
+    response = auth_client.get(f"/api/offer/?limit={limit}&offset={offset1}")
+
+    assert response.status_code == 200
+    offer_id = response.json()["results"][0]["id"]
+
+    response = auth_client.get(f"/api/offer/?limit={limit}&offset={offset2}")
+
+    assert response.status_code == 200
+    assert response.json()["results"][0]["id"] == offer_id + (offset2 - offset1)
 
 
 def test_get_list_offers_not_authenticated_user(api_client):
