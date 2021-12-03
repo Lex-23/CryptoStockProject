@@ -7,7 +7,6 @@ from utils.swagger_views import schema_view
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include("account.urls")),
-    path("api/", include("market.urls")),
     path(
         "api/auth/", jwt_views.MyTokenObtainPairView.as_view(), name="token_obtain_pair"
     ),
