@@ -37,7 +37,7 @@ class YahooMarket(AbstractMarket):
 
 
 class Market(models.Model):
-    name = models.CharField(max_length=20)
+    name = models.CharField(max_length=20, unique=True)
     url = models.URLField()
     kwargs = models.JSONField(blank=True, null=True)
 
