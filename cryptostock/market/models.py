@@ -1,23 +1,26 @@
+import abc
 from typing import Dict, List
 
 from django.db import models
-from utils.scraper import yahoo_scraper
+from market.helpers import _yahoo_scraper
 
 
-class AbstractMarket:
+class AbstractMarket(abc.ABC):
     def __init__(self, url, **kwargs):
         self.url = url
         self.kwargs = kwargs
 
+    @abc.abstractmethod
     def get_assets(self) -> List[Dict]:
-        pass
+        """Return all allowed assets from market"""
 
+    @abc.abstractmethod
     def get_asset(self, name) -> Dict:
-        asset = [i for i in self.get_assets() if i["name"] == name][0]
-        return asset
+        """ Return asset by name"""
 
+    @abc.abstractmethod
     def buy(self, name, count) -> Dict:
-        return {"asset": self.get_asset(name), "count": count}
+        """ Buy asset by name"""
 
 
 _market_storage = {}
@@ -33,13 +36,20 @@ class YahooMarket(AbstractMarket):
     NAME = "Yahoo"
 
     def get_assets(self):
-        return yahoo_scraper(url=self.url)
+        return _yahoo_scraper(url=self.url)
+
+    def get_asset(self, name) -> Dict:
+        asset = [i for i in self.get_assets() if i["name"] == name][0]
+        return asset
+
+    def buy(self, name, count) -> Dict:
+        return {"asset": self.get_asset(name), "count": count}
 
 
 class Market(models.Model):
     name = models.CharField(max_length=20, unique=True)
     url = models.URLField()
-    kwargs = models.JSONField(blank=True, null=True)
+    kwargs = models.JSONField(default=dict)
 
     @property
     def market_cls(self):
@@ -50,7 +60,8 @@ class Market(models.Model):
 
     @property
     def client(self):
-        return self.market_cls(url=self.url)
+        kwargs = self.kwargs
+        return self.market_cls(url=self.url, **kwargs)
 
     def __str__(self):
         return self.name
