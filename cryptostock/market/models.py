@@ -30,7 +30,7 @@ def market_register(cls):
 
 @market_register
 class YahooMarket(AbstractMarket):
-    NAME = "YAHOO"
+    NAME = "Yahoo"
 
     def get_assets(self):
         return yahoo_scraper(url=self.url)
@@ -50,8 +50,7 @@ class Market(models.Model):
 
     @property
     def client(self):
-        kwargs = self.kwargs
-        return self.market_cls(url=self.url, **kwargs)
+        return self.market_cls(url=self.url)
 
     def __str__(self):
         return self.name
