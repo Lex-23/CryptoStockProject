@@ -1,8 +1,10 @@
 import abc
+from functools import lru_cache
 from typing import Dict, List
 
+import requests
+from bs4 import BeautifulSoup
 from django.db import models
-from market.helpers import _yahoo_scraper
 
 
 class AbstractMarket(abc.ABC):
@@ -12,15 +14,15 @@ class AbstractMarket(abc.ABC):
 
     @abc.abstractmethod
     def get_assets(self) -> List[Dict]:
-        """Return all allowed assets from market"""
+        """ Return all allowed assets from market """
 
     @abc.abstractmethod
     def get_asset(self, name) -> Dict:
-        """ Return asset by name"""
+        """ Return asset by name """
 
     @abc.abstractmethod
-    def buy(self, name, count) -> Dict:
-        """ Buy asset by name"""
+    def buy(self, name, count: int) -> Dict[Dict, int]:
+        """ Buy asset by name """
 
 
 _market_storage = {}
@@ -36,14 +38,35 @@ class YahooMarket(AbstractMarket):
     NAME = "Yahoo"
 
     def get_assets(self):
-        return _yahoo_scraper(url=self.url)
+        return self.get_assets_from_yahoo()
 
     def get_asset(self, name) -> Dict:
-        asset = [i for i in self.get_assets() if i["name"] == name][0]
+        asset = [asset for asset in self.get_assets() if asset["name"] == name][0]
         return asset
 
     def buy(self, name, count) -> Dict:
         return {"asset": self.get_asset(name), "count": count}
+
+    @lru_cache(maxsize=None)
+    def get_assets_from_yahoo(self):
+        """
+        Function for get assets info from Yahoo.
+        """
+        response = requests.get(self.url)
+        soup = BeautifulSoup(response.text, "lxml")
+        parse_names = soup.find_all("td", attrs={"aria-label": "Symbol"})
+        parse_descriptions = soup.find_all("td", attrs={"aria-label": "Name"})
+        parse_price = soup.find_all("td", attrs={"aria-label": "Price (Intraday)"})
+
+        assets_list = []
+        for name, desc, price in zip(parse_names, parse_descriptions, parse_price):
+            asset = {
+                "name": name.text.split("-")[0],
+                "description": desc.text.split()[0],
+                "price": price.text.replace(",", ""),
+            }
+            assets_list.append(asset)
+        return assets_list
 
 
 class Market(models.Model):
@@ -60,8 +83,7 @@ class Market(models.Model):
 
     @property
     def client(self):
-        kwargs = self.kwargs
-        return self.market_cls(url=self.url, **kwargs)
+        return self.market_cls(url=self.url, **self.kwargs)
 
     def __str__(self):
         return self.name
