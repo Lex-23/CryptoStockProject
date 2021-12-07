@@ -1,10 +1,19 @@
 import abc
 from functools import lru_cache
-from typing import Dict, List
+from typing import Dict, List, TypedDict
 
 import requests
 from bs4 import BeautifulSoup
 from django.db import models
+
+
+class Asset(TypedDict):
+    name: str
+    description: str
+    price: str
+
+
+Count = int
 
 
 class AbstractMarket(abc.ABC):
@@ -13,15 +22,15 @@ class AbstractMarket(abc.ABC):
         self.kwargs = kwargs
 
     @abc.abstractmethod
-    def get_assets(self) -> List[Dict]:
+    def get_assets(self) -> List[Asset]:
         """ Return all allowed assets from market """
 
     @abc.abstractmethod
-    def get_asset(self, name) -> Dict:
+    def get_asset(self, name: str) -> Asset:
         """ Return asset by name """
 
     @abc.abstractmethod
-    def buy(self, name, count: int) -> Dict[Dict, int]:
+    def buy(self, name: str, count: Count) -> Dict[Asset, Count]:
         """ Buy asset by name """
 
 
@@ -40,11 +49,11 @@ class YahooMarket(AbstractMarket):
     def get_assets(self):
         return self.get_assets_from_yahoo()
 
-    def get_asset(self, name) -> Dict:
+    def get_asset(self, name):
         asset = [asset for asset in self.get_assets() if asset["name"] == name][0]
         return asset
 
-    def buy(self, name, count) -> Dict:
+    def buy(self, name, count):
         return {"asset": self.get_asset(name), "count": count}
 
     @lru_cache(maxsize=None)
