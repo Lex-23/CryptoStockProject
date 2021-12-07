@@ -1,4 +1,4 @@
 from django.urls import path
-from market.views import ListMarkets
+from market.views import AssetMarketListApiView
 
-urlpatterns = [path("markets/", ListMarkets.as_view())]
+urlpatterns = [path("market/<str:name>/asset/", AssetMarketListApiView.as_view())]
