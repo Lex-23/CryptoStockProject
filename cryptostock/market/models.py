@@ -52,10 +52,8 @@ class YahooMarket(AbstractMarket):
         return self.get_assets_from_yahoo()
 
     def get_asset(self, name):
-        try:
-            asset = [asset for asset in self.get_assets() if asset["name"] == name][0]
-        except IndexError:
-            return None
+        assets = (asset for asset in self.get_assets() if asset["name"] == name)
+        asset = next(assets, None)
         return asset
 
     def buy(self, name, count):

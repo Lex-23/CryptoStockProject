@@ -14,16 +14,12 @@ class AssetMarketListApiView(APIView):
 
 
 class AssetMarketApiView(APIView):
-    def get(self, request, format=None, **kwargs):
+    def get(self, request, market_name, asset_name, format=None):
         validate_is_broker(request)
-        market = get_object_or_404(
-            queryset=Market.objects.all(), name=kwargs["market_name"]
-        )
-        asset = market.client.get_asset(name=kwargs["asset_name"])
+        market = get_object_or_404(queryset=Market.objects.all(), name=market_name)
+        asset = market.client.get_asset(name=asset_name)
         if asset is None:
             raise ValidationError(
-                [
-                    f"asset {kwargs['asset_name']} not allow for market {kwargs['market_name']}."
-                ]
+                [f"asset {asset_name} not allow for market {market_name}."]
             )
         return Response(asset)
