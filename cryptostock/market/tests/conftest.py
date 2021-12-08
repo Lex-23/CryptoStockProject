@@ -1,10 +1,11 @@
 import pytest
 from account.tests.conftest import *  # noqa
+from market.models import Market
 
 
 @pytest.fixture
 def get_assets_list():
-    assets_list = [
+    return [
         {"name": "BTC", "description": "Bitcoin", "price": "50996.99"},
         {"name": "ETH", "description": "Ethereum", "price": "4353.60"},
         {"name": "BNB", "description": "BinanceCoin", "price": "586.37"},
@@ -19,4 +20,8 @@ def get_assets_list():
         {"name": "DOGE", "description": "Dogecoin", "price": "0.178727"},
         {"name": "AVAX", "description": "Avalanche", "price": "96.68"},
     ]
-    return assets_list
+
+
+@pytest.fixture
+def get_market(db):
+    return Market.objects.get(name="Yahoo")

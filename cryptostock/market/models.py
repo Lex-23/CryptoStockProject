@@ -16,7 +16,6 @@ class Asset(TypedDict):
 class BuyResponse(TypedDict):
     asset: Asset
     count: int
-    status: str
 
 
 class AbstractMarket(abc.ABC):
