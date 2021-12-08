@@ -6,14 +6,14 @@ from market.models import YahooMarket
 from market.tests.factory import MarketFactory
 
 
-def test_get_assets_from_market_name(auth_broker, get_assets_list):
+def test_get_assets_from_market_name(auth_broker, assets_list):
     name = "Yahoo"
-    YahooMarket.get_assets = MagicMock(return_value=get_assets_list)
+    YahooMarket.get_assets = MagicMock(return_value=assets_list)
     MarketFactory(name=name)
     response = auth_broker.get(f"/api/market/{name}/asset/")
 
     assert response.status_code == 200
-    assert response.json() == get_assets_list
+    assert response.json() == assets_list
 
 
 def test_get_assets_from_market_name_not_broker(auth_client):
@@ -36,9 +36,9 @@ def test_get_assets_from_market_not_authenticated_user(api_client):
     assert response.status_code == 401
 
 
-def test_get_assets_from_market_name_db_calls(auth_broker, get_assets_list):
+def test_get_assets_from_market_name_db_calls(auth_broker, assets_list):
     name = "Yahoo"
-    YahooMarket.get_assets = MagicMock(return_value=get_assets_list)
+    YahooMarket.get_assets = MagicMock(return_value=assets_list)
     MarketFactory(name=name)
 
     with CaptureQueriesContext(connection) as query_context:
