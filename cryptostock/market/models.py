@@ -1,6 +1,6 @@
 import abc
 from functools import lru_cache
-from typing import Dict, List, TypedDict
+from typing import List, TypedDict
 
 import requests
 from bs4 import BeautifulSoup
@@ -13,7 +13,10 @@ class Asset(TypedDict):
     price: str
 
 
-Count = int
+class BuyResponse(TypedDict):
+    asset: Asset
+    count: int
+    status: str
 
 
 class AbstractMarket(abc.ABC):
@@ -30,7 +33,7 @@ class AbstractMarket(abc.ABC):
         """ Return asset by name """
 
     @abc.abstractmethod
-    def buy(self, name: str, count: Count) -> Dict[Asset, Count]:
+    def buy(self, name: str, count: int) -> BuyResponse:
         """ Buy asset by name """
 
 
