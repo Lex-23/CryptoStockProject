@@ -7,8 +7,8 @@ from rest_framework.views import APIView
 from utils.validators import validate_is_broker
 
 
-class AssetBuySerializer(serializers.ModelSerializer):
-    count = serializers.IntegerField()
+class AssetBuySerializer(serializers.Serializer):
+    count = serializers.IntegerField(min_value=1, max_value=1000000000)
 
 
 class AssetMarketListApiView(APIView):
@@ -33,7 +33,10 @@ class AssetMarketApiView(APIView):
 class BuyAssetMarketApiView(APIView):
     def post(self, request, market_name, asset_name, format=None):
         validate_is_broker(request)
-        count = request.data["count"]
-        AssetBuySerializer(data=count).is_valid(raise_exception=True)
+
+        serializer = AssetBuySerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
         market = get_object_or_404(queryset=Market.objects.all(), name=market_name)
-        return Response(market.client.buy(name=asset_name, count=count))
+        return Response(
+            market.client.buy(name=asset_name, count=serializer.data["count"])
+        )
