@@ -3,6 +3,7 @@ import decimal
 from asset.models import Asset
 from django.contrib.auth.models import User
 from django.db import models
+from market.models import Market
 from utils.fields import CountField, PriceField
 from wallet.models import Wallet
 
@@ -15,7 +16,7 @@ class Account(models.Model):
     wallet = models.OneToOneField(
         Wallet, on_delete=models.CASCADE, related_name="account"
     )
-    cash_balance = CountField(max_digits=30)
+    cash_balance = CountField(max_digits=30, decimal_places=2)
 
     def __str__(self):
         return f"{self.name} ({self.owner})"
@@ -41,16 +42,39 @@ class Client(Account):
 
 
 class SalesDashboard(models.Model):
+    """
+    Model for put up for sale assets from broker
+    """
+
     asset = models.ForeignKey(Asset, on_delete=models.DO_NOTHING)
+    broker = models.ForeignKey(Broker, on_delete=models.CASCADE)
     count = CountField()
     price = PriceField()
-    broker = models.ForeignKey(Broker, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.asset} - price:{self.price} - broker:{self.broker}"
 
 
+class PurchaseDashboard(models.Model):
+    """
+    Model for history deals between broker and market
+    """
+
+    asset = models.ForeignKey(Asset, on_delete=models.DO_NOTHING)
+    market = models.ForeignKey(Market, on_delete=models.DO_NOTHING)
+    broker = models.ForeignKey(Broker, on_delete=models.CASCADE)
+    price = PriceField()
+    count = CountField(decimal_places=0)
+
+    def __str__(self):
+        return f"{self.asset} - price:{self.price} - count:{self.count}"
+
+
 class Offer(models.Model):
+    """
+    Model for history deals between client and broker
+    """
+
     deal = models.ForeignKey(
         SalesDashboard, on_delete=models.DO_NOTHING, related_name="offer"
     )
@@ -74,5 +98,5 @@ class Offer(models.Model):
     def total_value(self):
         decimal.getcontext().prec = 24
         return (self.count * self.price).quantize(
-            decimal.Decimal("0.0001"), rounding=decimal.ROUND_UP
+            decimal.Decimal("0.01"), rounding=decimal.ROUND_UP
         )

@@ -8,8 +8,8 @@ class PriceField(models.DecimalField):
     """default field for price"""
 
     MAX_DIGITS = 16
-    DECIMAL_PLACES = 6
-    VALIDATORS = [MinValueValidator(decimal.Decimal("0.000001"))]
+    DECIMAL_PLACES = 2
+    VALIDATORS = [MinValueValidator(decimal.Decimal("0.01"))]
 
     def __init__(self, **kwargs):
         kwargs.setdefault("max_digits", self.MAX_DIGITS)

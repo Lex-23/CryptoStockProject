@@ -1,14 +1,12 @@
+from account.models import PurchaseDashboard
+from asset.models import Asset
 from market.models import Market
-from rest_framework import serializers
+from market.serializers import AssetBuySerializer
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from utils.validators import validate_is_broker
-
-
-class AssetBuySerializer(serializers.Serializer):
-    count = serializers.IntegerField(min_value=1, max_value=1000000000)
 
 
 class AssetMarketListApiView(APIView):
@@ -23,6 +21,7 @@ class AssetMarketApiView(APIView):
         validate_is_broker(request)
         market = get_object_or_404(queryset=Market.objects.all(), name=market_name)
         asset = market.client.get_asset(name=asset_name)
+
         if asset is None:
             raise ValidationError(
                 [f"asset {asset_name} not allow for market {market_name}."]
@@ -37,6 +36,24 @@ class BuyAssetMarketApiView(APIView):
         serializer = AssetBuySerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         market = get_object_or_404(queryset=Market.objects.all(), name=market_name)
-        return Response(
-            market.client.buy(name=asset_name, count=serializer.data["count"])
+        deal = market.client.buy(name=asset_name, count=serializer.data["count"])
+        breakpoint()
+        asset = deal["asset"]
+        try:
+            Asset.objects.get(name=asset["name"])
+        except Asset.DoesNotExist:
+            Asset.objects.create(name=asset["name"], description=asset["description"])
+        purchase = PurchaseDashboard.objects.create(
+            asset=Asset.objects.get(name=asset["name"]),
+            market=market,
+            broker=request.user.account.broker,
+            count=deal["count"],
+            price=deal["asset"]["price"],
         )
+        broker = request.user.account.broker
+        broker.cash_balance -= deal["total_price"]
+        broker.save()
+        broker_wallet_record = broker.wallet.wallet_record.get(asset=purchase.asset)
+        broker_wallet_record.count += purchase.count
+        broker_wallet_record.save()
+        return Response(deal)
