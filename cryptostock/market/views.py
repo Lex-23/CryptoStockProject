@@ -1,12 +1,13 @@
-from account.models import PurchaseDashboard
-from asset.models import Asset
+from django.db import transaction
 from market.models import Market
 from market.serializers import AssetBuySerializer
+from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from utils.validators import validate_is_broker
+from utils.services import purchase_asset
+from utils.validators import validate_broker_cash_balance, validate_is_broker
 
 
 class AssetMarketListApiView(APIView):
@@ -30,30 +31,18 @@ class AssetMarketApiView(APIView):
 
 
 class BuyAssetMarketApiView(APIView):
+    @transaction.atomic
     def post(self, request, market_name, asset_name, format=None):
         validate_is_broker(request)
-
         serializer = AssetBuySerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+
         market = get_object_or_404(queryset=Market.objects.all(), name=market_name)
-        deal = market.client.buy(name=asset_name, count=serializer.data["count"])
-        breakpoint()
-        asset = deal["asset"]
-        try:
-            Asset.objects.get(name=asset["name"])
-        except Asset.DoesNotExist:
-            Asset.objects.create(name=asset["name"], description=asset["description"])
-        purchase = PurchaseDashboard.objects.create(
-            asset=Asset.objects.get(name=asset["name"]),
-            market=market,
-            broker=request.user.account.broker,
-            count=deal["count"],
-            price=deal["asset"]["price"],
+        deal = purchase_asset(
+            request, market, asset_name, count=serializer.data["count"]
         )
-        broker = request.user.account.broker
-        broker.cash_balance -= deal["total_price"]
-        broker.save()
-        broker_wallet_record = broker.wallet.wallet_record.get(asset=purchase.asset)
-        broker_wallet_record.count += purchase.count
-        broker_wallet_record.save()
-        return Response(deal)
+
+        validate_broker_cash_balance(
+            request.user.account.broker.cash_balance, deal["total_price"]
+        )
+        return Response(deal, status=status.HTTP_201_CREATED)
