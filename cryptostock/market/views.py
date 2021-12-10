@@ -7,7 +7,7 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from utils.services import purchase_asset
-from utils.validators import validate_broker_cash_balance, validate_is_broker
+from utils.validators import validate_is_broker
 
 
 class AssetMarketListApiView(APIView):
@@ -40,9 +40,5 @@ class BuyAssetMarketApiView(APIView):
         market = get_object_or_404(queryset=Market.objects.all(), name=market_name)
         deal = purchase_asset(
             request, market, asset_name, count=serializer.data["count"]
-        )
-
-        validate_broker_cash_balance(
-            request.user.account.broker.cash_balance, deal["total_price"]
         )
         return Response(deal, status=status.HTTP_201_CREATED)

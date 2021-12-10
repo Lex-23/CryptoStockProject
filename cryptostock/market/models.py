@@ -66,7 +66,7 @@ class YahooMarket(AbstractMarket):
             )
             * count
         )
-        return {"asset": asset, "count": count, "total_price": total_price}
+        return BuyResponse(asset=asset, count=count, total_price=total_price)
 
     @lru_cache(maxsize=None)
     def get_assets_from_yahoo(self):

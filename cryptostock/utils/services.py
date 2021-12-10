@@ -4,6 +4,7 @@ from account.models import Offer, PurchaseDashboard, SalesDashboard
 from account.serializers import OfferSerializer, SalesDashboardSerializer
 from asset.models import Asset
 from utils import validators
+from utils.validators import validate_broker_cash_balance
 from wallet.models import WalletRecord
 
 
@@ -109,8 +110,13 @@ def get_offers_with_related_items(request):
 
 def purchase_asset(request, market, asset_name, count):
     deal = market.client.buy(name=asset_name, count=count)
+    validate_broker_cash_balance(
+        request.user.account.broker.cash_balance, deal["total_price"]
+    )
 
-    _purchase_asset_check(deal["asset"])
+    Asset.objects.get_or_create(
+        name=deal["asset"]["name"], description=deal["asset"]["description"]
+    )
 
     purchase = PurchaseDashboard.objects.create(
         asset=Asset.objects.get(name=deal["asset"]["name"]),
@@ -127,20 +133,10 @@ def purchase_asset(request, market, asset_name, count):
 
 
 def _update_broker_account_after_purchase(asset, broker, count, deal_total_price):
-    broker.cash_balance -= deal_total_price
-    try:
-        broker_wallet_record = broker.wallet.wallet_record.get(asset=asset)
-    except WalletRecord.DoesNotExist:
-        broker_wallet_record = WalletRecord.objects.create(
-            asset=asset, wallet=broker.wallet
-        )
+    broker_wallet_record, created = WalletRecord.objects.get_or_create(
+        asset=asset, wallet=broker.wallet
+    )
     broker_wallet_record.count += count
     broker_wallet_record.save()
+    broker.cash_balance -= deal_total_price
     broker.save()
-
-
-def _purchase_asset_check(asset: dict):
-    try:
-        Asset.objects.get(name=asset["name"])
-    except Asset.DoesNotExist:
-        Asset.objects.create(name=asset["name"], description=asset["description"])
