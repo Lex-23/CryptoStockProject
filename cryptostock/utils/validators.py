@@ -50,3 +50,8 @@ def validate_offer_count(offer_count, deal):
 def validate_cash_balance(account, deal_value):
     if account.cash_balance < deal_value:
         raise ValidationError(["You don`t have enough funds for this operation."])
+
+
+def validate_broker_cash_balance(cash_balance, total_price):
+    if cash_balance < total_price:
+        raise ValidationError(["You don`t have enough funds for this operation."])

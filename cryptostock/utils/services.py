@@ -1,8 +1,11 @@
 import decimal
 
-from account.models import Offer, SalesDashboard
+from account.models import Offer, PurchaseDashboard, SalesDashboard
 from account.serializers import OfferSerializer, SalesDashboardSerializer
+from asset.models import Asset
+from django.db import transaction
 from utils import validators
+from utils.validators import validate_broker_cash_balance
 from wallet.models import WalletRecord
 
 
@@ -104,3 +107,38 @@ def get_offers_with_related_items(request):
         .all()
         .order_by("id")
     )
+
+
+def purchase_asset(request, market, asset_name, count):
+    deal = market.client.buy(name=asset_name, count=count)
+    validate_broker_cash_balance(
+        request.user.account.broker.cash_balance, deal["total_price"]
+    )
+
+    Asset.objects.get_or_create(
+        name=deal["asset"]["name"], description=deal["asset"]["description"]
+    )
+
+    purchase = PurchaseDashboard.objects.create(
+        asset=Asset.objects.get(name=deal["asset"]["name"]),
+        market=market,
+        broker=request.user.account.broker,
+        count=deal["count"],
+        price=deal["asset"]["price"],
+    )
+
+    _update_broker_account_after_purchase(
+        purchase.asset, request.user.account.broker, purchase.count, deal["total_price"]
+    )
+    return deal
+
+
+@transaction.atomic
+def _update_broker_account_after_purchase(asset, broker, count, deal_total_price):
+    broker_wallet_record, created = WalletRecord.objects.get_or_create(
+        asset=asset, wallet=broker.wallet
+    )
+    broker_wallet_record.count += count
+    broker_wallet_record.save()
+    broker.cash_balance -= deal_total_price
+    broker.save()

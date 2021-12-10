@@ -1,4 +1,4 @@
-from account.models import Broker, Client, Offer, SalesDashboard
+from account.models import Broker, Client, Offer, PurchaseDashboard, SalesDashboard
 from django.contrib import admin
 
 
@@ -36,6 +36,12 @@ class SalesDashboardAdmin(admin.ModelAdmin):
     list_editable = ("count", "price")
     search_fields = ("asset__name", "broker__name")
     list_filter = ("asset", "broker")
+
+
+@admin.register(PurchaseDashboard)
+class PurchaseDashboardAdmin(admin.ModelAdmin):
+    fields = ("asset", "market", "count", "price", "broker")
+    list_display = ("id", "asset", "market", "count", "price", "broker")
 
 
 @admin.register(Offer)

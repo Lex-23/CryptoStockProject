@@ -1,4 +1,5 @@
 import abc
+import decimal
 from functools import lru_cache
 from typing import List, TypedDict
 
@@ -16,6 +17,7 @@ class Asset(TypedDict):
 class BuyResponse(TypedDict):
     asset: Asset
     count: int
+    total_price: decimal.Decimal
 
 
 class AbstractMarket(abc.ABC):
@@ -57,7 +59,14 @@ class YahooMarket(AbstractMarket):
         return asset
 
     def buy(self, name, count):
-        return {"asset": self.get_asset(name), "count": count}
+        asset = self.get_asset(name)
+        total_price = (
+            decimal.Decimal(asset["price"]).quantize(
+                decimal.Decimal("0.01"), rounding=decimal.ROUND_UP
+            )
+            * count
+        )
+        return BuyResponse(asset=asset, count=count, total_price=total_price)
 
     @lru_cache(maxsize=None)
     def get_assets_from_yahoo(self):
