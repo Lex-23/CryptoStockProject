@@ -3,6 +3,7 @@ import decimal
 from account.models import Offer, PurchaseDashboard, SalesDashboard
 from account.serializers import OfferSerializer, SalesDashboardSerializer
 from asset.models import Asset
+from django.db import transaction
 from utils import validators
 from utils.validators import validate_broker_cash_balance
 from wallet.models import WalletRecord
@@ -132,6 +133,7 @@ def purchase_asset(request, market, asset_name, count):
     return deal
 
 
+@transaction.atomic
 def _update_broker_account_after_purchase(asset, broker, count, deal_total_price):
     broker_wallet_record, created = WalletRecord.objects.get_or_create(
         asset=asset, wallet=broker.wallet
