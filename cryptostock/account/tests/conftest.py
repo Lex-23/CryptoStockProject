@@ -69,7 +69,7 @@ def broker_account(account_factory, user_one):
         wallet_name="Test Wallet broker",
         account_name="Test account broker",
         user_model=Broker,
-        cash_balance=decimal.Decimal("10000000.0000"),
+        cash_balance=decimal.Decimal("1000.0000"),
     )
 
 

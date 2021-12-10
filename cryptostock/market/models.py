@@ -7,8 +7,6 @@ import requests
 from bs4 import BeautifulSoup
 from django.db import models
 
-decimal.getcontext().rounding = decimal.ROUND_UP
-
 
 class Asset(TypedDict):
     name: str
