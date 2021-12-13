@@ -64,7 +64,7 @@ class SalesDashboardFactory(DjangoModelFactory):
     asset = factory.SubFactory(AssetFactory)
     broker = factory.SubFactory(BrokerFactory)
     count = decimal.Decimal("50.5555")
-    price = decimal.Decimal("200.777777")
+    price = decimal.Decimal("200.77")
 
 
 class OfferFactory(DjangoModelFactory):

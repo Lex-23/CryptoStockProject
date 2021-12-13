@@ -2,12 +2,11 @@ from django.db import transaction
 from market.models import Market
 from market.serializers import AssetBuySerializer
 from rest_framework import status
-from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from utils.services import purchase_asset
-from utils.validators import validate_is_broker
+from utils.validators import get_validated_asset_from_market, validate_is_broker
 
 
 class AssetMarketListApiView(APIView):
@@ -21,12 +20,7 @@ class AssetMarketApiView(APIView):
     def get(self, request, market_name, asset_name, format=None):
         validate_is_broker(request)
         market = get_object_or_404(queryset=Market.objects.all(), name=market_name)
-        asset = market.client.get_asset(name=asset_name)
-
-        if asset is None:
-            raise ValidationError(
-                [f"asset {asset_name} not allow for market {market_name}."]
-            )
+        asset = get_validated_asset_from_market(asset_name, market)
         return Response(asset)
 
 

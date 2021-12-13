@@ -13,9 +13,9 @@ from django.test.utils import CaptureQueriesContext
 @pytest.mark.parametrize(
     "data",
     [
-        ({"count": "615.0000", "price": "250.485967"}),
+        ({"count": "615.0000", "price": "250.48"}),
         ({"count": "700.4558"}),
-        ({"price": "525.455808"}),
+        ({"price": "525.45"}),
     ],
 )
 def test_update_sales_dashboard(auth_broker, broker_account, data):
@@ -27,7 +27,7 @@ def test_update_sales_dashboard(auth_broker, broker_account, data):
         broker=broker_account,
         asset=wallet_record.asset,
         count=d.Decimal("500.0000"),
-        price=d.Decimal("345.543000"),
+        price=d.Decimal("345.54"),
     )
     asset_count_before_update = broker_account.wallet.wallet_record.get(
         asset=asset
@@ -61,9 +61,9 @@ def test_update_sales_dashboard(auth_broker, broker_account, data):
 @pytest.mark.parametrize(
     "data,query_count",
     [
-        ({"count": "615.0000", "price": "250.485967"}, 7),
+        ({"count": "615.0000", "price": "250.48"}, 7),
         ({"count": "700.4558"}, 7),
-        ({"price": "525.455808"}, 6),
+        ({"price": "525.45"}, 6),
     ],
 )
 def test_update_sales_dashboard_db_calls(
@@ -76,7 +76,7 @@ def test_update_sales_dashboard_db_calls(
         broker=broker_account,
         asset=wallet_record.asset,
         count=d.Decimal("500.0000"),
-        price=d.Decimal("345.543000"),
+        price=d.Decimal("345.54"),
     )
 
     with CaptureQueriesContext(connection) as query_context:
@@ -95,9 +95,9 @@ def test_update_sales_dashboard_not_broker(auth_client, broker_account):
         broker=broker_account,
         asset=asset,
         count=d.Decimal("500.0000"),
-        price=d.Decimal("345.543000"),
+        price=d.Decimal("345.54"),
     )
-    data = {"price": "452.000000"}
+    data = {"price": "452.00"}
 
     response = auth_client.patch(f"/api/salesdashboard/{sale.pk}/", data=data)
 
@@ -117,9 +117,9 @@ def test_update_not_own_sales_dashboard(auth_broker):
         broker=another_broker,
         asset=asset,
         count=d.Decimal("500.0000"),
-        price=d.Decimal("345.543000"),
+        price=d.Decimal("345.54"),
     )
-    data = {"price": "452.000000"}
+    data = {"price": "452.00"}
 
     response = auth_broker.patch(f"/api/salesdashboard/{sale.pk}/", data=data)
 
@@ -138,7 +138,7 @@ def test_update_sales_dashboard_count_too_much(auth_broker, broker_account):
         broker=broker_account,
         asset=asset,
         count=d.Decimal("500.0000"),
-        price=d.Decimal("345.543000"),
+        price=d.Decimal("345.54"),
     )
     data = {"count": "1000.0001"}
 

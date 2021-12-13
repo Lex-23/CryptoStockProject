@@ -50,7 +50,7 @@ class OfferSerializer(serializers.ModelSerializer):
     client = ClientSerializer(required=False)
     timestamp = serializers.DateTimeField(required=False)
     total_value = serializers.DecimalField(
-        required=False, max_digits=30, decimal_places=4
+        required=False, max_digits=30, decimal_places=2
     )
 
     class Meta:
