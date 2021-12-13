@@ -3,6 +3,7 @@ from account.views import (
     NewOfferApiView,
     OfferApiView,
     OffersListApiView,
+    PurchaseDashboardListApiView,
     SaleApiView,
     SalesListApiView,
 )
@@ -15,4 +16,5 @@ urlpatterns = [
     path("offer/", OffersListApiView.as_view()),
     path("offer/<int:pk>/", OfferApiView.as_view()),
     path("account/", AccountApiView.as_view()),
+    path("purchasedashboard/", PurchaseDashboardListApiView.as_view()),
 ]

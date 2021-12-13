@@ -1,8 +1,9 @@
-from account.models import SalesDashboard
+from account.models import PurchaseDashboard, SalesDashboard
 from account.serializers import (
     AccountSerializer,
     CreateSalesDashboardSerializer,
     OfferSerializer,
+    PurchaseDashboardSerializer,
     SalesDashboardSerializer,
 )
 from django.db import transaction
@@ -117,3 +118,13 @@ class AccountApiView(APIView):
         account = request.user.account
         serializer = AccountSerializer(account)
         return Response(serializer.data)
+
+
+class PurchaseDashboardListApiView(APIView, LimitOffsetPagination):
+    def get_queryset(self):
+        return PurchaseDashboard.objects.filter(broker=self.request.user.account.broker)
+
+    def get(self, request, format=None):
+        results = self.paginate_queryset(self.get_queryset(), request, view=self)
+        serializer = PurchaseDashboardSerializer(results, many=True)
+        return self.get_paginated_response(serializer.data)
