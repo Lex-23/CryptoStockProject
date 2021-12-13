@@ -138,7 +138,6 @@ def purchase_asset(request, market, asset_name, count):
 
 @transaction.atomic
 def _update_broker_account_after_purchase(asset, broker, count, deal_total_price):
-    print(f"BEFORE {broker.cash_balance}")
     broker_wallet_record, created = WalletRecord.objects.get_or_create(
         asset=asset, wallet=broker.wallet
     )
@@ -146,4 +145,3 @@ def _update_broker_account_after_purchase(asset, broker, count, deal_total_price
     broker_wallet_record.save()
     broker.cash_balance -= deal_total_price
     broker.save()
-    print(f"AFTER {broker.cash_balance}")
