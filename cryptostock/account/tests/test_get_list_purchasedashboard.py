@@ -11,7 +11,7 @@ from cryptostock.settings import REST_FRAMEWORK as DRF
 
 def test_get_list_purchasedashboard(auth_broker, broker_account):
     purchase1 = PurchaseDashboardFactory(
-        broker=broker_account, market=MarketFactory(name="Yahoo", url="http//:url")
+        broker=broker_account, market=MarketFactory(name="Yahoo")
     )
     purchase2 = PurchaseDashboardFactory(
         broker=purchase1.broker,

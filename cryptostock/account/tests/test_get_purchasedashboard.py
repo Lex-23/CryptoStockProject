@@ -8,7 +8,7 @@ from cryptostock.settings import REST_FRAMEWORK as DRF
 
 def test_get_purchasedashboard(auth_broker, broker_account):
     purchase = PurchaseDashboardFactory(
-        broker=broker_account, market=MarketFactory(name="Yahoo", url="http//:url")
+        broker=broker_account, market=MarketFactory(name="Yahoo")
     )
 
     response = auth_broker.get(f"/api/purchasedashboard/{purchase.id}/")
@@ -43,7 +43,7 @@ def test_get_purchasedashboard(auth_broker, broker_account):
 
 def test_get_purchasedashboard_db_calls(auth_broker, broker_account):
     purchase = PurchaseDashboardFactory(
-        broker=broker_account, market=MarketFactory(name="Yahoo", url="http//:url")
+        broker=broker_account, market=MarketFactory(name="Yahoo")
     )
 
     with CaptureQueriesContext(connection) as query_context:
