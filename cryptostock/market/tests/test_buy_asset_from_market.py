@@ -17,7 +17,6 @@ def test_buy_asset_from_market(
     auth_broker, broker_account, assets_list, asset_name, count
 ):
     market_name = "Yahoo"
-    asset_name = asset_name
     broker_account.cash_balance = decimal.Decimal("10000000.00")
     broker_account.save()
 
