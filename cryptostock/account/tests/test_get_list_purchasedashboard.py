@@ -87,7 +87,7 @@ def test_get_list_purchasedashboard_db_calls(auth_broker, broker_account):
         response = auth_broker.get("/api/purchasedashboard/")
 
     assert response.status_code == 200
-    assert len(query_context) == 6
+    assert len(query_context) == 5
 
     PurchaseDashboardFactory.create_batch(20, broker=broker_account)
 
@@ -95,7 +95,7 @@ def test_get_list_purchasedashboard_db_calls(auth_broker, broker_account):
         response = auth_broker.get("/api/purchasedashboard/")
 
     assert response.status_code == 200
-    assert len(query_context) == 6
+    assert len(query_context) == 5
 
 
 @pytest.mark.parametrize("count,limit,offset", [(10, 1, 0), (25, 10, 0), (50, 10, 2)])
