@@ -11,16 +11,14 @@ from cryptostock.settings import REST_FRAMEWORK as DRF
 
 
 def test_create_offer(auth_client, client_account):
-    broker = BrokerFactory(cash_balance=d.Decimal("1000.0000"))
+    broker = BrokerFactory(cash_balance=d.Decimal("1000.00"))
     client = client_account
-    wallet_record = WalletRecordFactory(
-        wallet=broker.wallet, count=d.Decimal("150.0000")
-    )
+    wallet_record = WalletRecordFactory(wallet=broker.wallet, count=d.Decimal("150.00"))
     sale = SalesDashboardFactory(
         asset=wallet_record.asset,
         broker=broker,
         count=d.Decimal("55.5555"),
-        price=d.Decimal("123.987600"),
+        price=d.Decimal("123.98"),
     )
     data = {"count": "10.9876"}
 
@@ -70,7 +68,7 @@ def test_create_offer(auth_client, client_account):
 
 def test_create_offer_client_have_this_asset(auth_client, client_account):
     """Case, when client already have target asset in his wallet"""
-    broker = BrokerFactory(cash_balance=d.Decimal("1000.0000"))
+    broker = BrokerFactory(cash_balance=d.Decimal("1000.00"))
     client = client_account
     broker_wallet_record = WalletRecordFactory(
         wallet=broker.wallet, count=d.Decimal("150.0000")
@@ -79,7 +77,7 @@ def test_create_offer_client_have_this_asset(auth_client, client_account):
         asset=broker_wallet_record.asset,
         broker=broker,
         count=d.Decimal("55.5555"),
-        price=d.Decimal("123.987600"),
+        price=d.Decimal("123.98"),
     )
     client_wallet_record = WalletRecordFactory(
         wallet=client.wallet, count=d.Decimal("50.0000"), asset=sale.asset
@@ -121,7 +119,7 @@ def test_create_offer_count_too_much(auth_client):
 
 def test_create_offer_cash_balance_not_enough(auth_client):
     sale = SalesDashboardFactory(
-        count=d.Decimal("555.0000"), price=d.Decimal("1000.548796")
+        count=d.Decimal("555.0000"), price=d.Decimal("1000.54")
     )
     data = {"count": "500.0000"}  # client.cash_balance = 10000 (conftest)
 

@@ -8,14 +8,14 @@ from account.tests.factory import OfferFactory, SalesDashboardFactory
     "count,price,expected_total_value",
     [
         ("10", "10", decimal.Decimal("100")),
-        ("5.5555", "5.555555", decimal.Decimal("30.8639")),
-        ("1", "0.555555", decimal.Decimal("0.5556")),
-        ("1", "0.000001", decimal.Decimal("0.0001")),
-        ("0.0001", "0.000001", decimal.Decimal("0.0001")),
+        ("5.5555", "5.55", decimal.Decimal("30.84")),
+        ("0.5555", "1", decimal.Decimal("0.56")),
+        ("0.0001", "1", decimal.Decimal("0.01")),
+        ("0.0001", "0.01", decimal.Decimal("0.01")),
         (
             "9999999999.0001",
-            "9999999999.000001",
-            decimal.Decimal("99999999980001010000.9999"),
+            "9999999999.01",
+            decimal.Decimal("99999999980101000000.99"),
         ),
     ],
 )

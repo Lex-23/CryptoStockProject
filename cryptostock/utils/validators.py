@@ -55,3 +55,12 @@ def validate_cash_balance(account, deal_value):
 def validate_broker_cash_balance(cash_balance, total_price):
     if cash_balance < total_price:
         raise ValidationError(["You don`t have enough funds for this operation."])
+
+
+def get_validated_asset_from_market(asset_name, market):
+    asset = market.client.get_asset(name=asset_name)
+    if asset is None:
+        raise ValidationError(
+            [f"asset {asset_name} not allow for market {market.name}."]
+        )
+    return asset

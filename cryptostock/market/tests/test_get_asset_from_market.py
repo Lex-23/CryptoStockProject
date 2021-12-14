@@ -39,7 +39,7 @@ def test_get_asset_from_market_name_db_calls(auth_broker, assets_list):
     assert len(query_context) == 2
 
 
-def test_get_asset_from_market_name_not_broker(auth_client, assets_list):
+def test_get_asset_from_market_name_not_broker(auth_client):
     market_name = "Yahoo"
     MarketFactory(name=market_name)
 
