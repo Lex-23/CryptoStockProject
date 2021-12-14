@@ -122,9 +122,25 @@ class AccountApiView(APIView):
 
 class PurchaseDashboardListApiView(APIView, LimitOffsetPagination):
     def get_queryset(self):
-        return PurchaseDashboard.objects.filter(broker=self.request.user.account.broker)
+        return (
+            PurchaseDashboard.objects.filter(broker=self.request.user.account.broker)
+            .select_related(
+                "broker__owner", "broker__wallet", "broker", "asset", "market"
+            )
+            .prefetch_related("asset__wallet_record")
+        )
 
     def get(self, request, format=None):
         results = self.paginate_queryset(self.get_queryset(), request, view=self)
         serializer = PurchaseDashboardSerializer(results, many=True)
         return self.get_paginated_response(serializer.data)
+
+
+class PurchaseDashboardApiView(APIView):
+    def get_queryset(self):
+        return PurchaseDashboard.objects.filter(broker=self.request.user.account.broker)
+
+    def get(self, request, pk, format=None):
+        purchase = get_object_or_404(self.get_queryset(), pk=pk)
+        serializer = PurchaseDashboardSerializer(purchase)
+        return Response(serializer.data)

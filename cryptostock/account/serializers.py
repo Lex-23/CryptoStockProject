@@ -38,13 +38,14 @@ class SalesDashboardSerializer(serializers.ModelSerializer):
 
 
 class PurchaseDashboardSerializer(serializers.ModelSerializer):
-    broker = BrokerSerializer(required=False)
-    asset = AssetSerializer(required=False)
-    market = MarketSerializer(required=False)
+    broker = BrokerSerializer()
+    asset = AssetSerializer()
+    market = MarketSerializer()
+    timestamp = serializers.DateTimeField()
 
     class Meta:
         model = SalesDashboard
-        fields = ["id", "asset", "broker", "market", "price", "count"]
+        fields = ["id", "asset", "broker", "market", "price", "count", "timestamp"]
 
 
 class CreateSalesDashboardSerializer(serializers.ModelSerializer):
