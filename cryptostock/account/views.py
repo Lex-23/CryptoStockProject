@@ -1,4 +1,4 @@
-from account.models import PurchaseDashboard, SalesDashboard
+from account.models import SalesDashboard
 from account.serializers import (
     AccountSerializer,
     CreateSalesDashboardSerializer,
@@ -16,6 +16,7 @@ from utils import validators
 from utils.services import (
     create_sale_object_serializer,
     get_offers_with_related_items,
+    get_purchasedashboards_with_related_items,
     offer_flow,
 )
 
@@ -122,13 +123,7 @@ class AccountApiView(APIView):
 
 class PurchaseDashboardListApiView(APIView, LimitOffsetPagination):
     def get_queryset(self):
-        return (
-            PurchaseDashboard.objects.filter(broker=self.request.user.account.broker)
-            .select_related(
-                "broker__owner", "broker__wallet", "broker", "asset", "market"
-            )
-            .prefetch_related("asset__wallet_record")
-        )
+        return get_purchasedashboards_with_related_items(self.request)
 
     def get(self, request, format=None):
         results = self.paginate_queryset(self.get_queryset(), request, view=self)
@@ -138,7 +133,7 @@ class PurchaseDashboardListApiView(APIView, LimitOffsetPagination):
 
 class PurchaseDashboardApiView(APIView):
     def get_queryset(self):
-        return PurchaseDashboard.objects.filter(broker=self.request.user.account.broker)
+        return get_purchasedashboards_with_related_items(self.request)
 
     def get(self, request, pk, format=None):
         purchase = get_object_or_404(self.get_queryset(), pk=pk)

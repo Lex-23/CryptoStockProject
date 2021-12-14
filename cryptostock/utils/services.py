@@ -145,3 +145,11 @@ def _update_broker_account_after_purchase(asset, broker, count, deal_total_price
     broker_wallet_record.save()
     broker.cash_balance -= deal_total_price
     broker.save()
+
+
+def get_purchasedashboards_with_related_items(request):
+    return (
+        PurchaseDashboard.objects.filter(broker=request.user.account.broker)
+        .select_related("broker__owner", "broker__wallet", "broker", "asset", "market")
+        .prefetch_related("asset__wallet_record")
+    )

@@ -28,5 +28,12 @@ def test_get_list_purchasedashboard_db_calls(auth_broker, broker_account):
         response = auth_broker.get("/api/purchasedashboard/")
 
     assert response.status_code == 200
-    breakpoint()
+    assert len(query_context) == 6
+
+    PurchaseDashboardFactory.create_batch(20, broker=broker_account)
+
+    with CaptureQueriesContext(connection) as query_context:
+        response = auth_broker.get("/api/purchasedashboard/")
+
+    assert response.status_code == 200
     assert len(query_context) == 6
