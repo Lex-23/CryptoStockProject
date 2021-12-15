@@ -65,9 +65,10 @@ class PurchaseDashboard(models.Model):
     broker = models.ForeignKey(Broker, on_delete=models.CASCADE)
     price = PriceField()
     count = CountField(decimal_places=0)
+    timestamp = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.asset} - price:{self.price} - count:{self.count}"
+        return f"{self.asset} - price: {self.price} - count: {self.count}"
 
 
 class Offer(models.Model):

@@ -1,10 +1,11 @@
 import decimal
 
 import factory
-from account.models import Broker, Client, Offer, SalesDashboard
+from account.models import Broker, Client, Offer, PurchaseDashboard, SalesDashboard
 from asset.models import Asset
 from django.contrib.auth.models import User
 from factory.django import DjangoModelFactory
+from market.tests.factory import MarketFactory
 from wallet.models import Wallet, WalletRecord
 
 
@@ -74,3 +75,14 @@ class OfferFactory(DjangoModelFactory):
     deal = factory.SubFactory(SalesDashboardFactory)
     client = factory.SubFactory(ClientFactory)
     count = decimal.Decimal("10.5555")
+
+
+class PurchaseDashboardFactory(DjangoModelFactory):
+    class Meta:
+        model = PurchaseDashboard
+
+    asset = factory.SubFactory(AssetFactory)
+    broker = factory.SubFactory(BrokerFactory)
+    market = factory.SubFactory(MarketFactory)
+    price = decimal.Decimal("5.55")
+    count = decimal.Decimal("10.0000")

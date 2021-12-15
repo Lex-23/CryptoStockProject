@@ -3,6 +3,7 @@ from account.serializers import (
     AccountSerializer,
     CreateSalesDashboardSerializer,
     OfferSerializer,
+    PurchaseDashboardSerializer,
     SalesDashboardSerializer,
 )
 from django.db import transaction
@@ -15,8 +16,10 @@ from utils import validators
 from utils.services import (
     create_sale_object_serializer,
     get_offers_with_related_items,
+    get_purchasedashboards_with_related_items,
     offer_flow,
 )
+from utils.validators import validate_is_broker
 
 
 class SalesListApiView(APIView, LimitOffsetPagination):
@@ -116,4 +119,26 @@ class AccountApiView(APIView):
     def get(self, request, format=None):
         account = request.user.account
         serializer = AccountSerializer(account)
+        return Response(serializer.data)
+
+
+class PurchaseDashboardListApiView(APIView, LimitOffsetPagination):
+    def get_queryset(self):
+        return get_purchasedashboards_with_related_items(self.request)
+
+    def get(self, request, format=None):
+        validate_is_broker(request)
+        results = self.paginate_queryset(self.get_queryset(), request, view=self)
+        serializer = PurchaseDashboardSerializer(results, many=True)
+        return self.get_paginated_response(serializer.data)
+
+
+class PurchaseDashboardApiView(APIView):
+    def get_queryset(self):
+        return get_purchasedashboards_with_related_items(self.request)
+
+    def get(self, request, pk, format=None):
+        validate_is_broker(request)
+        purchase = get_object_or_404(self.get_queryset(), pk=pk)
+        serializer = PurchaseDashboardSerializer(purchase)
         return Response(serializer.data)

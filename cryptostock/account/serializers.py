@@ -1,6 +1,7 @@
 from account.models import Account, Broker, Client, Offer, SalesDashboard
 from asset.models import Asset
 from asset.serializers import AssetSerializer
+from market.serializers import MarketSerializer
 from rest_framework import serializers
 from wallet.serializers import WalletRecordSerializer, WalletSerializer
 
@@ -34,6 +35,17 @@ class SalesDashboardSerializer(serializers.ModelSerializer):
     class Meta:
         model = SalesDashboard
         fields = ["id", "asset", "count", "price", "broker"]
+
+
+class PurchaseDashboardSerializer(serializers.ModelSerializer):
+    broker = BrokerSerializer()
+    asset = AssetSerializer()
+    market = MarketSerializer()
+    timestamp = serializers.DateTimeField()
+
+    class Meta:
+        model = SalesDashboard
+        fields = ["id", "asset", "broker", "market", "price", "count", "timestamp"]
 
 
 class CreateSalesDashboardSerializer(serializers.ModelSerializer):
