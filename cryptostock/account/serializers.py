@@ -34,7 +34,15 @@ class SalesDashboardSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SalesDashboard
-        fields = ["id", "asset", "count", "price", "broker"]
+        fields = [
+            "id",
+            "asset",
+            "count",
+            "price",
+            "broker",
+            "success_offer_notification",
+            "count_control_notification",
+        ]
 
 
 class PurchaseDashboardSerializer(serializers.ModelSerializer):
@@ -54,7 +62,13 @@ class CreateSalesDashboardSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = SalesDashboard
-        fields = ["asset", "count", "price"]
+        fields = [
+            "asset",
+            "count",
+            "price",
+            "success_offer_notification",
+            "count_control_notification",
+        ]
 
 
 class OfferSerializer(serializers.ModelSerializer):
