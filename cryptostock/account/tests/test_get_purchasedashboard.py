@@ -50,7 +50,7 @@ def test_get_purchasedashboard_db_calls(auth_broker, broker_account):
         response = auth_broker.get(f"/api/purchasedashboard/{purchase.id}/")
 
     assert response.status_code == 200
-    assert len(query_context) == 5
+    assert len(query_context) == 4
 
 
 def test_broker_get_not_own_purchasedashboard(auth_broker):
