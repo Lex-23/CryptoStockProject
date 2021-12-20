@@ -15,11 +15,6 @@ def notification_success_offer(offer_id):
         f"bought {offer.count} {offer.deal.asset.name} in {offer.timestamp}."
     )
     recipient = [str(offer.deal.broker.owner.email)]
-    # send_mail(subject,
-    #           message,
-    #           EMAIL_HOST_USER,
-    #           recipient,
-    #           fail_silently=False)
 
     print(f"{subject}\n{message}\n{recipient}")
 
@@ -34,11 +29,6 @@ def notification_salesdashboard_soon_over_control(sale_id):
     )
     message = f"Your asset {sale.asset.name} soon will be over"
     recipient = [str(sale.broker.owner.email)]
-    # send_mail(subject,
-    #           message,
-    #           EMAIL_HOST_USER,
-    #           recipient,
-    #           fail_silently=False)
 
     print(f"{subject}\n{message}\n{recipient}")
 
@@ -53,10 +43,5 @@ def notification_salesdashboard_is_over(sale_id):
     )
     message = f"Your asset {sale.asset.name} sold completely"
     recipient = [str(sale.broker.owner.email)]
-    # send_mail(subject,
-    #           message,
-    #           EMAIL_HOST_USER,
-    #           recipient,
-    #           fail_silently=False)
 
     print(f"{subject}\n{message}\n{recipient}")
