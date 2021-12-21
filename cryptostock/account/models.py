@@ -114,8 +114,3 @@ class Offer(models.Model):
         return (self.count * self.price).quantize(
             decimal.Decimal("0.01"), rounding=decimal.ROUND_UP
         )
-
-
-for i in range(SalesDashboard.objects.all().count()):
-    SalesDashboard.objects.all()[i].count_control_notification = decimal.Decimal("1")
-    SalesDashboard.objects.all()[i].save()
