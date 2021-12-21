@@ -33,6 +33,9 @@ class BuyAssetMarketApiView(APIView):
 
         market = get_object_or_404(queryset=Market.objects.all(), name=market_name)
         deal = purchase_asset(
-            request, market, asset_name, count=serializer.data["count"]
+            request.user.account.broker,
+            market,
+            asset_name,
+            count=serializer.data["count"],
         )
         return Response(deal, status=status.HTTP_201_CREATED)

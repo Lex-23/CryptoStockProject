@@ -6,7 +6,6 @@ from account.serializers import (
     PurchaseDashboardSerializer,
     SalesDashboardSerializer,
 )
-from django.db import transaction
 from rest_framework import status
 from rest_framework.generics import get_object_or_404
 from rest_framework.pagination import LimitOffsetPagination
@@ -36,10 +35,11 @@ class SalesListApiView(APIView, LimitOffsetPagination):
         return self.get_paginated_response(serializer.data)
 
     def post(self, request, format=None):
+        validators.validate_is_broker(request)
         serializer = CreateSalesDashboardSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         sale_data = create_sale_object_serializer(
-            request=request, **serializer.validated_data
+            broker=request.user.account.broker, **serializer.validated_data
         )
         return Response(sale_data, status=status.HTTP_201_CREATED)
 
@@ -85,13 +85,13 @@ class SaleApiView(APIView):
 
 
 class NewOfferApiView(APIView):
-    @transaction.atomic
     def post(self, request, pk, format=None):
+        validators.validate_is_client(request)
         deal = get_object_or_404(SalesDashboard, pk=pk)
         serializer = OfferSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         offer_count = serializer.validated_data["count"]
-        offer_data = offer_flow(offer_count, request, deal)
+        offer_data = offer_flow(offer_count, request.user.account.client, deal)
         return Response(offer_data, status=status.HTTP_201_CREATED)
 
 

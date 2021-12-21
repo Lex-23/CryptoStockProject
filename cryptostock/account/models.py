@@ -50,6 +50,15 @@ class SalesDashboard(models.Model):
     broker = models.ForeignKey(Broker, on_delete=models.CASCADE)
     count = CountField()
     price = PriceField()
+    success_offer_notification = models.BooleanField(
+        default=False,
+        help_text="turned on notification after every success offer. On default - off.",
+    )
+    count_control_notification = CountField(
+        blank=True,
+        null=True,
+        help_text="input here min count, after which you want get notification (if you want).",
+    )
 
     def __str__(self):
         return f"{self.asset} - price:{self.price} - broker:{self.broker}"

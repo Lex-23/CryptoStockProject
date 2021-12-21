@@ -3,6 +3,11 @@ import decimal
 from account.models import Offer, PurchaseDashboard, SalesDashboard
 from account.serializers import OfferSerializer, SalesDashboardSerializer
 from asset.models import Asset
+from celery_tasks.broker_notification_tasks import (
+    notification_salesdashboard_is_over,
+    notification_salesdashboard_soon_over_control,
+    notification_success_offer,
+)
 from django.db import transaction
 from utils import validators
 from utils.validators import (
@@ -12,19 +17,16 @@ from utils.validators import (
 from wallet.models import WalletRecord
 
 
-def create_sale_object_serializer(count, price, asset, request) -> dict:
+def create_sale_object_serializer(count, price, asset, broker, **kwargs) -> dict:
     """
     Validate request, create and serialize new object of SalesDashboard
     """
-    validators.validate_is_broker(request)
-    broker = request.user.account.broker
     validators.validate_asset_exists(asset, broker)
     validators.validate_asset_count(count, asset, broker)
 
     new_object = SalesDashboard.objects.create(
-        asset=asset, broker=broker, count=count, price=price
+        asset=asset, broker=broker, count=count, price=price, **kwargs
     )
-
     serializer = SalesDashboardSerializer(new_object)
     return serializer.data
 
@@ -59,26 +61,28 @@ def _client_buy_asset(client, deal, count, value):
     client.save()
 
 
-def _update_deal(deal, count):
-    deal.count -= count
-    deal.save()
-
-
 def deal_flow(client, deal, count, value):
     broker = deal.broker
     _broker_sale_asset(broker, deal, count, value)
     _client_buy_asset(client, deal, count, value)
-    _update_deal(deal, count)
+    deal.count -= count
+    deal.save()
+    if deal.count == decimal.Decimal("0"):
+        SalesDashboard.objects.delete(id=deal.id)
+        transaction.on_commit(
+            lambda: notification_salesdashboard_is_over.s(deal.id).apply_async(
+                task_id=f"salesdashboard: {deal.id} is over"
+            )
+        )
 
 
-def offer_flow(offer_count, request, deal) -> dict:
+@transaction.atomic
+def offer_flow(offer_count, client, deal) -> dict:
     """
-    Validate request, create and serialize new object of Offer
+    Validate request data, create and serialize new object of Offer
     """
-    validators.validate_is_client(request)
     validators.validate_offer_count(offer_count, deal)
 
-    client = request.user.account.client
     offer = Offer(deal=deal, client=client, count=offer_count)
     deal_value = decimal.Decimal(offer.total_value)
     validators.validate_cash_balance(client, deal_value)
@@ -86,7 +90,24 @@ def offer_flow(offer_count, request, deal) -> dict:
     deal_flow(client, deal, offer_count, deal_value)
     offer.save()
     serializer = OfferSerializer(offer)
+
+    offer_notifications_for_broker(offer)
     return serializer.data
+
+
+def offer_notifications_for_broker(offer):
+    if offer.deal.success_offer_notification:
+        transaction.on_commit(
+            lambda: notification_success_offer.s(offer.id).apply_async(
+                task_id=f"offer: {offer.id} is success"
+            )
+        )
+    if offer.deal.count < offer.deal.count_control_notification:
+        transaction.on_commit(
+            lambda: notification_salesdashboard_soon_over_control.s(
+                offer.deal.id
+            ).apply_async(task_id=f"salesdashboard: {offer.deal.id} soon over")
+        )
 
 
 def _get_offers(request):
@@ -112,12 +133,10 @@ def get_offers_with_related_items(request):
     )
 
 
-def purchase_asset(request, market, asset_name, count):
+def purchase_asset(broker, market, asset_name, count):
     get_validated_asset_from_market(asset_name, market)
     deal = market.client.buy(name=asset_name, count=count)
-    validate_broker_cash_balance(
-        request.user.account.broker.cash_balance, deal["total_price"]
-    )
+    validate_broker_cash_balance(broker.cash_balance, deal["total_price"])
     asset, created = Asset.objects.get_or_create(
         name=deal["asset"]["name"], description=deal["asset"]["description"]
     )
@@ -125,13 +144,13 @@ def purchase_asset(request, market, asset_name, count):
     purchase = PurchaseDashboard.objects.create(
         asset=asset,
         market=market,
-        broker=request.user.account.broker,
+        broker=broker,
         count=deal["count"],
         price=deal["asset"]["price"],
     )
 
     _update_broker_account_after_purchase(
-        purchase.asset, request.user.account.broker, purchase.count, deal["total_price"]
+        purchase.asset, broker, purchase.count, deal["total_price"]
     )
     return deal
 

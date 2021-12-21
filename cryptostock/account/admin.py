@@ -31,8 +31,23 @@ class BrokerAdmin(AccountAdmin):
 
 @admin.register(SalesDashboard)
 class SalesDashboardAdmin(admin.ModelAdmin):
-    fields = ("asset", "count", "price", "broker")
-    list_display = ("id", "asset", "count", "price", "broker")
+    fields = (
+        "asset",
+        "count",
+        "price",
+        "broker",
+        "success_offer_notification",
+        "count_control_notification",
+    )
+    list_display = (
+        "id",
+        "asset",
+        "count",
+        "price",
+        "broker",
+        "success_offer_notification",
+        "count_control_notification",
+    )
     list_editable = ("count", "price")
     search_fields = ("asset__name", "broker__name")
     list_filter = ("asset", "broker")
