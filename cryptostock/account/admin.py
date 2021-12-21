@@ -13,9 +13,9 @@ class OfferInline(admin.TabularInline):
 
 
 class AccountAdmin(admin.ModelAdmin):
-    fields = ("owner", "name", "wallet", "cash_balance")
+    fields = ("owner", "name", "wallet", "cash_balance", "telegram_chat_id")
     search_fields = ("owner__username", "name")
-    list_display = ("id", "owner", "name", "wallet", "cash_balance")
+    list_display = ("id", "owner", "name", "wallet", "cash_balance", "telegram_chat_id")
     list_editable = ("cash_balance",)
 
 

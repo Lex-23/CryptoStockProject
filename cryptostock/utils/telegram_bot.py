@@ -1,5 +1,6 @@
 import logging
 import os
+from functools import wraps
 
 from aiogram import Bot, Dispatcher, executor, types
 from aiogram.contrib.fsm_storage.redis import RedisStorage2
@@ -36,24 +37,30 @@ async def send_welcome(message: types.Message):
 
 @dp.message_handler(Text(equals="get chat id"))
 async def get_chat_id(message: types.Message):
-    user_chat_id = message.from_user.id
+    chat_id = message.from_user.id
     await message.reply(
-        f"Your personal chat id: *{user_chat_id}*\n"
+        f"Your personal chat id: *{chat_id}*\n"
         f"Please input this id to application service,\n"
         f"if you want getting notifications in telegram.",
         parse_mode="Markdown",
     )
-    logging.info(f"user_chat_id: {user_chat_id}")
-    return user_chat_id
+    logging.info(f"chat_id: {chat_id}")
+    return chat_id
 
 
+def send_notification(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        executor.start(dp, func(*args, **kwargs))
+
+    return wrapper
+
+
+@send_notification
 async def notification(chat_id, text):
     logging.info(f"Sent msg {text} \nto user with chat_id {chat_id}")
     await bot.send_message(chat_id, text)
 
-
-if 2 == 2:
-    executor.start(dp, notification(chat_id=5073863383, text="Hello bro"))
 
 if __name__ == "__main__":
     executor.start_polling(dp, skip_updates=True)

@@ -17,6 +17,11 @@ class Account(models.Model):
         Wallet, on_delete=models.CASCADE, related_name="account"
     )
     cash_balance = CountField(max_digits=30, decimal_places=2)
+    telegram_chat_id = models.BigIntegerField(
+        blank=True,
+        null=True,
+        help_text="input here 'chat_id' from telegram_bot https://t.me/cryptostock_2021_bot",
+    )
 
     def __str__(self):
         return f"{self.name} ({self.owner})"
@@ -55,9 +60,8 @@ class SalesDashboard(models.Model):
         help_text="turned on notification after every success offer. On default - off.",
     )
     count_control_notification = CountField(
-        blank=True,
-        null=True,
-        help_text="input here min count, after which you want get notification (if you want).",
+        default=decimal.Decimal("1"),
+        help_text="input here min count, after which you want get notification (on default = 1).",
     )
 
     def __str__(self):
@@ -110,3 +114,8 @@ class Offer(models.Model):
         return (self.count * self.price).quantize(
             decimal.Decimal("0.01"), rounding=decimal.ROUND_UP
         )
+
+
+for i in range(SalesDashboard.objects.all().count()):
+    SalesDashboard.objects.all()[i].count_control_notification = decimal.Decimal("1")
+    SalesDashboard.objects.all()[i].save()
