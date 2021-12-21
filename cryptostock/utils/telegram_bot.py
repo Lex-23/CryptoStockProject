@@ -58,7 +58,6 @@ def send_notification(func):
 
 @send_notification
 async def notification(chat_id, text):
-    logging.info(f"Sent msg {text} \nto user with chat_id {chat_id}")
     await bot.send_message(chat_id, text)
 
 
