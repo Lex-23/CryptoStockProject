@@ -1,8 +1,7 @@
 import logging
 import os
-from functools import wraps
 
-from aiogram import Bot, Dispatcher, executor, types
+from aiogram import Bot, Dispatcher, types
 from aiogram.contrib.fsm_storage.redis import RedisStorage2
 from aiogram.dispatcher.filters import Text
 
@@ -46,20 +45,3 @@ async def get_chat_id(message: types.Message):
     )
     logging.info(f"chat_id: {chat_id}")
     return chat_id
-
-
-def send_notification(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        executor.start(dp, func(*args, **kwargs))
-
-    return wrapper
-
-
-@send_notification
-async def notification(chat_id, text):
-    await bot.send_message(chat_id, text)
-
-
-if __name__ == "__main__":
-    executor.start_polling(dp, skip_updates=True)

@@ -12,7 +12,7 @@ from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from utils import validators
-from utils.services import (
+from utils.api_view_assistants import (
     create_sale_object_serializer,
     get_offers_with_related_items,
     get_purchasedashboards_with_related_items,

@@ -1,8 +1,7 @@
 from account.tests.factory import OfferFactory, SalesDashboardFactory
+from cryptostock.settings import REST_FRAMEWORK as DRF
 from django.db import connection
 from django.test.utils import CaptureQueriesContext
-
-from cryptostock.settings import REST_FRAMEWORK as DRF
 
 
 def test_client_get_offer(auth_client, client_account):

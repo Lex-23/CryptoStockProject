@@ -6,7 +6,6 @@ from account.tests.factory import (
     SalesDashboardFactory,
     WalletRecordFactory,
 )
-
 from cryptostock.settings import REST_FRAMEWORK as DRF
 
 

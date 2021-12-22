@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from utils.services import purchase_asset
+from utils.api_view_assistants import purchase_asset
 from utils.validators import get_validated_asset_from_market, validate_is_broker
 
 

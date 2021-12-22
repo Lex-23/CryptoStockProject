@@ -1,9 +1,8 @@
 from account.tests.factory import PurchaseDashboardFactory
+from cryptostock.settings import REST_FRAMEWORK as DRF
 from django.db import connection
 from django.test.utils import CaptureQueriesContext
 from market.tests.factory import MarketFactory
-
-from cryptostock.settings import REST_FRAMEWORK as DRF
 
 
 def test_get_purchasedashboard(auth_broker, broker_account):
