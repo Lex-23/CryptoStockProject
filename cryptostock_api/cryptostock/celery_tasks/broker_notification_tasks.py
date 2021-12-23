@@ -1,5 +1,6 @@
 from account.models import Offer, SalesDashboard
 from celery import shared_task
+from notification.models import TelegramNotifier
 from utils.notification_handlers.telegram_client import notify
 
 
@@ -16,9 +17,15 @@ def notification_success_offer(offer_id):
         f"bought {offer.count} {offer.deal.asset.name} in {offer.timestamp}."
     )
     recipient = [str(offer.deal.broker.owner.email)]
+
+    notifier = TelegramNotifier.objects.get(account=offer.broker)
     notify(
         chat_id=offer.broker.telegram_chat_id,
         text=f"{subject}\n{message}\nbuyer email: {recipient}",
+    )
+
+    notifier.send_notification(
+        notify, text=f"{subject}\n{message}\nbuyer email: {recipient}"
     )
 
 
