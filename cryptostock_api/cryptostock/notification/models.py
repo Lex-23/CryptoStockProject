@@ -64,7 +64,7 @@ class Notifier(models.Model):
     # TODO: add there FK to model with choice of notification event (may be)
 
     def __str__(self):
-        return f"{self.notifier} for {self.account}"
+        return f"{self.type} for {self.account}"
 
     class Meta:
         unique_together = ("account", "type")
