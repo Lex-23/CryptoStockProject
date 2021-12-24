@@ -87,7 +87,7 @@ def deal_flow(client, deal, count, value):
 def offer_flow(offer_count, client, deal) -> dict:
     """
     Validate request data, create and serialize new object of Offer
-    nNotify broker
+    Notify broker
     """
     validators.validate_offer_count(offer_count, deal)
 
