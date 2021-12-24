@@ -1,7 +1,6 @@
 from account.models import Offer, SalesDashboard
 from celery import shared_task
-from notification.models import TelegramNotifier
-from utils.notification_handlers.telegram_client import notify
+from utils.notification_handlers.notification_manager import notification_manager
 
 
 @shared_task(default_retry_delay=10 * 60)
@@ -18,14 +17,8 @@ def notification_success_offer(offer_id):
     )
     recipient = [str(offer.deal.broker.owner.email)]
 
-    notifier = TelegramNotifier.objects.get(account=offer.broker)
-    notify(
-        chat_id=offer.broker.telegram_chat_id,
-        text=f"{subject}\n{message}\nbuyer email: {recipient}",
-    )
-
-    notifier.send_notification(
-        notify, text=f"{subject}\n{message}\nbuyer email: {recipient}"
+    notification_manager(
+        offer.deal.broker.id, tg_text=f"{subject}\n{message}\nbuyer email: {recipient}"
     )
 
 
@@ -40,9 +33,8 @@ def notification_salesdashboard_soon_over_control(sale_id):
     message = f"Your asset {sale.asset.name} soon will be over"
     recipient = [str(sale.broker.owner.email)]
 
-    notify(
-        chat_id=sale.broker.telegram_chat_id,
-        text=f"{subject}\n{message}\nbuyer email: {recipient}",
+    notification_manager(
+        sale.broker.id, tg_text=f"{subject}\n{message}\nbuyer email: {recipient}"
     )
 
 
@@ -57,7 +49,6 @@ def notification_salesdashboard_is_over(sale_id):
     message = f"Your asset {sale.asset.name} sold completely"
     recipient = [str(sale.broker.owner.email)]
 
-    notify(
-        chat_id=sale.broker.telegram_chat_id,
-        text=f"{subject}\n{message}\nbuyer email: {recipient}",
+    notification_manager(
+        sale.broker.id, tg_text=f"{subject}\n{message}\nbuyer email: {recipient}"
     )

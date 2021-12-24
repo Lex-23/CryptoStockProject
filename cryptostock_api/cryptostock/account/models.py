@@ -17,11 +17,6 @@ class Account(models.Model):
         Wallet, on_delete=models.CASCADE, related_name="account"
     )
     cash_balance = CountField(max_digits=30, decimal_places=2)
-    telegram_chat_id = models.BigIntegerField(
-        blank=True,
-        null=True,
-        help_text="input here 'chat_id' from telegram_bot https://t.me/cryptostock_2021_bot",
-    )
 
     def __str__(self):
         return f"{self.name} ({self.owner})"
@@ -52,7 +47,7 @@ class SalesDashboard(models.Model):
     """
 
     asset = models.ForeignKey(Asset, on_delete=models.DO_NOTHING)
-    broker = models.ForeignKey(Broker, on_delete=models.CASCADE)
+    broker = models.ForeignKey(Broker, on_delete=models.SET_NULL, null=True)
     count = CountField()
     price = PriceField()
     success_offer_notification = models.BooleanField(

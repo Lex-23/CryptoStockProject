@@ -16,16 +16,17 @@ class TelegramNotifier:
     NAME = "Telegram"
 
     @staticmethod
-    def send_notification(func, text):
+    def send_notification(func, chat_id, text, **kwargs):
         """
         method for notification in telegram
+        :param text: notification text
+        :param chat_id: personal users chat_id
         :param func: special func for send notification from telegram bot
-        :param text: text for notification
         """
-        return func(text)
+        return func(chat_id, text, **kwargs)
 
 
-class ManagerNotifier(models.Model):
+class NotificationType(models.Model):
     name = models.CharField(max_length=20, unique=True)
 
     @property
@@ -39,13 +40,31 @@ class ManagerNotifier(models.Model):
     def client(self):
         return self.notifier_cls
 
+    def __str__(self):
+        return self.name
+
 
 class Notifier(models.Model):
+    """
+    This is a universal model for set up types of users notifications
+    """
+
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
-    notifier = models.ForeignKey(ManagerNotifier, on_delete=models.CASCADE)
+    type = models.ForeignKey(NotificationType, on_delete=models.CASCADE)
     telegram_chat_id = models.BigIntegerField(
         blank=True,
         null=True,
         help_text=f"input here 'chat_id' from telegram_bot {os.environ['TG_BOT_URL']}",
     )
-    email = models.EmailField(blank=True, null=True)
+    email = models.EmailField(
+        blank=True, null=True, help_text="input here email you want for notifications"
+    )
+    active = models.BooleanField(default=True)
+    # TODO: add other necessary attributes for other possible notifiers (skype, VK, etc)
+    # TODO: add there FK to model with choice of notification event (may be)
+
+    def __str__(self):
+        return f"{self.notifier} for {self.account}"
+
+    class Meta:
+        unique_together = ("account", "type")

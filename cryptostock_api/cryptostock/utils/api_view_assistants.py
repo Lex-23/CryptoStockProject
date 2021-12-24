@@ -68,7 +68,7 @@ def deal_flow(client, deal, count, value):
     deal.count -= count
     deal.save()
     if deal.count == decimal.Decimal("0"):
-        SalesDashboard.objects.delete(id=deal.id)
+        SalesDashboard.objects.get(id=deal.id).delete()
         transaction.on_commit(
             lambda: notification_salesdashboard_is_over.s(deal.id).apply_async(
                 task_id=f"salesdashboard: {deal.id} is over"
