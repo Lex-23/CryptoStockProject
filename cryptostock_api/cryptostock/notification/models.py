@@ -1,5 +1,3 @@
-import os
-
 from account.models import Account
 from django.db import models
 
@@ -52,9 +50,7 @@ class Notifier(models.Model):
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
     type = models.ForeignKey(NotificationType, on_delete=models.CASCADE)
     telegram_chat_id = models.BigIntegerField(
-        blank=True,
-        null=True,
-        help_text=f"input here 'chat_id' from telegram_bot {os.environ['TG_BOT_URL']}",
+        blank=True, null=True, help_text="input here 'chat_id' from telegram_bot"
     )
     email = models.EmailField(
         blank=True, null=True, help_text="input here email you want for notifications"

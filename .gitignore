@@ -49,7 +49,7 @@ coverage.xml
 *.cover
 *.py,cover
 .hypothesis/
-cryptostock-api/.pytest_cache/
+**/.pytest_cache/
 
 # Translations
 *.mo

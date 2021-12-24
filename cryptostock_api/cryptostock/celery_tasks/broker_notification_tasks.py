@@ -3,7 +3,7 @@ from celery import shared_task
 from utils.notification_handlers.notification_manager import notification_manager
 
 
-@shared_task(default_retry_delay=10 * 60)
+@shared_task
 def notification_success_offer(offer_id):
     offer = Offer.objects.get(id=offer_id)
 
@@ -22,7 +22,7 @@ def notification_success_offer(offer_id):
     )
 
 
-@shared_task(default_retry_delay=10 * 60)
+@shared_task
 def notification_salesdashboard_soon_over_control(sale_id):
     sale = SalesDashboard.objects.get(id=sale_id)
 
@@ -38,7 +38,7 @@ def notification_salesdashboard_soon_over_control(sale_id):
     )
 
 
-@shared_task(default_retry_delay=10 * 60)
+@shared_task
 def notification_salesdashboard_is_over(sale_id):
     sale = SalesDashboard.objects.get(id=sale_id)
 

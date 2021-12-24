@@ -62,6 +62,13 @@ def _client_buy_asset(client, deal, count, value):
 
 
 def deal_flow(client, deal, count, value):
+    """
+    This func changes brokers` and clients` cash_balance and count of target salesdashboard
+    :param client: client, who buy some asset
+    :param deal: target salesdasboard
+    :param count: count of asset, which buy client
+    :param value: value of asset in target salesdasboard
+    """
     broker = deal.broker
     _broker_sale_asset(broker, deal, count, value)
     _client_buy_asset(client, deal, count, value)
@@ -80,6 +87,7 @@ def deal_flow(client, deal, count, value):
 def offer_flow(offer_count, client, deal) -> dict:
     """
     Validate request data, create and serialize new object of Offer
+    nNotify broker
     """
     validators.validate_offer_count(offer_count, deal)
 
