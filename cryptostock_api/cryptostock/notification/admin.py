@@ -10,6 +10,7 @@ class NotificationTypeAdmin(admin.ModelAdmin):
 
 @admin.register(Notifier)
 class NotifierAdmin(admin.ModelAdmin):
-    fields = ("account", "type", "telegram_chat_id", "email", "active")
-    list_display = ("id", "account", "type", "telegram_chat_id", "email", "active")
+    fields = ("account", "type", "active")
+    list_display = ("id", "account", "type", "active")
     list_editable = ("active",)
+    list_filter = ("account", "type")

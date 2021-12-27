@@ -17,5 +17,5 @@ def executor_start(func):
 
 
 @executor_start
-async def notify(chat_id, text):
-    await bot.send_message(chat_id, text)
+async def notify(**kwargs):
+    await bot.send_message(kwargs["tg_chat_id"], kwargs["tg_text"])

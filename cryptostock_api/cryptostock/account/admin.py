@@ -20,9 +20,16 @@ class NotifierInline(admin.TabularInline):
 
 
 class AccountAdmin(admin.ModelAdmin):
-    fields = ("owner", "name", "wallet", "cash_balance")
+    fields = ("owner", "name", "wallet", "cash_balance", "account_contacts_data")
     search_fields = ("owner__username", "name")
-    list_display = ("id", "owner", "name", "wallet", "cash_balance")
+    list_display = (
+        "id",
+        "owner",
+        "name",
+        "wallet",
+        "cash_balance",
+        "account_contacts_data",
+    )
     list_editable = ("cash_balance",)
 
 
