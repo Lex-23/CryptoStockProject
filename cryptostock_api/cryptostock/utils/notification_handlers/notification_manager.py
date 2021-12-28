@@ -7,5 +7,4 @@ def notification_manager(account_id, **kwargs):
         account=Account.objects.get(id=account_id), active=True
     )
     for notifier in active_account_notifiers:
-
         notifier.type.send_notification(**kwargs)
