@@ -1,6 +1,7 @@
 from account.models import Account
 from django.db import models
-from utils.notification_handlers.telegram_client import notify
+from utils.notification_handlers.email_client import email_notify
+from utils.notification_handlers.telegram_client import tg_notify
 
 _notifier_storage = {}
 
@@ -10,7 +11,8 @@ def notifier_register(name, notify_func):
     return notify_func
 
 
-tg_notify = notifier_register("Telegram", notify)
+tg_notify = notifier_register("Telegram", tg_notify)
+email_notify = notifier_register("Email", email_notify)
 
 
 class NotificationType(models.Model):
