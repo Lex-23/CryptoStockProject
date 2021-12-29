@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from enum import Enum
 
 from account.models import Account
 from django.db import models
@@ -51,77 +51,50 @@ class Notifier(models.Model):
         unique_together = ("account", "type")
 
 
-class ConsumerType:
+class TypeEnum(Enum):
+    @classmethod
+    def values(cls):
+        return tuple((f"{tag.value}", tag.name) for tag in cls)
+
+
+class ConsumerType(TypeEnum):
     TELEGRAM = "TELEGRAM"
     EMAIL = "EMAIL"
+    VK = "VK"
 
 
-class NotificationEvent:
+class NotificationEvent(TypeEnum):
     SUCCESS_OFFER = "SUCCESS_OFFER"
     SALESDASHBOARD_SOON_OVER = "SALESDASHBOARD_SOON_OVER"
     SALESDASHBOARD_IS_OVER = "SALESDASHBOARD_IS_OVER"
 
 
-class TemplaterRegister:
-    _templaters = {}
-
-    @classmethod
-    def register(cls, consumer_type):
-        def inner(templater_cls):
-            cls._templaters[consumer_type] = templater_cls
-            return templater_cls
-
-        return inner
-
-    get = classmethod(_templaters.get)
+SENDER = {"TELEGRAM": tg_notify, "EMAIL": email_notify}
 
 
-class BaseTemplator:
-    def render(self, data: Dict[str]) -> Any:
-        pass
+class Consumer(models.Model):
+    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    enable = models.BooleanField(default=True)
+    type = models.CharField(max_length=50, choices=ConsumerType.values())
+    data = models.JSONField(default=dict)
 
-
-@TemplaterRegister.register(ConsumerType.TELEGRAM)
-class TelegramTemplator:
-    def render(self, data: Dict[str, Any]) -> Any:
-        return "Asset {asset} was sold to {client}".format(**data)
-
-
-@TemplaterRegister.register(ConsumerType.EMAIL)
-class EmailSoldAllTemplator:
-    def render(self, data: Dict[str, Any]) -> Any:
-        return "<p>Asset {asset} was sold to {client}</p>".format(**data)
-
-
-SENDER = {ConsumerType.TELEGRAM: tg_notify, ConsumerType.EMAIL: email_notify}
-
-
-class Consumer:
-    user: int
-    enable: bool
-    type: ConsumerType
-    data: Dict[str, Any]
+    @property
+    def enable_consumers(self):
+        return Consumer.objects.all().filter(account=self.account, enable=True)
 
     def send(self, message):
         return SENDER[self.type](message)
 
 
-class NotificationSubscription:
-    user: int
-    notification_event: NotificationEvent
-    enable: bool
+class NotificationSubscription(models.Model):
+    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    notification_event = models.CharField(
+        max_length=50, choices=NotificationEvent.values()
+    )
+    enable = models.BooleanField(default=True)
 
-
-class User:
-    consumers: List[Consumer]
-    notification_subscriptions: List[NotificationSubscription]
-
-
-def notify(notification_type, user, data):
-    if notification_type not in user.enabled_notification_subscriptions:
-        return
-
-    for consumer in user.enabled_consumers:
-        templater = TemplaterRegister.get((consumer.type, notification_type))
-        message = templater.render(data)
-        consumer.send(message)
+    @property
+    def enable_notification_subscriptions(self):
+        return NotificationSubscription.objects.all().filter(
+            account=self.account, enable=True
+        )

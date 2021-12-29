@@ -1,5 +1,10 @@
 from django.contrib import admin
-from notification.models import NotificationType, Notifier
+from notification.models import (
+    Consumer,
+    NotificationSubscription,
+    NotificationType,
+    Notifier,
+)
 
 
 @admin.register(NotificationType)
@@ -14,3 +19,15 @@ class NotifierAdmin(admin.ModelAdmin):
     list_display = ("id", "account", "type", "active")
     list_editable = ("active",)
     list_filter = ("account", "type")
+
+
+@admin.register(Consumer)
+class ConsumerAdmin(admin.ModelAdmin):
+    fields = ("account", "enable", "type", "data")
+    list_display = ("id", "account", "enable", "type", "data")
+
+
+@admin.register(NotificationSubscription)
+class NotificationSubscriptionAdmin(admin.ModelAdmin):
+    fields = ("account", "enable", "notification_event")
+    list_display = ("id", "account", "enable", "notification_event")
