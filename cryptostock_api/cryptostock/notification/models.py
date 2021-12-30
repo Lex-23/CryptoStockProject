@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Any, Dict
 
 from account.models import Account
 from django.db import models
@@ -98,3 +99,22 @@ class NotificationSubscription(models.Model):
         return NotificationSubscription.objects.all().filter(
             account=self.account, enable=True
         )
+
+
+class TemplaterRegister:
+    _templaters = {}
+
+    @classmethod
+    def register(cls, consumer_type, notification_type):
+        def inner(templater_cls):
+            cls._templaters[consumer_type, notification_type] = templater_cls
+            return templater_cls
+
+        return inner
+
+    get = classmethod(_templaters.get)
+
+
+class BaseTemplator:
+    def render(self, data: Dict[str, Any]) -> Any:
+        pass
