@@ -69,7 +69,7 @@ class NotificationEvent(ChoiceEnum):
     SALESDASHBOARD_IS_OVER = "SALESDASHBOARD_IS_OVER"
 
 
-SENDER = {"TELEGRAM": tg_notify, "EMAIL": email_notify}
+SENDER = {ConsumerType.TELEGRAM: tg_notify, ConsumerType.EMAIL: email_notify}
 
 
 class Consumer(models.Model):
