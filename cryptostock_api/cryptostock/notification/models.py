@@ -51,19 +51,19 @@ class Notifier(models.Model):
         unique_together = ("account", "type")
 
 
-class TypeEnum(Enum):
+class ChoiceEnum(str, Enum):
     @classmethod
-    def values(cls):
-        return tuple((f"{tag.value}", tag.name) for tag in cls)
+    def choices(cls):
+        return tuple((tag.value, tag.name) for tag in cls)
 
 
-class ConsumerType(TypeEnum):
+class ConsumerType(ChoiceEnum):
     TELEGRAM = "TELEGRAM"
     EMAIL = "EMAIL"
     VK = "VK"
 
 
-class NotificationEvent(TypeEnum):
+class NotificationEvent(ChoiceEnum):
     SUCCESS_OFFER = "SUCCESS_OFFER"
     SALESDASHBOARD_SOON_OVER = "SALESDASHBOARD_SOON_OVER"
     SALESDASHBOARD_IS_OVER = "SALESDASHBOARD_IS_OVER"
@@ -75,8 +75,8 @@ SENDER = {"TELEGRAM": tg_notify, "EMAIL": email_notify}
 class Consumer(models.Model):
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
     enable = models.BooleanField(default=True)
-    type = models.CharField(max_length=50, choices=ConsumerType.values())
-    data = models.JSONField(default=dict)
+    type = models.CharField(max_length=50, choices=ConsumerType.choices())
+    data = models.JSONField(default=dict, blank=True)
 
     @property
     def enable_consumers(self):
@@ -88,8 +88,8 @@ class Consumer(models.Model):
 
 class NotificationSubscription(models.Model):
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
-    notification_event = models.CharField(
-        max_length=50, choices=NotificationEvent.values()
+    notification_type = models.CharField(
+        max_length=50, choices=NotificationEvent.choices()
     )
     enable = models.BooleanField(default=True)
 
