@@ -117,35 +117,9 @@ class TemplaterRegister:
 
 class BaseTemplator:
     def render(self, data: Dict[str, Any]) -> Any:
-        pass
-
-
-class SuccessOfferTemplator(BaseTemplator):
-    def render(self, data):
-        return (
-            "Purchaser {purchaser} bought {count} {asset} on {date}\n"
-            "purchaser contact: {purchaser_contact}.".format(**data)
-        )
-
-
-class TelegramTemplatorMixin:
-    def format_render(self, inner, data: Dict[str, Any]):
-        return f"Hello *{data['username']}*\nAny updates for you:\n{inner}"
-
-
-class EmailTemplatorMixin:
-    def subject(self, data: Dict[str, Any]):
-        return data["subject"]
-
-    def recipient(self, data: Dict[str, Any]):
-        return data["recipient"]
+        return "Info".format(**data)
 
 
 @TemplaterRegister.register(ConsumerType.TELEGRAM, NotificationEvent.SUCCESS_OFFER)
-class TelegramSuccessOffer(SuccessOfferTemplator, TelegramTemplatorMixin):
-    pass
-
-
-@TemplaterRegister.register(ConsumerType.EMAIL, NotificationEvent.SUCCESS_OFFER)
-class EmailSuccessOffer(SuccessOfferTemplator, EmailTemplatorMixin):
+class TelegramSuccessOffer(BaseTemplator):
     pass
