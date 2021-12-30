@@ -15,11 +15,14 @@ def notification_success_offer(offer_id):
         f"user {offer.client.owner.username} "
         f"bought {offer.count} {offer.deal.asset.name} in {offer.timestamp}."
     )
-    recipient = f"{offer.deal.broker.owner.email}"
+    recipient = [f"{offer.deal.broker.owner.email}"]
     notification_manager(
         offer.deal.broker.id,
-        tg_text=f"{subject}\n{message}\nbuyer email: {recipient}",
+        tg_text=f"{subject}\n{message}\nbuyer email: {offer.client.owner.email}",
         tg_chat_id=offer.broker.account_contacts_data["tg_chat_id"],
+        subject=subject,
+        message=message,
+        recipient=recipient,
     )
 
 
@@ -36,8 +39,11 @@ def notification_salesdashboard_soon_over_control(sale_id):
 
     notification_manager(
         sale.broker.id,
-        tg_text=f"{subject}\n{message}\nbuyer email: {recipient}",
+        tg_text=f"{subject}\n{message}",
         tg_chat_id=sale.broker.account_contacts_data["tg_chat_id"],
+        subject=subject,
+        message=message,
+        recipient=recipient,
     )
 
 
@@ -54,6 +60,9 @@ def notification_salesdashboard_is_over(sale_id):
 
     notification_manager(
         sale.broker.id,
-        tg_text=f"{subject}\n{message}\nbuyer email: {recipient}",
+        tg_text=f"{subject}\n{message}",
         tg_chat_id=sale.broker.account_contacts_data["tg_chat_id"],
+        subject=subject,
+        message=message,
+        recipient=recipient,
     )
