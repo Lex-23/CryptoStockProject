@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Any, Dict
 
 from account.models import Account
 from django.db import models
@@ -82,8 +83,11 @@ class Consumer(models.Model):
     def enable_consumers(self):
         return Consumer.objects.all().filter(account=self.account, enable=True)
 
-    def send(self, message):
-        return SENDER[self.type](message)
+    def send(self, **data):
+        sender = SENDER.get(self.type)
+        if sender is None:
+            raise ValueError(f"Sender doesn't exist, type={self.type}")
+        return sender(**data)
 
 
 class NotificationSubscription(models.Model):
@@ -98,3 +102,25 @@ class NotificationSubscription(models.Model):
         return NotificationSubscription.objects.all().filter(
             account=self.account, enable=True
         )
+
+
+class TemplaterRegister:
+    _templaters = {}
+
+    @classmethod
+    def register(cls, consumer_type, notification_type):
+        def inner(templater_cls):
+            # TODO: register logic
+            return templater_cls
+
+        return inner
+
+    @classmethod
+    def get(cls, consumer_type, notification_type):
+        # TODO: get templator logic
+        return cls._templaters.get(consumer_type, notification_type)
+
+
+class BaseTemplator:
+    def render(self, data: Dict[str, Any]) -> Any:
+        return f"Event: {data}"
