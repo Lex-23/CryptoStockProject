@@ -83,8 +83,11 @@ class Consumer(models.Model):
     def enable_consumers(self):
         return Consumer.objects.all().filter(account=self.account, enable=True)
 
-    def send(self, message, **data):
-        return SENDER[self.type](message, **data)
+    def send(self, **data):
+        sender = SENDER.get(self.type)
+        if sender is None:
+            raise ValueError(f"Sender doesn't exist, type={self.type}")
+        return sender(**data)
 
 
 class NotificationSubscription(models.Model):
