@@ -107,7 +107,7 @@ class TemplaterRegister:
     @classmethod
     def register(cls, consumer_type, notification_type):
         def inner(templater_cls):
-            cls._templaters[consumer_type, notification_type] = templater_cls
+            # TODO: register logic
             return templater_cls
 
         return inner
@@ -115,11 +115,7 @@ class TemplaterRegister:
     get = classmethod(_templaters.get)
 
 
+@TemplaterRegister.register(ConsumerType.TELEGRAM, NotificationEvent.SUCCESS_OFFER)
 class BaseTemplator:
     def render(self, data: Dict[str, Any]) -> Any:
-        return "Info".format(**data)
-
-
-@TemplaterRegister.register(ConsumerType.TELEGRAM, NotificationEvent.SUCCESS_OFFER)
-class TelegramSuccessOffer(BaseTemplator):
-    pass
+        return f"Event: {data}"
