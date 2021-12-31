@@ -118,7 +118,6 @@ class TemplaterRegister:
         return cls._templaters.get(consumer_type, notification_type)
 
 
-@TemplaterRegister.register(ConsumerType.TELEGRAM, NotificationEvent.SUCCESS_OFFER)
 class BaseTemplator:
     def render(self, data: Dict[str, Any]) -> Any:
         return f"Event: {data}"
