@@ -112,7 +112,10 @@ class TemplaterRegister:
 
         return inner
 
-    get = classmethod(_templaters.get)
+    @classmethod
+    def get(cls, consumer_type, notification_type):
+        # TODO: get templator logic
+        return cls._templaters.get(consumer_type, notification_type)
 
 
 @TemplaterRegister.register(ConsumerType.TELEGRAM, NotificationEvent.SUCCESS_OFFER)
