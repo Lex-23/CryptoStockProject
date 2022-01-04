@@ -75,8 +75,8 @@ def deal_flow(client, deal, count, value):
         SalesDashboard.objects.get(id=deal.id).delete()
         transaction.on_commit(
             lambda: notify.s(
-                NotificationEvent.SALESDASHBOARD_IS_OVER,
-                deal.broker.id,
+                notification_type=NotificationEvent.SALESDASHBOARD_IS_OVER,
+                account_id=deal.broker.id,
                 deal_id=deal.id,
             ).apply_async(task_id=f"salesdashboard: {deal.id} is over")
         )
@@ -106,13 +106,17 @@ def offer_notifications_for_broker(offer):
     if offer.deal.success_offer_notification:
         transaction.on_commit(
             lambda: notify.s(
-                NotificationEvent.SUCCESS_OFFER, offer.broker.id, offer_id=offer.id
+                notification_type=NotificationEvent.SUCCESS_OFFER,
+                account_id=offer.broker.id,
+                offer_id=offer.id,
             ).apply_async(task_id=f"offer: {offer.id} is success")
         )
     if offer.deal.count < offer.deal.count_control_notification:
         transaction.on_commit(
             lambda: notify.s(
-                NotificationEvent.SUCCESS_OFFER, offer.broker.id, offer_id=offer.id
+                notification_type=NotificationEvent.SUCCESS_OFFER,
+                account_id=offer.broker.id,
+                offer_id=offer.id,
             ).apply_async(task_id=f"salesdashboard: {offer.deal.id} soon over")
         )
 
