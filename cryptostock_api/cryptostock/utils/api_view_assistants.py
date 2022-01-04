@@ -3,12 +3,9 @@ import decimal
 from account.models import Offer, PurchaseDashboard, SalesDashboard
 from account.serializers import OfferSerializer, SalesDashboardSerializer
 from asset.models import Asset
-from celery_tasks.broker_notification_tasks import (
-    notification_salesdashboard_is_over,
-    notification_salesdashboard_soon_over_control,
-    notification_success_offer,
-)
+from celery_tasks.broker_notification_tasks import common_notify_task
 from django.db import transaction
+from notification.models import NotificationEvent
 from utils import validators
 from utils.validators import (
     get_validated_asset_from_market,
@@ -77,9 +74,11 @@ def deal_flow(client, deal, count, value):
     if deal.count == decimal.Decimal("0"):
         SalesDashboard.objects.get(id=deal.id).delete()
         transaction.on_commit(
-            lambda: notification_salesdashboard_is_over.s(deal.id).apply_async(
-                task_id=f"salesdashboard: {deal.id} is over"
-            )
+            lambda: common_notify_task.s(
+                deal.broker.id,
+                NotificationEvent.SALESDASHBOARD_IS_OVER,
+                deal_id=deal.id,
+            ).apply_async(task_id=f"salesdashboard: {deal.id} is over")
         )
 
 
@@ -106,14 +105,14 @@ def offer_flow(offer_count, client, deal) -> dict:
 def offer_notifications_for_broker(offer):
     if offer.deal.success_offer_notification:
         transaction.on_commit(
-            lambda: notification_success_offer.s(offer.id).apply_async(
-                task_id=f"offer: {offer.id} is success"
-            )
+            lambda: common_notify_task.s(
+                offer.broker.id, NotificationEvent.SUCCESS_OFFER, offer_id=offer.id
+            ).apply_async(task_id=f"offer: {offer.id} is success")
         )
     if offer.deal.count < offer.deal.count_control_notification:
         transaction.on_commit(
-            lambda: notification_salesdashboard_soon_over_control.s(
-                offer.deal.id
+            lambda: common_notify_task.s(
+                offer.broker.id, NotificationEvent.SUCCESS_OFFER, offer_id=offer.id
             ).apply_async(task_id=f"salesdashboard: {offer.deal.id} soon over")
         )
 

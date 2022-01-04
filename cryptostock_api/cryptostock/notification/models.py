@@ -74,14 +74,12 @@ SENDER = {ConsumerType.TELEGRAM: tg_notify, ConsumerType.EMAIL: email_notify}
 
 
 class Consumer(models.Model):
-    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    account = models.ForeignKey(
+        Account, on_delete=models.CASCADE, related_name="consumers"
+    )
     enable = models.BooleanField(default=True)
     type = models.CharField(max_length=50, choices=ConsumerType.choices())
     data = models.JSONField(default=dict, blank=True)
-
-    @property
-    def enable_consumers(self):
-        return Consumer.objects.all().filter(account=self.account, enable=True)
 
     def send(self, **data):
         sender = SENDER.get(self.type)
@@ -91,17 +89,13 @@ class Consumer(models.Model):
 
 
 class NotificationSubscription(models.Model):
-    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    account = models.ForeignKey(
+        Account, on_delete=models.CASCADE, related_name="notification_subscriptions"
+    )
     notification_type = models.CharField(
         max_length=50, choices=NotificationEvent.choices()
     )
     enable = models.BooleanField(default=True)
-
-    @property
-    def enable_notification_subscriptions(self):
-        return NotificationSubscription.objects.all().filter(
-            account=self.account, enable=True
-        )
 
 
 class TemplaterRegister:

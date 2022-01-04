@@ -36,6 +36,14 @@ class Account(models.Model):
         elif hasattr(self, "broker"):
             return "broker"
 
+    @property
+    def enabled_notification_types(self):
+        return self.notification_subscriptions.all().filter(enable=True)
+
+    @property
+    def enabled_consumers(self):
+        return self.consumers.all().filter(enable=True)
+
 
 class Broker(Account):
     pass

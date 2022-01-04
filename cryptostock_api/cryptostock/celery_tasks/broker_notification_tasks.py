@@ -1,6 +1,9 @@
 from account.models import Offer, SalesDashboard
 from celery import shared_task
-from utils.notification_handlers.notification_manager import notification_manager
+from utils.notification_handlers.notification_manager import (
+    notification_manager,
+    notify,
+)
 
 
 @shared_task
@@ -66,3 +69,8 @@ def notification_salesdashboard_is_over(sale_id):
         message=message,
         recipient=recipient,
     )
+
+
+@shared_task
+def common_notify_task(account_id, notification_type, **data):
+    notify(notification_type, account_id, **data)
