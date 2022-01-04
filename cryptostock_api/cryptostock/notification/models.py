@@ -81,11 +81,11 @@ class Consumer(models.Model):
     type = models.CharField(max_length=50, choices=ConsumerType.choices())
     data = models.JSONField(default=dict, blank=True)
 
-    def send(self, message, **kwargs):
+    def send(self, message):
         sender = SENDER.get(self.type)
         if sender is None:
             raise ValueError(f"Sender doesn't exist, type={self.type}")
-        return sender(message, context=self.data, **kwargs)
+        return sender(message, **self.data)
 
     def __str__(self):
         return self.type

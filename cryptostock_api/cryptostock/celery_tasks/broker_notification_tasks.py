@@ -76,4 +76,4 @@ def notify(notification_type, account_id, **data):
         for consumer in account.enabled_consumers:
             templater = TemplaterRegister.get(consumer.type, notification_type)
             message = templater.render(data)
-            consumer.send(message, **data)
+            consumer.send(message)
