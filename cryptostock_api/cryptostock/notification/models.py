@@ -81,11 +81,11 @@ class Consumer(models.Model):
     type = models.CharField(max_length=50, choices=ConsumerType.choices())
     data = models.JSONField(default=dict, blank=True)
 
-    def send(self, message, **data):
+    def send(self, message, **kwargs):
         sender = SENDER.get(self.type)
         if sender is None:
             raise ValueError(f"Sender doesn't exist, type={self.type}")
-        return sender(message, **data)
+        return sender(message, context=self.data, **kwargs)
 
     def __str__(self):
         return self.type
@@ -117,7 +117,7 @@ class TemplaterRegister:
 
     @classmethod
     def get(cls, consumer_type, notification_type):
-        # TODO: get templator logic, and: return cls._templaters.get(consumer_type, notification_type)
+        # TODO: get templator logic
         return BaseTemplator
 
 

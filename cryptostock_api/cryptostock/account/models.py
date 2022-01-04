@@ -38,15 +38,12 @@ class Account(models.Model):
 
     @property
     def enabled_notification_types(self):
-        enabled_notification_subscriptions_types = []
-        for notification_subscription in self.notification_subscriptions.all().filter(
-            enable=True
-        ):
-            enabled_notification_subscriptions_types.append(
-                notification_subscription.notification_type
+        return [
+            notification_subscription.notification_type
+            for notification_subscription in self.notification_subscriptions.all().filter(
+                enable=True
             )
-
-        return enabled_notification_subscriptions_types
+        ]
 
     @property
     def enabled_consumers(self):

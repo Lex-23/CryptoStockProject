@@ -3,7 +3,7 @@ import decimal
 from account.models import Offer, PurchaseDashboard, SalesDashboard
 from account.serializers import OfferSerializer, SalesDashboardSerializer
 from asset.models import Asset
-from celery_tasks.broker_notification_tasks import common_notify_task
+from celery_tasks.broker_notification_tasks import notify
 from django.db import transaction
 from notification.models import NotificationEvent
 from utils import validators
@@ -74,7 +74,7 @@ def deal_flow(client, deal, count, value):
     if deal.count == decimal.Decimal("0"):
         SalesDashboard.objects.get(id=deal.id).delete()
         transaction.on_commit(
-            lambda: common_notify_task.s(
+            lambda: notify.s(
                 NotificationEvent.SALESDASHBOARD_IS_OVER,
                 deal.broker.id,
                 deal_id=deal.id,
@@ -105,7 +105,7 @@ def offer_flow(offer_count, client, deal) -> dict:
 def offer_notifications_for_broker(offer):
     if offer.deal.success_offer_notification:
         transaction.on_commit(
-            lambda: common_notify_task.s(
+            lambda: notify.s(
                 NotificationEvent.SUCCESS_OFFER,
                 offer.broker.id,
                 offer_id=offer.id,
@@ -114,7 +114,7 @@ def offer_notifications_for_broker(offer):
         )
     if offer.deal.count < offer.deal.count_control_notification:
         transaction.on_commit(
-            lambda: common_notify_task.s(
+            lambda: notify.s(
                 NotificationEvent.SUCCESS_OFFER, offer.broker.id, offer_id=offer.id
             ).apply_async(task_id=f"salesdashboard: {offer.deal.id} soon over")
         )
