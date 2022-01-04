@@ -72,5 +72,5 @@ def notification_salesdashboard_is_over(sale_id):
 
 
 @shared_task
-def common_notify_task(account_id, notification_type, **data):
+def common_notify_task(notification_type, account_id, **data):
     notify(notification_type, account_id, **data)

@@ -81,11 +81,14 @@ class Consumer(models.Model):
     type = models.CharField(max_length=50, choices=ConsumerType.choices())
     data = models.JSONField(default=dict, blank=True)
 
-    def send(self, **data):
+    def send(self, message, **data):
         sender = SENDER.get(self.type)
         if sender is None:
             raise ValueError(f"Sender doesn't exist, type={self.type}")
-        return sender(**data)
+        return sender(message, **data)
+
+    def __str__(self):
+        return self.type
 
 
 class NotificationSubscription(models.Model):
@@ -96,6 +99,9 @@ class NotificationSubscription(models.Model):
         max_length=50, choices=NotificationEvent.choices()
     )
     enable = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.notification_type
 
 
 class TemplaterRegister:
@@ -111,10 +117,11 @@ class TemplaterRegister:
 
     @classmethod
     def get(cls, consumer_type, notification_type):
-        # TODO: get templator logic
-        return cls._templaters.get(consumer_type, notification_type)
+        # TODO: get templator logic, and: return cls._templaters.get(consumer_type, notification_type)
+        return BaseTemplator
 
 
 class BaseTemplator:
-    def render(self, data: Dict[str, Any]) -> Any:
+    @staticmethod
+    def render(data: Dict[str, Any]) -> Any:
         return f"Event: {data}"
