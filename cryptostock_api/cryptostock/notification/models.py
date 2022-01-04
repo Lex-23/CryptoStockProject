@@ -108,20 +108,35 @@ class TemplaterRegister:
     _templaters = {}
 
     @classmethod
-    def register(cls, consumer_type, notification_type):
+    def register(cls, notification_type, consumer_type=None):
         def inner(templater_cls):
-            # TODO: register logic
+            cls._templaters[notification_type, consumer_type] = templater_cls
             return templater_cls
 
         return inner
 
     @classmethod
-    def get(cls, consumer_type, notification_type):
-        # TODO: get templator logic
-        return BaseTemplator
+    def get(cls, notification_type, consumer_type):
+        return cls._templaters.get(
+            (notification_type, consumer_type),
+            cls._templaters.get((notification_type, None), BaseTemplater),
+        )
 
 
-class BaseTemplator:
+class BaseTemplater:
     @staticmethod
     def render(data: Dict[str, Any]) -> Any:
         return f"Event: {data}"
+
+
+@TemplaterRegister.register(notification_type=NotificationEvent.SUCCESS_OFFER)
+class OneTemplater:
+    pass
+
+
+@TemplaterRegister.register(
+    notification_type=NotificationEvent.SUCCESS_OFFER,
+    consumer_type=ConsumerType.TELEGRAM,
+)
+class TwoTemplater:
+    pass
