@@ -40,7 +40,7 @@ class Account(models.Model):
     def enabled_notification_types(self):
         return [
             notification_subscription.notification_type
-            for notification_subscription in self.notification_subscriptions.all().filter(
+            for notification_subscription in self.notification_subscriptions.filter(
                 enable=True
             )
         ]

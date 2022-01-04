@@ -106,10 +106,7 @@ def offer_notifications_for_broker(offer):
     if offer.deal.success_offer_notification:
         transaction.on_commit(
             lambda: notify.s(
-                NotificationEvent.SUCCESS_OFFER,
-                offer.broker.id,
-                offer_id=offer.id,
-                tg_chat_id=offer.broker.account_contacts_data["tg_chat_id"],
+                NotificationEvent.SUCCESS_OFFER, offer.broker.id, offer_id=offer.id
             ).apply_async(task_id=f"offer: {offer.id} is success")
         )
     if offer.deal.count < offer.deal.count_control_notification:

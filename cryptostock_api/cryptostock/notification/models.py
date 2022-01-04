@@ -85,7 +85,7 @@ class Consumer(models.Model):
         sender = SENDER.get(self.type)
         if sender is None:
             raise ValueError(f"Sender doesn't exist, type={self.type}")
-        return sender(message, **self.data)
+        return sender(message, context=self.data)
 
     def __str__(self):
         return self.type
