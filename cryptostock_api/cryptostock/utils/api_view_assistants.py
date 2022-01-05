@@ -58,6 +58,7 @@ def _client_buy_asset(client, deal, count, value):
     client.save()
 
 
+# @transaction.atomic
 def deal_flow(client, deal, count, value):
     """
     This func changes brokers` and clients` cash_balance and count of target salesdashboard
@@ -71,8 +72,8 @@ def deal_flow(client, deal, count, value):
     _client_buy_asset(client, deal, count, value)
     deal.count -= count
     deal.save()
+    breakpoint()
     if deal.count == decimal.Decimal("0"):
-        SalesDashboard.objects.get(id=deal.id).delete()
         transaction.on_commit(
             lambda: notify.s(
                 notification_type=NotificationType.SALESDASHBOARD_IS_OVER,
@@ -80,6 +81,7 @@ def deal_flow(client, deal, count, value):
                 deal_id=deal.id,
             ).apply_async(task_id=f"salesdashboard: {deal.id} is over")
         )
+        SalesDashboard.objects.filter(id=deal.id).delete()
 
 
 @transaction.atomic

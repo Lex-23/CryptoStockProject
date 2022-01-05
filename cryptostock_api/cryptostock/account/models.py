@@ -63,7 +63,7 @@ class SalesDashboard(models.Model):
     Model for put up for sale assets from broker
     """
 
-    asset = models.ForeignKey(Asset, on_delete=models.DO_NOTHING)
+    asset = models.ForeignKey(Asset, on_delete=models.CASCADE)
     broker = models.ForeignKey(Broker, on_delete=models.SET_NULL, null=True)
     count = CountField()
     price = PriceField()
@@ -85,8 +85,8 @@ class PurchaseDashboard(models.Model):
     Model for history deals between broker and market
     """
 
-    asset = models.ForeignKey(Asset, on_delete=models.DO_NOTHING)
-    market = models.ForeignKey(Market, on_delete=models.DO_NOTHING)
+    asset = models.ForeignKey(Asset, on_delete=models.CASCADE)
+    market = models.ForeignKey(Market, on_delete=models.SET_NULL, null=True)
     broker = models.ForeignKey(Broker, on_delete=models.CASCADE)
     price = PriceField()
     count = CountField(decimal_places=0)
@@ -102,9 +102,9 @@ class Offer(models.Model):
     """
 
     deal = models.ForeignKey(
-        SalesDashboard, on_delete=models.DO_NOTHING, related_name="offer"
+        SalesDashboard, on_delete=models.SET_NULL, null=True, related_name="offer"
     )
-    client = models.ForeignKey(Client, on_delete=models.DO_NOTHING)
+    client = models.ForeignKey(Client, on_delete=models.SET_NULL, null=True)
     count = CountField()
     timestamp = models.DateTimeField(auto_now=True)
 
