@@ -114,7 +114,7 @@ def offer_notifications_for_broker(offer):
     if offer.deal.count < offer.deal.count_control_notification:
         transaction.on_commit(
             lambda: notify.s(
-                notification_type=NotificationEvent.SUCCESS_OFFER,
+                notification_type=NotificationEvent.SALESDASHBOARD_SOON_OVER,
                 account_id=offer.broker.id,
                 offer_id=offer.id,
             ).apply_async(task_id=f"salesdashboard: {offer.deal.id} soon over")
