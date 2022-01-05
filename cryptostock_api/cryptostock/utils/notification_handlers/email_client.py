@@ -7,6 +7,7 @@ CRYPTOSTOCK_NAME = os.environ["CRYPTOSTOCK_NAME"]
 
 
 def email_notify(message, context):
+    # TODO: validate context
     if type(message) == dict:
         recipient = context.get("recipient", message["recipient"])
         subject = message["subject"]
