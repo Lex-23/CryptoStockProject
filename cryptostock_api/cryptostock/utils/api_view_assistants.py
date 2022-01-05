@@ -58,7 +58,7 @@ def _client_buy_asset(client, deal, count, value):
     client.save()
 
 
-# @transaction.atomic
+@transaction.atomic
 def deal_flow(client, deal, count, value):
     """
     This func changes brokers` and clients` cash_balance and count of target salesdashboard
