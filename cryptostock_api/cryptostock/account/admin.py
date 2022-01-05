@@ -1,6 +1,5 @@
 from account.models import Broker, Client, Offer, PurchaseDashboard, SalesDashboard
 from django.contrib import admin
-from notification.models import Notifier
 
 
 class SalesDashboardInline(admin.TabularInline):
@@ -11,11 +10,6 @@ class SalesDashboardInline(admin.TabularInline):
 
 class OfferInline(admin.TabularInline):
     model = Offer
-    extra = 1
-
-
-class NotifierInline(admin.TabularInline):
-    model = Notifier
     extra = 1
 
 
@@ -35,12 +29,12 @@ class AccountAdmin(admin.ModelAdmin):
 
 @admin.register(Client)
 class ClientAdmin(AccountAdmin):
-    inlines = [OfferInline, NotifierInline]
+    inlines = [OfferInline]
 
 
 @admin.register(Broker)
 class BrokerAdmin(AccountAdmin):
-    inlines = [SalesDashboardInline, NotifierInline]
+    inlines = [SalesDashboardInline]
 
 
 @admin.register(SalesDashboard)
