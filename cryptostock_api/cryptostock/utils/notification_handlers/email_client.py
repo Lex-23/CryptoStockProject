@@ -16,4 +16,11 @@ def email_notify(message, context):
         recipient = context.get("recipient")
         subject = f"Notification from {CRYPTOSTOCK_NAME}"
 
-    send_mail(subject, message, EMAIL_HOST_USER, recipient, fail_silently=False)
+    send_mail(
+        subject,
+        message,
+        EMAIL_HOST_USER,
+        recipient,
+        html_message=message,
+        fail_silently=False,
+    )

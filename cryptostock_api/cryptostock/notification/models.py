@@ -90,8 +90,8 @@ class SuccessOfferTemplater:
     def render(data: Dict[str, Any], *args) -> Any:
         offer = Offer.objects.get(id=data["offer_id"])
         return (
-            f"User {offer.client.owner.username} bought from you {offer.count} "
-            f"{offer.deal.asset.name}\nfor total value: {offer.total_value} in {offer.timestamp.date()}.\n"
+            f"User {offer.client.owner.username} bought from you <b>{offer.count} "
+            f"{offer.deal.asset.name}\n</b>for total value: <b>{offer.total_value}</b> in {offer.timestamp.date()}.\n"
             f"Buyer email: {offer.client.owner.email}."
         )
 
@@ -102,8 +102,8 @@ class SalesDashboardSoonOverTemplater:
     def render(data: Dict[str, Any], *args) -> Any:
         offer = Offer.objects.get(id=data["offer_id"])
         return (
-            f"Your asset {offer.deal.asset.name} on sales dashboard #{offer.deal.id}\n"
-            f"soon will be over, {offer.deal.count} remain."
+            f"Your asset <b>{offer.deal.asset.name}</b> on sales dashboard #{offer.deal.id}\n"
+            f"<b>soon will be over</b>, {offer.deal.count} remain."
         )
 
 
@@ -112,7 +112,7 @@ class SalesDashboardIsOverTemplater:
     @staticmethod
     def render(data: Dict[str, Any], *args) -> Any:
         salesdashboard = SalesDashboard.objects.get(id=data["deal_id"])
-        return f"Your sales dashboard #{salesdashboard.id} with {salesdashboard.asset.name} sold completely."
+        return f"Your sales dashboard #{salesdashboard.id} with <b>{salesdashboard.asset.name} sold completely</b>."
 
 
 @TemplaterRegister.register(
@@ -125,8 +125,9 @@ class SuccessOfferEmailTemplater:
         return {
             "recipient": (f"{offer.deal.broker.owner.email}",),
             "subject": "You received successful offer from your sales dashboard.",
-            "body": f"Hello, {offer.deal.broker.owner.username}.\n"
-            f"User {offer.client.owner.username} bought from you {offer.count} "
-            f"{offer.deal.asset.name} for total value: {offer.total_value} in {offer.timestamp.date()}.\n"
-            f"Buyer email: {offer.client.owner.email}.",
+            "body": f"<h2>Hello, {offer.deal.broker.owner.username}.</h2>"
+            f"<p>User {offer.client.owner.username} bought from you <b>{offer.count} "
+            f"{offer.deal.asset.name}</b> for total value: "
+            f"<b>{offer.total_value}</b> in {offer.timestamp.date()}.</p>"
+            f"<h4>Buyer email: {offer.client.owner.email}.</h4>",
         }
