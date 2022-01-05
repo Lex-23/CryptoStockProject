@@ -122,7 +122,7 @@ class SuccessOfferEmailTemplater:
     @staticmethod
     def render(data: Dict[str, Any], *args) -> Any:
         offer = Offer.objects.get(id=data["offer_id"])
-        message = {
+        return {
             "recipient": (f"{offer.deal.broker.owner.email}",),
             "subject": "You received successful offer from your sales dashboard.",
             "body": f"Hello, {offer.deal.broker.owner.username}.\n"
@@ -130,4 +130,3 @@ class SuccessOfferEmailTemplater:
             f"{offer.deal.asset.name} for total value: {offer.total_value} in {offer.timestamp.date()}.\n"
             f"Buyer email: {offer.client.owner.email}.",
         }
-        return message
