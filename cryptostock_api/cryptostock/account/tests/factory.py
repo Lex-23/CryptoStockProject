@@ -66,15 +66,18 @@ class SalesDashboardFactory(DjangoModelFactory):
     broker = factory.SubFactory(BrokerFactory)
     count = decimal.Decimal("50.5555")
     price = decimal.Decimal("200.77")
+    count_control_notification = decimal.Decimal("1.0000")
 
 
 class OfferFactory(DjangoModelFactory):
     class Meta:
         model = Offer
 
-    deal = factory.SubFactory(SalesDashboardFactory)
+    asset = factory.SubFactory(AssetFactory)
     client = factory.SubFactory(ClientFactory)
+    broker = factory.SubFactory(BrokerFactory)
     count = decimal.Decimal("10.5555")
+    price = decimal.Decimal("5.55")
 
 
 class PurchaseDashboardFactory(DjangoModelFactory):

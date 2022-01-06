@@ -134,7 +134,7 @@ def _get_offers(request):
     if request.auth["user_role"] == "client":
         return Offer.objects.filter(client_id=request.user.account.client.id)
     elif request.auth["user_role"] == "broker":
-        return Offer.objects.filter(deal__broker__id=request.user.account.broker.id)
+        return Offer.objects.filter(broker__id=request.user.account.broker.id)
 
 
 def get_offers_with_related_items(request):

@@ -15,9 +15,19 @@ from django.test.utils import CaptureQueriesContext
 
 def test_client_get_list_offers(auth_client, client_account):
     sale = SalesDashboardFactory()
-    offer1 = OfferFactory(deal=sale, client=client_account)
-    offer2 = OfferFactory(deal=sale, count=d.Decimal("30.0456"), client=offer1.client)
-    OfferFactory(deal=sale, client=ClientFactory())
+    offer1 = OfferFactory(
+        asset=sale.asset, broker=sale.broker, price=sale.price, client=client_account
+    )
+    offer2 = OfferFactory(
+        asset=sale.asset,
+        broker=sale.broker,
+        price=sale.price,
+        count=d.Decimal("30.0456"),
+        client=offer1.client,
+    )
+    OfferFactory(
+        asset=sale.asset, broker=sale.broker, price=sale.price, client=ClientFactory()
+    )
 
     response = auth_client.get("/api/offer/")
 
@@ -27,6 +37,11 @@ def test_client_get_list_offers(auth_client, client_account):
     assert response.json()["results"] == [
         {
             "id": offer1.id,
+            "asset": {
+                "id": offer1.asset.id,
+                "name": offer1.asset.name,
+                "description": offer1.asset.description,
+            },
             "client": {
                 "id": offer1.client.id,
                 "name": offer1.client.name,
@@ -37,23 +52,14 @@ def test_client_get_list_offers(auth_client, client_account):
                 },
             },
             "count": f"{offer1.count}",
-            "deal": {
-                "id": offer1.deal.id,
-                "asset": {
-                    "id": offer1.deal.asset.id,
-                    "name": offer1.deal.asset.name,
-                    "description": offer1.deal.asset.description,
-                },
-                "count": f"{offer1.deal.count}",
-                "price": f"{offer1.price}",
-                "broker": {
-                    "id": offer1.broker.id,
-                    "name": offer1.broker.name,
-                    "owner": offer1.broker.owner.username,
-                    "wallet": {
-                        "id": offer1.broker.wallet.id,
-                        "name": offer1.broker.wallet.name,
-                    },
+            "price": f"{offer1.price}",
+            "broker": {
+                "id": offer1.broker.id,
+                "name": offer1.broker.name,
+                "owner": offer1.broker.owner.username,
+                "wallet": {
+                    "id": offer1.broker.wallet.id,
+                    "name": offer1.broker.wallet.name,
                 },
             },
             "total_value": f"{offer1.total_value}",
@@ -61,6 +67,11 @@ def test_client_get_list_offers(auth_client, client_account):
         },
         {
             "id": offer2.id,
+            "asset": {
+                "id": offer2.asset.id,
+                "name": offer2.asset.name,
+                "description": offer2.asset.description,
+            },
             "client": {
                 "id": offer2.client.id,
                 "name": offer2.client.name,
@@ -71,23 +82,14 @@ def test_client_get_list_offers(auth_client, client_account):
                 },
             },
             "count": f"{offer2.count}",
-            "deal": {
-                "id": offer2.deal.id,
-                "asset": {
-                    "id": offer2.deal.asset.id,
-                    "name": offer2.deal.asset.name,
-                    "description": offer2.deal.asset.description,
-                },
-                "count": f"{offer2.deal.count}",
-                "price": f"{offer2.price}",
-                "broker": {
-                    "id": offer2.broker.id,
-                    "name": offer2.broker.name,
-                    "owner": offer2.broker.owner.username,
-                    "wallet": {
-                        "id": offer2.broker.wallet.id,
-                        "name": offer2.broker.wallet.name,
-                    },
+            "price": f"{offer2.price}",
+            "broker": {
+                "id": offer2.broker.id,
+                "name": offer2.broker.name,
+                "owner": offer2.broker.owner.username,
+                "wallet": {
+                    "id": offer2.broker.wallet.id,
+                    "name": offer2.broker.wallet.name,
                 },
             },
             "total_value": f"{offer2.total_value}",
@@ -98,8 +100,13 @@ def test_client_get_list_offers(auth_client, client_account):
 
 def test_broker_get_list_offers(auth_broker, broker_account):
     sale = SalesDashboardFactory(broker=broker_account, asset=AssetFactory(name="ETH"))
-    offer1 = OfferFactory(deal=sale)
-    offer2 = OfferFactory(deal=sale, count=d.Decimal("30.0456"))
+    offer1 = OfferFactory(asset=sale.asset, broker=sale.broker, price=sale.price)
+    offer2 = OfferFactory(
+        asset=sale.asset,
+        broker=sale.broker,
+        price=sale.price,
+        count=d.Decimal("30.0456"),
+    )
     OfferFactory()
 
     response = auth_broker.get("/api/offer/")
@@ -109,6 +116,11 @@ def test_broker_get_list_offers(auth_broker, broker_account):
     assert response.json()["results"] == [
         {
             "id": offer1.id,
+            "asset": {
+                "id": offer1.asset.id,
+                "name": offer1.asset.name,
+                "description": offer1.asset.description,
+            },
             "client": {
                 "id": offer1.client.id,
                 "name": offer1.client.name,
@@ -119,23 +131,14 @@ def test_broker_get_list_offers(auth_broker, broker_account):
                 },
             },
             "count": f"{offer1.count}",
-            "deal": {
-                "id": offer1.deal.id,
-                "asset": {
-                    "id": offer1.deal.asset.id,
-                    "name": offer1.deal.asset.name,
-                    "description": offer1.deal.asset.description,
-                },
-                "count": f"{offer1.deal.count}",
-                "price": f"{offer1.price}",
-                "broker": {
-                    "id": offer1.broker.id,
-                    "name": offer1.broker.name,
-                    "owner": offer1.broker.owner.username,
-                    "wallet": {
-                        "id": offer1.broker.wallet.id,
-                        "name": offer1.broker.wallet.name,
-                    },
+            "price": f"{offer1.price}",
+            "broker": {
+                "id": offer1.broker.id,
+                "name": offer1.broker.name,
+                "owner": offer1.broker.owner.username,
+                "wallet": {
+                    "id": offer1.broker.wallet.id,
+                    "name": offer1.broker.wallet.name,
                 },
             },
             "total_value": f"{offer1.total_value}",
@@ -143,6 +146,11 @@ def test_broker_get_list_offers(auth_broker, broker_account):
         },
         {
             "id": offer2.id,
+            "asset": {
+                "id": offer2.asset.id,
+                "name": offer2.asset.name,
+                "description": offer2.asset.description,
+            },
             "client": {
                 "id": offer2.client.id,
                 "name": offer2.client.name,
@@ -153,23 +161,14 @@ def test_broker_get_list_offers(auth_broker, broker_account):
                 },
             },
             "count": f"{offer2.count}",
-            "deal": {
-                "id": offer2.deal.id,
-                "asset": {
-                    "id": offer2.deal.asset.id,
-                    "name": offer2.deal.asset.name,
-                    "description": offer2.deal.asset.description,
-                },
-                "count": f"{offer2.deal.count}",
-                "price": f"{offer2.price}",
-                "broker": {
-                    "id": offer2.broker.id,
-                    "name": offer2.broker.name,
-                    "owner": offer2.broker.owner.username,
-                    "wallet": {
-                        "id": offer2.broker.wallet.id,
-                        "name": offer2.broker.wallet.name,
-                    },
+            "price": f"{offer2.price}",
+            "broker": {
+                "id": offer2.broker.id,
+                "name": offer2.broker.name,
+                "owner": offer2.broker.owner.username,
+                "wallet": {
+                    "id": offer2.broker.wallet.id,
+                    "name": offer2.broker.wallet.name,
                 },
             },
             "total_value": f"{offer2.total_value}",
@@ -185,6 +184,7 @@ def test_get_list_offers_db_calls_from_client(auth_client, client_account):
         response = auth_client.get("/api/offer/")
 
     assert response.status_code == 200
+
     assert len(query_context) == 6
 
     OfferFactory.create_batch(1000, client=client_account)
@@ -198,7 +198,9 @@ def test_get_list_offers_db_calls_from_client(auth_client, client_account):
 
 def test_get_list_offers_db_calls_from_broker(auth_broker, broker_account):
     sale = SalesDashboardFactory(broker=broker_account)
-    OfferFactory.create_batch(100, deal=sale)
+    OfferFactory.create_batch(
+        100, asset=sale.asset, broker=sale.broker, price=sale.price
+    )
 
     with CaptureQueriesContext(connection) as query_context:
         response = auth_broker.get("/api/offer/")
@@ -206,7 +208,9 @@ def test_get_list_offers_db_calls_from_broker(auth_broker, broker_account):
     assert response.status_code == 200
     assert len(query_context) == 6
 
-    OfferFactory.create_batch(300, deal=sale)
+    OfferFactory.create_batch(
+        300, asset=sale.asset, broker=sale.broker, price=sale.price
+    )
 
     with CaptureQueriesContext(connection) as query_context:
         response = auth_broker.get("/api/offer/")
