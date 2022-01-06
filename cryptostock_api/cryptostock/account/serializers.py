@@ -72,8 +72,10 @@ class CreateSalesDashboardSerializer(serializers.ModelSerializer):
 
 
 class OfferSerializer(serializers.ModelSerializer):
-    deal = SalesDashboardSerializer(required=False)
+    asset = AssetSerializer(required=False)
     client = ClientSerializer(required=False)
+    broker = BrokerSerializer(required=False)
+    price = serializers.DecimalField(required=False, decimal_places=2, max_digits=16)
     timestamp = serializers.DateTimeField(required=False)
     total_value = serializers.DecimalField(
         required=False, max_digits=30, decimal_places=2
@@ -81,4 +83,13 @@ class OfferSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Offer
-        fields = ["id", "client", "count", "deal", "total_value", "timestamp"]
+        fields = [
+            "id",
+            "asset",
+            "client",
+            "count",
+            "price",
+            "broker",
+            "total_value",
+            "timestamp",
+        ]

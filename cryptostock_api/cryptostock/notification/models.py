@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Any, Dict
 
-from account.models import Account, Offer
+from account.models import Account, Offer, SalesDashboard
 from django.db import models
 from utils.notification_handlers.email_client import email_notify
 from utils.notification_handlers.telegram_client import tg_notify
@@ -98,7 +98,7 @@ class SuccessOfferTemplater:
         offer = Offer.objects.get(id=data["offer_id"])
         return (
             f"User {offer.client.owner.username} bought from you <b>{offer.count} "
-            f"{offer.deal.asset.name}\n</b>for total value: <b>{offer.total_value}</b> in {offer.timestamp.date()}.\n"
+            f"{offer.asset.name}\n</b>for total value: <b>{offer.total_value}</b> in {offer.timestamp.date()}.\n"
             f"Buyer email: {offer.client.owner.email}."
         )
 
@@ -107,10 +107,10 @@ class SuccessOfferTemplater:
 class SalesDashboardSoonOverTemplater:
     @staticmethod
     def render(data: Dict[str, Any], *args) -> Any:
-        offer = Offer.objects.get(id=data["offer_id"])
+        sale = SalesDashboard.objects.get(id=data["salesdashboard_id"])
         return (
-            f"Your asset <b>{offer.deal.asset.name}</b> on sales dashboard #{offer.deal.id}\n"
-            f"<b>soon will be over</b>, {offer.deal.count} remain."
+            f"Your asset <b>{sale.asset.name}</b> on sales dashboard #{sale.id}\n"
+            f"<b>soon will be over</b>, {sale.count} remain."
         )
 
 
@@ -118,7 +118,7 @@ class SalesDashboardSoonOverTemplater:
 class SalesDashboardIsOverTemplater:
     @staticmethod
     def render(data: Dict[str, Any], *args) -> Any:
-        return f"Your sales dashboard #{data['di']} with <b>{data['asset_name']} sold completely</b>."
+        return f"Your sales dashboard #{data['deal_id']} with <b>{data['asset_name']} sold completely</b>."
 
 
 @TemplaterRegister.register(
@@ -130,9 +130,9 @@ class SuccessOfferEmailTemplater:
         offer = Offer.objects.get(id=data["offer_id"])
         return {
             "subject": "You received successful offer from your sales dashboard.",
-            "body": f"<h2>Hello, {offer.deal.broker.owner.username}.</h2>"
+            "body": f"<h2>Hello, {offer.broker.owner.username}.</h2>"
             f"<p>User {offer.client.owner.username} bought from you <b>{offer.count} "
-            f"{offer.deal.asset.name}</b> for total value: "
+            f"{offer.asset.name}</b> for total value: "
             f"<b>{offer.total_value}</b> in {offer.timestamp.date()}.</p>"
             f"<h4>Buyer email: {offer.client.owner.email}.</h4>",
         }

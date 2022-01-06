@@ -58,7 +58,6 @@ def _client_buy_asset(client, deal, count, value):
     client.save()
 
 
-@transaction.atomic
 def deal_flow(client, deal, count, value):
     """
     This func changes brokers` and clients` cash_balance and count of target salesdashboard
@@ -73,14 +72,17 @@ def deal_flow(client, deal, count, value):
     deal.count -= count
     deal.save()
     if deal.count == decimal.Decimal("0"):
+        deal_id = deal.id
+        asset_name = deal.asset.name
+        SalesDashboard.objects.filter(id=deal_id).delete()
         transaction.on_commit(
             lambda: notify.s(
                 notification_type=NotificationType.SALESDASHBOARD_IS_OVER,
-                account_id=deal.broker.id,
-                deal_id=deal.id,
-            ).apply_async(task_id=f"salesdashboard: {deal.id} is over")
+                account_id=broker.id,
+                deal_id=deal_id,
+                asset_name=asset_name,
+            ).apply_async(task_id=f"salesdashboard_is_over notification: {deal_id}")
         )
-        SalesDashboard.objects.filter(id=deal.id).delete()
 
 
 @transaction.atomic
@@ -91,7 +93,13 @@ def offer_flow(offer_count, client, deal) -> dict:
     """
     validators.validate_offer_count(offer_count, deal)
 
-    offer = Offer(deal=deal, client=client, count=offer_count)
+    offer = Offer(
+        asset=deal.asset,
+        broker=deal.broker,
+        client=client,
+        price=deal.price,
+        count=offer_count,
+    )
     deal_value = decimal.Decimal(offer.total_value)
     validators.validate_cash_balance(client, deal_value)
 
@@ -99,26 +107,26 @@ def offer_flow(offer_count, client, deal) -> dict:
     offer.save()
     serializer = OfferSerializer(offer)
 
-    offer_notifications_for_broker(offer)
+    offer_notifications_for_broker(offer, deal)
     return serializer.data
 
 
-def offer_notifications_for_broker(offer):
-    if offer.deal.success_offer_notification:
+def offer_notifications_for_broker(offer, deal):
+    if deal.success_offer_notification:
         transaction.on_commit(
             lambda: notify.s(
                 notification_type=NotificationType.SUCCESS_OFFER,
                 account_id=offer.broker.id,
                 offer_id=offer.id,
-            ).apply_async(task_id=f"offer: {offer.id} is success")
+            ).apply_async(task_id=f"offer_success notification: {offer.id}")
         )
-    if offer.deal.count < offer.deal.count_control_notification:
+    if deal.count < deal.count_control_notification:
         transaction.on_commit(
             lambda: notify.s(
                 notification_type=NotificationType.SALESDASHBOARD_SOON_OVER,
                 account_id=offer.broker.id,
-                offer_id=offer.id,
-            ).apply_async(task_id=f"salesdashboard: {offer.deal.id} soon over")
+                salesdashboard_id=deal.id,
+            ).apply_async(task_id=f"salesdashboard soon_over notification: {deal.id}")
         )
 
 
@@ -132,11 +140,11 @@ def _get_offers(request):
 def get_offers_with_related_items(request):
     return (
         _get_offers(request)
-        .prefetch_related("deal__asset__wallet_record")
+        .prefetch_related("asset__wallet_record")
         .select_related(
-            "deal__asset",
-            "deal__broker__owner",
-            "deal__broker__wallet",
+            "asset",
+            "broker__owner",
+            "broker__wallet",
             "client__owner",
             "client__wallet",
         )
