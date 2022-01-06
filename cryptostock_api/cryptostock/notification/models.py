@@ -78,9 +78,10 @@ class TemplaterRegister:
 
     @classmethod
     def get(cls, notification_type, consumer_type):
-        return cls._templaters.get(
-            (notification_type, consumer_type),
-            cls._templaters.get((notification_type, None), BaseTemplater),
+        return (
+            cls._templaters.get((notification_type, consumer_type))
+            or cls._templaters.get((notification_type, None))
+            or BaseTemplater
         )
 
 
@@ -128,7 +129,6 @@ class SuccessOfferEmailTemplater:
     def render(data: Dict[str, Any], *args) -> Any:
         offer = Offer.objects.get(id=data["offer_id"])
         return {
-            "recipient": (f"{offer.deal.broker.owner.email}",),
             "subject": "You received successful offer from your sales dashboard.",
             "body": f"<h2>Hello, {offer.deal.broker.owner.username}.</h2>"
             f"<p>User {offer.client.owner.username} bought from you <b>{offer.count} "
