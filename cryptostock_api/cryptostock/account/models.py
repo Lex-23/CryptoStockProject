@@ -97,24 +97,12 @@ class Offer(models.Model):
     Model for history deals between client and broker
     """
 
-    deal = models.ForeignKey(
-        SalesDashboard, on_delete=models.SET_NULL, null=True, related_name="offer"
-    )
+    asset = models.ForeignKey(Asset, on_delete=models.SET_NULL, null=True)
     client = models.ForeignKey(Client, on_delete=models.SET_NULL, null=True)
+    broker = models.ForeignKey(Broker, on_delete=models.SET_NULL, null=True)
     count = CountField()
+    price = PriceField()
     timestamp = models.DateTimeField(auto_now=True)
-
-    @property
-    def price(self):
-        return self.deal.price
-
-    @property
-    def asset(self):
-        return self.deal.asset
-
-    @property
-    def broker(self):
-        return self.deal.broker
 
     @property
     def total_value(self):

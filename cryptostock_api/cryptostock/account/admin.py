@@ -71,7 +71,7 @@ class PurchaseDashboardAdmin(admin.ModelAdmin):
 
 @admin.register(Offer)
 class OfferAdmin(admin.ModelAdmin):
-    fields = ("deal", "client", "count")
+    fields = ("asset", "client", "count", "price", "broker")
     list_display = (
         "id",
         "client",
@@ -81,11 +81,10 @@ class OfferAdmin(admin.ModelAdmin):
         "broker",
         "timestamp",
         "total_value",
-        "deal_id",
     )
-    search_fields = ("client__name", "deal__asset__name", "deal__broker__name")
+    search_fields = ("client__name", "asset__name", "broker__name")
     list_per_page = 10
-    ordering = ("id", "deal__asset")
+    ordering = ("id", "asset")
 
     def has_add_permission(self, request, obj=None):
         return False
