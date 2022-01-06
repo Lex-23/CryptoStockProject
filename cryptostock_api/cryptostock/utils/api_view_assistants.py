@@ -72,7 +72,6 @@ def deal_flow(client, deal, count, value):
     _client_buy_asset(client, deal, count, value)
     deal.count -= count
     deal.save()
-    breakpoint()
     if deal.count == decimal.Decimal("0"):
         transaction.on_commit(
             lambda: notify.s(

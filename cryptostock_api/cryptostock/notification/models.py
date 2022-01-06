@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Any, Dict
 
-from account.models import Account, Offer, SalesDashboard
+from account.models import Account, Offer
 from django.db import models
 from utils.notification_handlers.email_client import email_notify
 from utils.notification_handlers.telegram_client import tg_notify
@@ -45,6 +45,9 @@ class Consumer(models.Model):
     def __str__(self):
         return self.type
 
+    class Meta:
+        unique_together = ("account", "type")
+
 
 class NotificationSubscription(models.Model):
     account = models.ForeignKey(
@@ -57,6 +60,9 @@ class NotificationSubscription(models.Model):
 
     def __str__(self):
         return self.notification_type
+
+    class Meta:
+        unique_together = ("account", "notification_type")
 
 
 class TemplaterRegister:
@@ -111,8 +117,7 @@ class SalesDashboardSoonOverTemplater:
 class SalesDashboardIsOverTemplater:
     @staticmethod
     def render(data: Dict[str, Any], *args) -> Any:
-        salesdashboard = SalesDashboard.objects.get(id=data["deal_id"])
-        return f"Your sales dashboard #{salesdashboard.id} with <b>{salesdashboard.asset.name} sold completely</b>."
+        return f"Your sales dashboard #{data['di']} with <b>{data['asset_name']} sold completely</b>."
 
 
 @TemplaterRegister.register(
