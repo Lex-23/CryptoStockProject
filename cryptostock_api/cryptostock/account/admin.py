@@ -1,6 +1,5 @@
 from account.models import Broker, Client, Offer, PurchaseDashboard, SalesDashboard
 from django.contrib import admin
-from notification.models import Notifier
 
 
 class SalesDashboardInline(admin.TabularInline):
@@ -14,33 +13,21 @@ class OfferInline(admin.TabularInline):
     extra = 1
 
 
-class NotifierInline(admin.TabularInline):
-    model = Notifier
-    extra = 1
-
-
 class AccountAdmin(admin.ModelAdmin):
-    fields = ("owner", "name", "wallet", "cash_balance", "account_contacts_data")
+    fields = ("owner", "name", "wallet", "cash_balance")
     search_fields = ("owner__username", "name")
-    list_display = (
-        "id",
-        "owner",
-        "name",
-        "wallet",
-        "cash_balance",
-        "account_contacts_data",
-    )
+    list_display = ("id", "owner", "name", "wallet", "cash_balance")
     list_editable = ("cash_balance",)
 
 
 @admin.register(Client)
 class ClientAdmin(AccountAdmin):
-    inlines = [OfferInline, NotifierInline]
+    inlines = [OfferInline]
 
 
 @admin.register(Broker)
 class BrokerAdmin(AccountAdmin):
-    inlines = [SalesDashboardInline, NotifierInline]
+    inlines = [SalesDashboardInline]
 
 
 @admin.register(SalesDashboard)
