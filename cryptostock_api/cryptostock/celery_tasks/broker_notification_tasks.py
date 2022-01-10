@@ -11,3 +11,8 @@ def notify(notification_type, account_id, **data):
             templater = TemplaterRegister.get(notification_type, consumer.type)
             message = templater.render(data, notification_type)
             consumer.send(message)
+
+
+@shared_task
+def mul(x, y):
+    return x * y
