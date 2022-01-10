@@ -9,7 +9,7 @@ def test_get_list_sales_dashboard(auth_user, broker_account):
     sale2 = SalesDashboardFactory(broker=broker_account, asset=AssetFactory(name="ETH"))
 
     response = auth_user.get("/api/salesdashboard/")
-    breakpoint()
+
     assert response.status_code == 200
     assert response.json()["results"] == [
         {

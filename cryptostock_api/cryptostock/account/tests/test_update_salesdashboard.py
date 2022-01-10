@@ -55,6 +55,8 @@ def test_update_sales_dashboard(auth_broker, broker_account, data):
             "owner": sale.broker.owner.username,
             "wallet": {"id": sale.broker.wallet.id, "name": sale.broker.wallet.name},
         },
+        "success_offer_notification": sale.success_offer_notification,
+        "count_control_notification": f"{sale.count_control_notification}",
     }
 
 
