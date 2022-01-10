@@ -1,6 +1,6 @@
 import decimal as d
 
-from account.models import Offer, SalesDashboard
+from account.models import Offer
 from account.tests.factory import (
     BrokerFactory,
     SalesDashboardFactory,
@@ -23,7 +23,6 @@ def test_create_offer(auth_client, client_account):
 
     response = auth_client.post(f"/api/salesdashboard/{sale.id}/buy/", data=data)
 
-    updated_sale = SalesDashboard.objects.get(id=sale.id)
     offer = Offer.objects.all().last()
 
     assert response.status_code == 201
@@ -37,6 +36,11 @@ def test_create_offer(auth_client, client_account):
     assert offer.client.cash_balance == client.cash_balance - offer.total_value
     assert response.json() == {
         "id": offer.id,
+        "asset": {
+            "id": offer.asset.id,
+            "name": offer.asset.name,
+            "description": offer.asset.description,
+        },
         "client": {
             "id": client.id,
             "name": client.name,
@@ -44,21 +48,12 @@ def test_create_offer(auth_client, client_account):
             "wallet": {"id": client.wallet.id, "name": client.wallet.name},
         },
         "count": data["count"],
-        "deal": {
-            "id": sale.id,
-            "asset": {
-                "id": sale.asset.id,
-                "name": sale.asset.name,
-                "description": sale.asset.description,
-            },
-            "count": f"{updated_sale.count}",
-            "price": f"{sale.price}",
-            "broker": {
-                "id": broker.id,
-                "name": broker.name,
-                "owner": broker.owner.username,
-                "wallet": {"id": broker.wallet.id, "name": broker.wallet.name},
-            },
+        "price": f"{offer.price}",
+        "broker": {
+            "id": broker.id,
+            "name": broker.name,
+            "owner": broker.owner.username,
+            "wallet": {"id": broker.wallet.id, "name": broker.wallet.name},
         },
         "total_value": f"{offer.total_value}",
         "timestamp": f"{offer.timestamp.strftime(format=DRF['DATETIME_FORMAT'])}",

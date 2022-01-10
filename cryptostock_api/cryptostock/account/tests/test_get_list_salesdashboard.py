@@ -30,6 +30,8 @@ def test_get_list_sales_dashboard(auth_user, broker_account):
                     "name": sale1.broker.wallet.name,
                 },
             },
+            "success_offer_notification": sale1.success_offer_notification,
+            "count_control_notification": f"{sale1.count_control_notification}",
         },
         {
             "id": sale2.id,
@@ -49,6 +51,8 @@ def test_get_list_sales_dashboard(auth_user, broker_account):
                     "name": sale2.broker.wallet.name,
                 },
             },
+            "success_offer_notification": sale2.success_offer_notification,
+            "count_control_notification": f"{sale2.count_control_notification}",
         },
     ]
 

@@ -23,5 +23,10 @@ def test_offer_total_value(count, price, expected_total_value):
     deal = SalesDashboardFactory(
         count=decimal.Decimal("1000.0000"), price=decimal.Decimal(price)
     )
-    offer = OfferFactory(deal=deal, count=decimal.Decimal(count))
+    offer = OfferFactory(
+        asset=deal.asset,
+        broker=deal.broker,
+        price=deal.price,
+        count=decimal.Decimal(count),
+    )
     assert offer.total_value == expected_total_value

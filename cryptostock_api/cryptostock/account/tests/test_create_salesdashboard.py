@@ -35,6 +35,8 @@ def test_create_sales_dashboard(auth_broker, broker_account):
                 "name": broker_account.wallet.name,
             },
         },
+        "success_offer_notification": created_sale.success_offer_notification,
+        "count_control_notification": f"{created_sale.count_control_notification}",
     }
 
 
