@@ -1,5 +1,8 @@
+from unittest.mock import MagicMock
+
 import pytest
 from account.tests.conftest import *  # noqa
+from cryptostock import celery_app
 from notification.models import ConsumerType
 
 
@@ -11,14 +14,13 @@ def celery_config():
     }
 
 
-@pytest.fixture
-def tg_notify():
-    return "telegram notify is success"
+@pytest.fixture(scope="module")
+def celeryapp(request):
+    celery_app.conf.update(CELERY_ALWAYS_EAGER=True)
+    return celery_app
 
 
-@pytest.fixture
-def email_notify():
-    return "email notify is success"
-
+tg_notify = MagicMock(return_value="success telegram notify")
+email_notify = MagicMock(return_value="success email notify")
 
 SENDER = {ConsumerType.TELEGRAM: tg_notify, ConsumerType.EMAIL: email_notify}

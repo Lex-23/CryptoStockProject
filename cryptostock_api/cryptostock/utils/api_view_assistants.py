@@ -112,6 +112,7 @@ def offer_flow(offer_count, client, deal) -> dict:
 
 
 def offer_notifications_for_broker(offer, deal):
+    breakpoint()
     if deal.success_offer_notification:
         transaction.on_commit(
             lambda: notify.s(
