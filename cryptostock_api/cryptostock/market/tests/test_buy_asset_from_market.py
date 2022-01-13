@@ -19,6 +19,7 @@ def test_buy_asset_from_market(
     market_name = "Yahoo"
     broker_account.cash_balance = decimal.Decimal("10000000.00")
     broker_account.save()
+
     YahooMarket.get_assets = MagicMock(return_value=assets_list)
     market = MarketFactory(name=market_name)
     deal = market.client.buy(name=asset_name, count=count)
