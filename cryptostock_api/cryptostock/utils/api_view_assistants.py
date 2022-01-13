@@ -110,7 +110,7 @@ def offer_flow(offer_count, client, deal) -> dict:
 def offer_notifications_for_broker(offer, deal):
     if deal.success_offer_notification:
         async_notify_success_offer(offer)
-    if deal.count < deal.count_control_notification:
+    if deal.count <= deal.count_control_notification:
         async_notify_salesdashboard_soon_over(offer, deal)
 
 
