@@ -1,7 +1,7 @@
 from unittest.mock import call, patch
 
 import pytest
-from account.tests.factory import OfferFactory, SalesDashboardFactory
+from account.tests.factory import BrokerFactory, OfferFactory, SalesDashboardFactory
 from celery_tasks.broker_notification_tasks import notify
 from django.conf import settings
 from notification.models import ConsumerType, NotificationType, TemplaterRegister
@@ -120,3 +120,41 @@ def test_email_notify_success(send_mail, notification_type):
         html_message=message,
         fail_silently=False,
     )
+
+
+@patch(
+    "utils.notification_handlers.telegram_client.bot.send_message",
+    return_value="success telegram notify",
+)
+@patch(
+    "utils.notification_handlers.email_client.send_mail",
+    return_value="success email notify",
+)
+@pytest.mark.parametrize(
+    "tg_consumer_enable, email_consumer_enable",
+    [(True, True), (True, False), (False, True), (False, False)],
+)
+def test_enable_consumer(
+    send_message, send_mail, tg_consumer_enable, email_consumer_enable
+):
+    account = BrokerFactory()
+    offer = OfferFactory(broker=account)
+    ConsumerFactory(
+        account=account,
+        type=ConsumerType.EMAIL,
+        data={"recipient": ["mail@mail.mail"]},
+        enable=tg_consumer_enable,
+    )
+    ConsumerFactory(
+        account=account,
+        type=ConsumerType.TELEGRAM,
+        data={"tg_chat_id": 00000000},
+        enable=email_consumer_enable,
+    )
+    notification_subscription = NotificationSubscriptionFactory(
+        account=account, notification_type=NotificationType.SUCCESS_OFFER
+    )
+    notify(notification_subscription.notification_type, account.id, offer_id=offer.id)
+
+    assert send_message.called is tg_consumer_enable
+    assert send_mail.called is email_consumer_enable
