@@ -24,7 +24,7 @@ from utils.notification_handlers.email_client import CRYPTOSTOCK_NAME
 def test_telegram_notify_success(send_message, notification_type):
     salesdasboard = SalesDashboardFactory()
     offer = OfferFactory(asset=salesdasboard.asset, broker=salesdasboard.broker)
-    data = {
+    data_expected = {
         NotificationType.SUCCESS_OFFER: {"offer_id": offer.id},
         NotificationType.SALESDASHBOARD_IS_OVER: {
             "deal_id": salesdasboard.id,
@@ -37,7 +37,7 @@ def test_telegram_notify_success(send_message, notification_type):
     account = salesdasboard.broker
 
     consumer = ConsumerFactory(
-        account=account, type=ConsumerType.TELEGRAM, data={"tg_chat_id": 00000000}
+        account=account, type=ConsumerType.TELEGRAM, data={"tg_chat_id": 0}
     )
     notification_subscription = NotificationSubscriptionFactory(
         account=account, notification_type=notification_type
@@ -45,14 +45,14 @@ def test_telegram_notify_success(send_message, notification_type):
     notify(
         notification_type=notification_type,
         account_id=account.id,
-        **data[notification_type],
+        **data_expected[notification_type],
     )
 
     templater = TemplaterRegister.get(
         notification_subscription.notification_type, consumer.type
     )
     message = templater.render(
-        data[notification_type], notification_subscription.notification_type
+        data_expected[notification_type], notification_subscription.notification_type
     )
 
     assert send_message.called is True
@@ -89,7 +89,7 @@ def test_email_notify_success(send_mail, notification_type):
     account = salesdasboard.broker
 
     consumer = ConsumerFactory(
-        account=account, type=ConsumerType.EMAIL, data={"recipient": ["mail@mail.mail"]}
+        account=account, type=ConsumerType.EMAIL, data={"recipient": ["test@mail.com"]}
     )
     notification_subscription = NotificationSubscriptionFactory(
         account=account, notification_type=notification_type
@@ -148,7 +148,7 @@ def test_enable_consumer(
     ConsumerFactory(
         account=account,
         type=ConsumerType.TELEGRAM,
-        data={"tg_chat_id": 00000000},
+        data={"tg_chat_id": 0},
         enable=email_consumer_enable,
     )
     notification_subscription = NotificationSubscriptionFactory(
