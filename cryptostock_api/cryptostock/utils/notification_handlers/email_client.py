@@ -1,6 +1,6 @@
 import os
 
-from django.conf.global_settings import EMAIL_HOST_USER
+from django.conf import settings
 from django.core.mail import send_mail
 
 CRYPTOSTOCK_NAME = os.environ["CRYPTOSTOCK_NAME"]
@@ -17,7 +17,7 @@ def email_notify(message, context):
     send_mail(
         subject,
         message,
-        EMAIL_HOST_USER,
+        settings.EMAIL_HOST_USER,
         recipient,
         html_message=message,
         fail_silently=False,
