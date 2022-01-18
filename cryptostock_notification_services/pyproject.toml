@@ -9,6 +9,9 @@ python = "^3.8"
 redis = "^4.0.2"
 aiogram = "^2.17.1"
 aioredis = "^2.0.0"
+vkbottle = "^4.1.11"
+loguru = "^0.5.3"
+uvloop = "^0.16.0"
 
 [tool.poetry.dev-dependencies]
 

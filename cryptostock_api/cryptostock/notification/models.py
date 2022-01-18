@@ -5,6 +5,7 @@ from account.models import Account, Offer, SalesDashboard
 from django.db import models
 from utils.notification_handlers.email_client import email_notify
 from utils.notification_handlers.telegram_client import tg_notify
+from utils.notification_handlers.vk_client import vk_notify
 
 
 class ChoiceEnum(str, Enum):
@@ -25,7 +26,11 @@ class NotificationType(ChoiceEnum):
     SALESDASHBOARD_IS_OVER = "SALESDASHBOARD_IS_OVER"
 
 
-SENDER = {ConsumerType.TELEGRAM: tg_notify, ConsumerType.EMAIL: email_notify}
+SENDER = {
+    ConsumerType.TELEGRAM: tg_notify,
+    ConsumerType.EMAIL: email_notify,
+    ConsumerType.VK: vk_notify,
+}
 
 
 class Consumer(models.Model):
