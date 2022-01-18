@@ -49,6 +49,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "notification.middleware.NotificationMiddleware",
 ]
 
 ROOT_URLCONF = "cryptostock.urls"
@@ -158,3 +159,5 @@ EMAIL_USE_TLS = True
 EMAIL_PORT = int(os.environ["CRYPTOSTOCK_EMAIL_PORT"])
 EMAIL_HOST_USER = os.environ["CRYPTOSTOCK_EMAIL_HOST_USER"]
 EMAIL_HOST_PASSWORD = os.environ["CRYPTOSTOCK_EMAIL_HOST_PASSWORD"]
+
+NOTIFY_ON_URL = os.environ["NOTIFY_ON_URL"]
