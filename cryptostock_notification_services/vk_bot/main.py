@@ -4,6 +4,7 @@ from vkbottle import Keyboard, KeyboardButtonColor, Text
 from vkbottle.bot import Bot, Message
 
 bot = Bot(token=os.getenv("VK_BOT_API_TOKEN"))
+bot.labeler.vbml_ignore_case = True
 
 
 @bot.on.message(text="Hello")
@@ -20,11 +21,11 @@ async def help_handler(message: Message):
     )
 
 
-@bot.on.private_message(text=["menu", "start", "/start", "enter"])
+@bot.on.private_message(text=["menu", "start", "/start", "enter", "начать"])
 @bot.on.private_message(payload={"cmd": "menu"})
 async def menu(message: Message):
     await message.answer(
-        message="Click 'get id' for getting your peer id",
+        message="Click 'get id' for getting your peer id. Than we can start notification",
         keyboard=(
             Keyboard(one_time=False, inline=False).add(
                 Text("get id"), color=KeyboardButtonColor.POSITIVE
