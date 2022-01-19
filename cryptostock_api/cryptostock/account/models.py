@@ -17,6 +17,7 @@ class Account(models.Model):
         Wallet, on_delete=models.CASCADE, related_name="account"
     )
     cash_balance = CountField(max_digits=30, decimal_places=2)
+    account_token = models.CharField(max_length=32, blank=True, null=True, unique=True)
 
     def __str__(self):
         return f"{self.name} ({self.owner})"

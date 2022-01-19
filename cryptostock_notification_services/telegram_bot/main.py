@@ -16,14 +16,26 @@ dp = Dispatcher(bot, storage=storage)
 
 @dp.message_handler(commands=["start"])
 async def start(message: types.Message):
-    start_buttons = ["get chat id", "notify: TURN ON"]
+    start_buttons = ["get chat id"]
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     keyboard.add(*start_buttons)
-    await message.reply(
-        "Click *get chat id* for apply notifications for telegram.",
-        reply_markup=keyboard,
-        parse_mode="Markdown",
-    )
+    arguments = message.get_args()
+    if arguments:
+        chat_id = message.from_user.id
+        payload = {"account_token": arguments, "chat_id": chat_id}
+        requests.post("http://127.0.0.1:8000/api/notify-on", data=payload)
+        logging.info("notification TURN ON")
+        await message.reply(
+            "*Notifications* to telegram *turned ON*. Congratulation!",
+            reply_markup=keyboard,
+            parse_mode="Markdown",
+        )
+    else:
+        await message.reply(
+            "Welcome!\nClick *get chat id* for apply notifications for telegram, if you need.",
+            reply_markup=keyboard,
+            parse_mode="Markdown",
+        )
 
 
 @dp.message_handler(commands=["help"])
@@ -46,12 +58,3 @@ async def get_chat_id(message: types.Message):
     )
     logging.info(f"chat_id: {chat_id}")
     return chat_id
-
-
-@dp.message_handler(Text(equals="notify: TURN ON"))
-async def notify_on(message: types.Message):
-    await message.reply("Notification to tg is ON")
-    chat_id = message.from_user.id
-    payload = {"id": chat_id}
-    requests.get("http://127.0.0.1:8000/notify-on", params=payload)
-    logging.info("notification TURN ON")
