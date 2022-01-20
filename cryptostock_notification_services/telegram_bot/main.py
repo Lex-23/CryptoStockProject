@@ -13,6 +13,9 @@ storage = RedisStorage2()
 bot = Bot(token=os.getenv("TELEGRAM_BOT_API_TOKEN"))
 dp = Dispatcher(bot, storage=storage)
 
+TELEGRAM_BOT_NAME = os.environ["TELEGRAM_BOT_NAME"]
+TELEGRAM_NOTIFICATION_ACTIVATE_URL = os.environ["TELEGRAM_NOTIFICATION_ACTIVATE_URL"]
+
 
 @dp.message_handler(commands=["start"])
 async def start(message: types.Message):
@@ -22,8 +25,12 @@ async def start(message: types.Message):
     arguments = message.get_args()
     if arguments:
         chat_id = message.from_user.id
-        payload = {"account_token": arguments, "chat_id": chat_id}
-        requests.post("http://127.0.0.1:8000/api/notify-on", data=payload)
+        payload = {
+            "source": TELEGRAM_BOT_NAME,
+            "account_token": arguments,
+            "chat_id": chat_id,
+        }
+        requests.post(TELEGRAM_NOTIFICATION_ACTIVATE_URL, data=payload)
         logging.info("notification TURN ON")
         await message.reply(
             "*Notifications* to telegram *turned ON*. Congratulation!",

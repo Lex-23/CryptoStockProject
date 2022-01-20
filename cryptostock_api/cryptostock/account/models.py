@@ -1,4 +1,5 @@
 import decimal
+import uuid
 
 from asset.models import Asset
 from django.contrib.auth.models import User
@@ -17,7 +18,13 @@ class Account(models.Model):
         Wallet, on_delete=models.CASCADE, related_name="account"
     )
     cash_balance = CountField(max_digits=30, decimal_places=2)
-    account_token = models.CharField(max_length=32, blank=True, null=True, unique=True)
+    account_token = models.CharField(
+        max_length=32,
+        blank=True,
+        null=True,
+        unique=True,
+        help_text="for generate using uuid4",
+    )
 
     def __str__(self):
         return f"{self.name} ({self.owner})"
@@ -45,6 +52,13 @@ class Account(models.Model):
     @property
     def enabled_consumers(self):
         return self.consumers.all().filter(enable=True)
+
+    def generate_account_token(self):
+        self.account_token = uuid.uuid4().hex
+
+    def reset_account_token(self):
+        """Method for reset account_token after it used for connecting with notification service"""
+        self.account_token = None
 
 
 class Broker(Account):

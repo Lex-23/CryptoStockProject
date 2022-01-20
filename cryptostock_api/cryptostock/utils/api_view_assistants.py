@@ -8,7 +8,7 @@ from celery_tasks.broker_notification_tasks import (
     async_notify_salesdashboard_soon_over,
     async_notify_success_offer,
 )
-from django.db import transaction
+from django.db import IntegrityError, transaction
 from utils import validators
 from utils.validators import (
     get_validated_asset_from_market,
@@ -176,3 +176,11 @@ def get_purchasedashboards_with_related_items(request):
         .select_related("broker__owner", "broker__wallet", "asset", "market")
         .order_by("id")
     )
+
+
+def generate_new_account_token(account):
+    try:
+        account.generate_account_token()
+        account.save()
+    except IntegrityError:
+        generate_new_account_token(account)
