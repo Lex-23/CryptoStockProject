@@ -49,7 +49,6 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    # "notification.middleware.NotificationMiddleware",
 ]
 
 ROOT_URLCONF = "cryptostock.urls"
