@@ -1,3 +1,4 @@
+from django.db import transaction
 from notification.models import Consumer, ConsumerType
 from notification.serializers import FromTelegramDataSerializer
 from rest_framework import permissions, status
@@ -13,6 +14,7 @@ from utils.validators import validate_consumer_exists, validate_consumer_type
 class TelegramNotificationActivateApiView(APIView):
     permission_classes = [permissions.AllowAny]
 
+    @transaction.atomic
     def post(self, request):
         serializer = FromTelegramDataSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -23,6 +25,7 @@ class TelegramNotificationActivateApiView(APIView):
 
 
 class CreateConsumerApiView(APIView):
+    @transaction.atomic
     def post(self, request, consumer_type, **kwargs):
         account = request.user.account
         validate_consumer_type(consumer_type)

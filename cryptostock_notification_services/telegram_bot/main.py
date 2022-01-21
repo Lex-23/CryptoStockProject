@@ -31,9 +31,9 @@ async def start(message: types.Message):
             "chat_id": chat_id,
         }
         requests.post(TELEGRAM_NOTIFICATION_ACTIVATE_URL, data=payload)
-        logging.info("notification TURN ON")
+        logging.info("notification TURN ON in process")
         await message.reply(
-            "*Notifications* to telegram *turned ON*. Congratulation!",
+            "Activating notifications in process. Please wait success message",
             reply_markup=keyboard,
             parse_mode="Markdown",
         )

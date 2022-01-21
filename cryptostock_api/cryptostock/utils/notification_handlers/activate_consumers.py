@@ -1,6 +1,7 @@
 import os
 
 from account.models import Account
+from celery_tasks.general_notification_tasks import success_tg_notification_activate
 from notification.models import Consumer, ConsumerType
 from utils.api_view_assistants import generate_new_account_token
 
@@ -28,3 +29,6 @@ def join_tg_consumer_with_bot(account_token, tg_chat_id):
     consumer.save()
     account.reset_account_token()
     account.save()
+    success_tg_notification_activate.s(account.id).apply_async(
+        task_id=f"success_activate_tg_notification for acc: {account.id}"
+    )

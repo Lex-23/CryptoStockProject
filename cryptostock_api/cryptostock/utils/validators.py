@@ -74,4 +74,6 @@ def validate_consumer_type(consumer_type: str):
 
 def validate_consumer_exists(consumer_type: str, account):
     if account.consumers.filter(type=consumer_type):
-        raise ValidationError([f"consumer type {consumer_type} exists yet."])
+        raise ValidationError(
+            [f"consumer {consumer_type} have existed yet for your account."]
+        )
