@@ -30,13 +30,19 @@ async def start(message: types.Message):
             "account_token": arguments,
             "chat_id": chat_id,
         }
-        requests.post(TELEGRAM_NOTIFICATION_ACTIVATE_URL, data=payload)
+        response = requests.post(TELEGRAM_NOTIFICATION_ACTIVATE_URL, data=payload)
         logging.info("notification TURN ON in process")
         await message.reply(
-            "Activating notifications in process. Please wait success message",
+            "*Activating notifications in process*. Please wait success message",
             reply_markup=keyboard,
             parse_mode="Markdown",
         )
+        if response.status_code != 200:
+            await message.reply(
+                "*Activating notifications failure*. Please, try again or write to support.",
+                reply_markup=keyboard,
+                parse_mode="Markdown",
+            )
     else:
         await message.reply(
             "Welcome!\nClick *get chat id* for apply notifications for telegram, if you need.",
