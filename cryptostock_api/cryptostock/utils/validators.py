@@ -1,3 +1,4 @@
+from notification.models import ConsumerType
 from rest_framework.serializers import ValidationError
 
 
@@ -64,3 +65,15 @@ def get_validated_asset_from_market(asset_name, market):
             [f"asset {asset_name} not allow for market {market.name}."]
         )
     return asset
+
+
+def validate_consumer_type(consumer_type: str):
+    if consumer_type not in ConsumerType.__members__:
+        raise ValidationError([f"consumer type {consumer_type} not implemented."])
+
+
+def validate_consumer_exists(consumer_type: str, account):
+    if account.consumers.filter(type=consumer_type):
+        raise ValidationError(
+            [f"consumer {consumer_type} have existed yet for your account."]
+        )
