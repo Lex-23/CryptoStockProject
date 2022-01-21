@@ -21,4 +21,7 @@ CRYPTOSTOCK_EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
 CRYPTOSTOCK_EMAIL_HOST=smtp.gmail.com
 TELEGRAM_BOT_API_TOKEN=TOKEN
 CRYPTOSTOCK_NAME=CRYPTOSTOCK
+TELEGRAM_BOT_NAME=name_bot
+TELEGRAM_NOTIFICATION_ACTIVATE_URL=http://{DNS}/api/notifications/consumers/TELEGRAM/activate/
+VK_BOT_API_TOKEN=vk_token
 ```
