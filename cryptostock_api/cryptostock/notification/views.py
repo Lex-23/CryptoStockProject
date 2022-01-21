@@ -30,7 +30,7 @@ class CreateConsumerApiView(APIView):
         account = request.user.account
         validate_consumer_type(consumer_type)
         validate_consumer_exists(consumer_type, account)
-
+        breakpoint()
         Consumer.objects.create(account=account, type=ConsumerType(consumer_type))
-        data = CONSUMER_ACTIVATE_DATA[consumer_type](account)
+        data = CONSUMER_ACTIVATE_DATA[consumer_type](account, **request.data)
         return Response(data, status=status.HTTP_201_CREATED)
