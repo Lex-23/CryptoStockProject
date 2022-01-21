@@ -23,6 +23,7 @@ async def start(message: types.Message):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
     keyboard.add(*start_buttons)
     arguments = message.get_args()
+
     if arguments:
         chat_id = message.from_user.id
         payload = {
@@ -30,6 +31,7 @@ async def start(message: types.Message):
             "account_token": arguments,
             "chat_id": chat_id,
         }
+
         response = requests.post(TELEGRAM_NOTIFICATION_ACTIVATE_URL, data=payload)
         logging.info("notification TURN ON in process")
         await message.reply(
@@ -37,12 +39,14 @@ async def start(message: types.Message):
             reply_markup=keyboard,
             parse_mode="Markdown",
         )
+
         if response.status_code != 200:
             await message.reply(
                 "*Activating notifications failure*. Please, try again or write to support.",
                 reply_markup=keyboard,
                 parse_mode="Markdown",
             )
+
     else:
         await message.reply(
             "Welcome!\nClick *get chat id* for apply notifications for telegram, if you need.",
