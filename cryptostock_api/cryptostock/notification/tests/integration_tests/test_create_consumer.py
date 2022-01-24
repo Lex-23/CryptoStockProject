@@ -2,7 +2,7 @@ from notification.models import Consumer
 
 
 def test_create_email_consumer(broker_account, auth_broker):
-    expected_data = {"recipient": "liverpoolsmile23@gmail.com"}
+    expected_data = {"recipient": "test@mail.com"}
     response = auth_broker.post(
         "/api/notifications/consumers/EMAIL/", data=expected_data
     )
