@@ -1,4 +1,3 @@
-from django.core.validators import validate_email
 from notification.models import ConsumerType
 from rest_framework.serializers import ValidationError
 
@@ -85,10 +84,3 @@ def validate_recipient_exists(consumer, recipient):
         raise ValidationError(
             [f"recipient {recipient} has exists already for this consumer."]
         )
-
-
-def validate_recipient(recipient):
-    try:
-        validate_email(recipient)
-    except Exception:
-        raise ValidationError([f"recipient email {recipient} address not valid ."])
