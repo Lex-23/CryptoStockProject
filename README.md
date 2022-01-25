@@ -20,8 +20,10 @@ CRYPTOSTOCK_EMAIL_HOST_PASSWORD=password
 CRYPTOSTOCK_EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
 CRYPTOSTOCK_EMAIL_HOST=smtp.gmail.com
 TELEGRAM_BOT_API_TOKEN=tg_api_token
-CRYPTOSTOCK_NAME=CRYPTOSTOCK
 TELEGRAM_BOT_NAME=name_tg_bot
 TELEGRAM_NOTIFICATION_ACTIVATE_URL=http://{DNS}/api/notifications/consumers/TELEGRAM/activate/
+TELEGRAM_NOTIFICATION_ACTIVATE_URL=http://{DNS}/api/notifications/consumers/VK/activate/
 VK_BOT_API_TOKEN=vk_api_token
+VK_BOT_PUBLIC_NUMBER=public123456789 (Note: use only default number)
+CRYPTOSTOCK_NAME=CRYPTOSTOCK
 ```

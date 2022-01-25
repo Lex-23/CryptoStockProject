@@ -1,15 +1,14 @@
 from account.models import Account
 from celery import shared_task
-from notification.models import Consumer, ConsumerType
-from utils.notification_handlers.telegram_client import tg_notify
+from notification.models import SENDER, Consumer
 
 
-@shared_task
-def success_tg_notification_activate(account_id):
+@shared_task()
+def success_notification_activated(account_id, consumer_type: str):
     consumer = Consumer.objects.get(
-        account=Account.objects.get(id=account_id), type=ConsumerType.TELEGRAM
+        account=Account.objects.get(id=account_id), type=consumer_type
     )
-    tg_notify(
-        message="<b>Notifications</b> for telegram have been <b>activated</b> .",
+    SENDER[consumer_type](
+        message=f"Notifications for {consumer_type} have been activated.",
         context=consumer.data,
     )
