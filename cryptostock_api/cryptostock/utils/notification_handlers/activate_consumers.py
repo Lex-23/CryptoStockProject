@@ -28,6 +28,7 @@ def add_recipient(account, **kwargs):
     consumer = Consumer.objects.get(account=account, type=ConsumerType.EMAIL)
     consumer.data["recipient"] = [recipient]
     consumer.save()
+
     success_notification_activated.s(account.id, "EMAIL").apply_async(
         task_id=f"email consumer ON - account: {account.id}"
     )
