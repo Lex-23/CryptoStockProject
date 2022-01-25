@@ -45,7 +45,7 @@ CONSUMER_ACTIVATE_DATA = {
 @transaction.atomic
 def join_tg_consumer_with_bot(account, tg_chat_id):
     consumer = Consumer.objects.get(account=account, type=ConsumerType.TELEGRAM)
-    consumer.data["tg_chat_id"] = tg_chat_id
+    consumer.data["chat_id"] = tg_chat_id
     account.reset_account_token()
     consumer.save()
     account.save()
