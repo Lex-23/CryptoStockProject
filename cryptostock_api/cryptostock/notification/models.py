@@ -24,6 +24,15 @@ class NotificationType(ChoiceEnum):
     SUCCESS_OFFER = "SUCCESS_OFFER"
     SALESDASHBOARD_SOON_OVER = "SALESDASHBOARD_SOON_OVER"
     SALESDASHBOARD_IS_OVER = "SALESDASHBOARD_IS_OVER"
+    TARGET_ASSET_ON_SALESDASHBOAD = "TARGET_ASSET_ON_SALESDASHBOAD"
+    TARGET_ASSET_PRICE_ON_SALESDASHBOAD_HAS_DROPPED = (
+        "TARGET_ASSET_PRICE_ON_SALESDASHBOAD_HAS_DROPPED"
+    )
+    TARGET_ASSET_ON_MARKET = "TARGET_ASSET_ON_MARKET"
+    TARGET_ASSET_PRICE_ON_MARKET_HAS_DROPPED = (
+        "TARGET_ASSET_PRICE_ON_MARKET_HAS_DROPPED"
+    )
+    TARGET_ASSET_PRICE_ON_MARKET_HAS_RICED = "TARGET_ASSET_PRICE_ON_MARKET_HAS_DROPPED"
 
 
 SENDER = {
@@ -62,12 +71,17 @@ class NotificationSubscription(models.Model):
         max_length=50, choices=NotificationType.choices()
     )
     enable = models.BooleanField(default=True)
+    data = models.JSONField(default=dict, blank=True)
 
     def __str__(self):
         return self.notification_type
 
     class Meta:
         unique_together = ("account", "notification_type")
+
+    @classmethod
+    def get_all_enable_subscriptions_filter_by_type(cls, notification_type):
+        return cls.objects.filter(notification_type=notification_type, enable=True)
 
 
 class TemplaterRegister:

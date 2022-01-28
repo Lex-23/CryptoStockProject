@@ -2,10 +2,10 @@ from unittest.mock import call, patch
 
 import pytest
 from account.tests.factory import BrokerFactory, OfferFactory, SalesDashboardFactory
-from celery_tasks.broker_notification_tasks import notify
 from django.conf import settings
 from notification.models import ConsumerType, NotificationType, TemplaterRegister
 from notification.tests.factory import ConsumerFactory, NotificationSubscriptionFactory
+from utils.notification_handlers.common_services import notify
 from utils.notification_handlers.email_client import CRYPTOSTOCK_NAME
 
 
@@ -37,7 +37,7 @@ def test_telegram_notify_success(send_message, notification_type):
     account = salesdasboard.broker
 
     consumer = ConsumerFactory(
-        account=account, type=ConsumerType.TELEGRAM, data={"tg_chat_id": 0}
+        account=account, type=ConsumerType.TELEGRAM, data={"chat_id": 0}
     )
     notification_subscription = NotificationSubscriptionFactory(
         account=account, notification_type=notification_type
@@ -57,7 +57,7 @@ def test_telegram_notify_success(send_message, notification_type):
 
     assert send_message.called is True
     assert send_message.call_args == call(
-        consumer.data["tg_chat_id"], message, parse_mode="html"
+        consumer.data["chat_id"], message, parse_mode="html"
     )
 
 
@@ -148,7 +148,7 @@ def test_enable_consumer(
     ConsumerFactory(
         account=account,
         type=ConsumerType.TELEGRAM,
-        data={"tg_chat_id": 0},
+        data={"chat_id": 0},
         enable=email_consumer_enable,
     )
     notification_subscription = NotificationSubscriptionFactory(
