@@ -5,13 +5,13 @@ from utils.notification_handlers.common_services import notify
 
 
 @shared_task
-def async_notify(notification_type, account_id, **data):
+def async_notify_for_broker(notification_type, account_id, **data):
     return notify(notification_type, account_id, **data)
 
 
 def async_notify_success_offer(offer):
     transaction.on_commit(
-        lambda: async_notify.s(
+        lambda: async_notify_for_broker.s(
             notification_type=NotificationType.SUCCESS_OFFER,
             account_id=offer.broker.id,
             offer_id=offer.id,
@@ -21,7 +21,7 @@ def async_notify_success_offer(offer):
 
 def async_notify_salesdashboard_soon_over(offer, deal):
     transaction.on_commit(
-        lambda: async_notify.s(
+        lambda: async_notify_for_broker.s(
             notification_type=NotificationType.SALESDASHBOARD_SOON_OVER,
             account_id=offer.broker.id,
             salesdashboard_id=deal.id,
@@ -31,7 +31,7 @@ def async_notify_salesdashboard_soon_over(offer, deal):
 
 def async_notify_salesdashboard_is_over(broker, deal_id, asset_name):
     transaction.on_commit(
-        lambda: async_notify.s(
+        lambda: async_notify_for_broker.s(
             notification_type=NotificationType.SALESDASHBOARD_IS_OVER,
             account_id=broker.id,
             deal_id=deal_id,

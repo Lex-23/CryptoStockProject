@@ -24,15 +24,7 @@ class NotificationType(ChoiceEnum):
     SUCCESS_OFFER = "SUCCESS_OFFER"
     SALESDASHBOARD_SOON_OVER = "SALESDASHBOARD_SOON_OVER"
     SALESDASHBOARD_IS_OVER = "SALESDASHBOARD_IS_OVER"
-    TARGET_ASSET_ON_SALESDASHBOAD = "TARGET_ASSET_ON_SALESDASHBOAD"
-    TARGET_ASSET_PRICE_ON_SALESDASHBOAD_HAS_DROPPED = (
-        "TARGET_ASSET_PRICE_ON_SALESDASHBOAD_HAS_DROPPED"
-    )
-    TARGET_ASSET_ON_MARKET = "TARGET_ASSET_ON_MARKET"
-    TARGET_ASSET_PRICE_ON_MARKET_HAS_DROPPED = (
-        "TARGET_ASSET_PRICE_ON_MARKET_HAS_DROPPED"
-    )
-    TARGET_ASSET_PRICE_ON_MARKET_HAS_RICED = "TARGET_ASSET_PRICE_ON_MARKET_HAS_DROPPED"
+    NEW_SALESDASHBOARD = "NEW_SALESDASHBOARD"
 
 
 SENDER = {
@@ -138,6 +130,18 @@ class SalesDashboardIsOverTemplater:
     @staticmethod
     def render(data: Dict[str, Any], *args) -> Any:
         return f"Your sales dashboard #{data['deal_id']} with <b>{data['asset_name']} sold completely</b>."
+
+
+@TemplaterRegister.register(notification_type=NotificationType.NEW_SALESDASHBOARD)
+class UpdateAssetOnSalesDashboard:
+    @staticmethod
+    def render(data: Dict[str, Any], *args) -> Any:
+        sale = SalesDashboard.objects.get(id=data["sale_id"])
+        return (
+            f"We have <b>updates</b> for your tracked asset <b>{sale.asset.name}</b>.\n"
+            f"Info about new salesdashboard with <b>id: {sale.id}</b>:\n"
+            f"<b>price: {sale.price}</b>, <b>count: {sale.count}</b>."
+        )
 
 
 @TemplaterRegister.register(

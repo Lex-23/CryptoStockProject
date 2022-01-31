@@ -17,6 +17,7 @@ from utils.validators import (
 from wallet.models import WalletRecord
 
 
+@transaction.atomic
 def create_sale_object_serializer(count, price, asset, broker, **kwargs) -> dict:
     """
     Validate request, create and serialize new object of SalesDashboard
