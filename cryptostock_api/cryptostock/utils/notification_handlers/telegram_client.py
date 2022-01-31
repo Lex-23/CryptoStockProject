@@ -19,4 +19,4 @@ def executor_start(func):
 @executor_start
 async def tg_notify(message, context):
     # TODO: validate context
-    await bot.send_message(context["tg_chat_id"], message, parse_mode="html")
+    await bot.send_message(context["chat_id"], message, parse_mode="html")
