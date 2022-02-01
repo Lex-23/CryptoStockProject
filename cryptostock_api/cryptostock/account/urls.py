@@ -11,5 +11,3 @@ urlpatterns = [
     path("purchasedashboard/", views.PurchaseDashboardListApiView.as_view()),
     path("purchasedashboard/<int:pk>/", views.PurchaseDashboardApiView.as_view()),
 ]
-
-data = {"min_tracked_price": {"BTC": 12, "ETH": 11}}
