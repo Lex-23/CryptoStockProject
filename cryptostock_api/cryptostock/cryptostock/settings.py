@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django_celery_beat",
     "drf_yasg",
     "debug_toolbar",
     "rest_framework",
@@ -149,6 +150,7 @@ CELERY_RESULT_SERIALIZER = "json"
 CELERY_TASK_SERIALIZER = "json"
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TIMEZONE = os.environ["CRYPTOSTOCK_TIMEZONE"]
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 
 
 # email_server config
