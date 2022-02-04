@@ -9,7 +9,7 @@ from account.serializers import (
 from celery_tasks.client_notification_tasks import (
     async_notify_clients_update_on_salesdashboard,
 )
-from notification.models import NotificationType
+from notification.models import ClientNotificationType
 from rest_framework import status
 from rest_framework.generics import get_object_or_404
 from rest_framework.pagination import LimitOffsetPagination
@@ -47,10 +47,10 @@ class SalesListApiView(APIView, LimitOffsetPagination):
         )
 
         async_notify_clients_update_on_salesdashboard(
-            sale_data["id"], NotificationType.NEW_SALESDASHBOARD
+            sale_data["id"], ClientNotificationType.NEW_SALESDASHBOARD
         )
         async_notify_clients_update_on_salesdashboard(
-            sale_data["id"], NotificationType.ASSET_PRICE_HAS_BEEN_DROPPED
+            sale_data["id"], ClientNotificationType.ASSET_PRICE_HAS_BEEN_DROPPED
         )
 
         return Response(sale_data, status=status.HTTP_201_CREATED)
@@ -83,7 +83,7 @@ class SaleApiView(APIView):
         serializer.save()
 
         async_notify_clients_update_on_salesdashboard(
-            serializer.data["id"], NotificationType.ASSET_PRICE_HAS_BEEN_DROPPED
+            serializer.data["id"], ClientNotificationType.ASSET_PRICE_HAS_BEEN_DROPPED
         )
         return Response(serializer.data)
 

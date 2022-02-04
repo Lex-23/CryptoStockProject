@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Any, Dict
 
-from account.models import Account, Offer, SalesDashboard
+from account.models import Account, Broker, Client, Offer, SalesDashboard
 from django.db import models
 from utils.notification_handlers.email_client import email_notify
 from utils.notification_handlers.telegram_client import tg_notify
@@ -20,12 +20,26 @@ class ConsumerType(ChoiceEnum):
     VK = "VK"
 
 
-class NotificationType(ChoiceEnum):
+class BrokerNotificationType(ChoiceEnum):
     SUCCESS_OFFER = "SUCCESS_OFFER"
     SALESDASHBOARD_SOON_OVER = "SALESDASHBOARD_SOON_OVER"
     SALESDASHBOARD_IS_OVER = "SALESDASHBOARD_IS_OVER"
+    ASSET_APPEARED_ON_MARKET = "ASSET_APPEARED_ON_MARKET"
+    ASSET_PRICE_HAS_BEEN_DROPPED_ON_MARKET = "ASSET_PRICE_HAS_BEEN_DROPPED_ON_MARKET"
+    ASSET_PRICE_HAS_BEEN_RICED_ON_MARKET = "ASSET_PRICE_HAS_BEEN_RICED_ON_MARKET"
+
+
+class ClientNotificationType(ChoiceEnum):
     NEW_SALESDASHBOARD = "NEW_SALESDASHBOARD"
     ASSET_PRICE_HAS_BEEN_DROPPED = "ASSET_PRICE_HAS_BEEN_DROPPED"
+
+
+# When we created new schedule notification tasks - required add them to this list
+SCHEDULE_NOTIFICATION_TYPES = [
+    BrokerNotificationType.ASSET_APPEARED_ON_MARKET,
+    BrokerNotificationType.ASSET_PRICE_HAS_BEEN_DROPPED_ON_MARKET,
+    BrokerNotificationType.ASSET_PRICE_HAS_BEEN_RICED_ON_MARKET,
+]
 
 
 SENDER = {
@@ -60,9 +74,7 @@ class NotificationSubscription(models.Model):
     account = models.ForeignKey(
         Account, on_delete=models.CASCADE, related_name="notification_subscriptions"
     )
-    notification_type = models.CharField(
-        max_length=50, choices=NotificationType.choices()
-    )
+    notification_type = models.CharField(null=True, blank=True)
     enable = models.BooleanField(default=True)
     data = models.JSONField(default=dict, blank=True)
 
@@ -70,11 +82,30 @@ class NotificationSubscription(models.Model):
         return self.notification_type
 
     class Meta:
+        abstract = True
         unique_together = ("account", "notification_type")
 
     @classmethod
     def get_all_enable_subscriptions_filter_by_type(cls, notification_type):
         return cls.objects.filter(notification_type=notification_type, enable=True)
+
+
+class BrokerNotificationSubscription(NotificationSubscription):
+    account = models.ForeignKey(
+        Broker, on_delete=models.CASCADE, related_name="notification_subscriptions"
+    )
+    notification_type = models.CharField(
+        max_length=100, choices=BrokerNotificationType.choices()
+    )
+
+
+class ClientNotificationSubscription(NotificationSubscription):
+    account = models.ForeignKey(
+        Client, on_delete=models.CASCADE, related_name="notification_subscriptions"
+    )
+    notification_type = models.CharField(
+        max_length=100, choices=ClientNotificationType.choices()
+    )
 
 
 class TemplaterRegister:
@@ -103,7 +134,7 @@ class BaseTemplater:
         return f"Happened {notification_type} with info: {data}."
 
 
-@TemplaterRegister.register(notification_type=NotificationType.SUCCESS_OFFER)
+@TemplaterRegister.register(notification_type=BrokerNotificationType.SUCCESS_OFFER)
 class SuccessOfferTemplater:
     @staticmethod
     def render(data: Dict[str, Any], *args) -> Any:
@@ -115,7 +146,9 @@ class SuccessOfferTemplater:
         )
 
 
-@TemplaterRegister.register(notification_type=NotificationType.SALESDASHBOARD_SOON_OVER)
+@TemplaterRegister.register(
+    notification_type=BrokerNotificationType.SALESDASHBOARD_SOON_OVER
+)
 class SalesDashboardSoonOverTemplater:
     @staticmethod
     def render(data: Dict[str, Any], *args) -> Any:
@@ -126,14 +159,16 @@ class SalesDashboardSoonOverTemplater:
         )
 
 
-@TemplaterRegister.register(notification_type=NotificationType.SALESDASHBOARD_IS_OVER)
+@TemplaterRegister.register(
+    notification_type=BrokerNotificationType.SALESDASHBOARD_IS_OVER
+)
 class SalesDashboardIsOverTemplater:
     @staticmethod
     def render(data: Dict[str, Any], *args) -> Any:
         return f"Your sales dashboard #{data['deal_id']} with <b>{data['asset_name']} sold completely</b>."
 
 
-@TemplaterRegister.register(notification_type=NotificationType.NEW_SALESDASHBOARD)
+@TemplaterRegister.register(notification_type=ClientNotificationType.NEW_SALESDASHBOARD)
 class UpdateAssetOnSalesDashboard:
     @staticmethod
     def render(data: Dict[str, Any], *args) -> Any:
@@ -146,7 +181,7 @@ class UpdateAssetOnSalesDashboard:
 
 
 @TemplaterRegister.register(
-    notification_type=NotificationType.ASSET_PRICE_HAS_BEEN_DROPPED
+    notification_type=ClientNotificationType.ASSET_PRICE_HAS_BEEN_DROPPED
 )
 class PriceAssetHasBeenDropped:
     @staticmethod
@@ -160,7 +195,8 @@ class PriceAssetHasBeenDropped:
 
 
 @TemplaterRegister.register(
-    notification_type=NotificationType.SUCCESS_OFFER, consumer_type=ConsumerType.EMAIL
+    notification_type=BrokerNotificationType.SUCCESS_OFFER,
+    consumer_type=ConsumerType.EMAIL,
 )
 class SuccessOfferEmailTemplater:
     @staticmethod

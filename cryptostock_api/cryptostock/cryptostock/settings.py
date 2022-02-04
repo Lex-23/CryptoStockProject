@@ -142,7 +142,7 @@ STATIC_URL = "/static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# celery
+# celery config
 CELERY_BROKER_URL = os.environ["CRYPTOSTOCK_CELERY_BROKER_URL"]
 CELERY_RESULT_BACKEND = os.environ["CRYPTOSTOCK_CELERY_RESULT_BACKEND"]
 CELERY_ACCEPT_CONTENT = ["application/json"]
@@ -151,7 +151,6 @@ CELERY_TASK_SERIALIZER = "json"
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TIMEZONE = os.environ["CRYPTOSTOCK_TIMEZONE"]
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
-
 
 # email_server config
 EMAIL_BACKEND = os.environ["CRYPTOSTOCK_EMAIL_BACKEND"]
