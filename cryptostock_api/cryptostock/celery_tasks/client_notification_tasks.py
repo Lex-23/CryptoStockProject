@@ -30,7 +30,7 @@ def notify_scope_of_clients_asset_price_dropped(**data):
     )
     for notification_subscription in queryset:
         if sale.price <= decimal.Decimal(
-            notification_subscription.data["min_tracked_price"][sale.asset.name]
+            notification_subscription.data["tracked_price"][sale.asset.name]
         ):
             notify(notification_type, notification_subscription.account.id, **data)
 

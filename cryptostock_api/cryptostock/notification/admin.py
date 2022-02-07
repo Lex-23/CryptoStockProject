@@ -15,13 +15,14 @@ class ConsumerAdmin(admin.ModelAdmin):
 class NotificationSubscriptionAdmin(admin.ModelAdmin):
     fields = ("account", "enable", "notification_type", "data")
     list_display = ("id", "account", "enable", "notification_type", "data")
+    list_editable = ("enable",)
 
 
 @admin.register(BrokerNotificationSubscription)
-class BrokerNotificationSubscriptionAdmin(admin.ModelAdmin):
+class BrokerNotificationSubscriptionAdmin(NotificationSubscriptionAdmin):
     pass
 
 
 @admin.register(ClientNotificationSubscription)
-class ClientNotificationSubscriptionAdmin(admin.ModelAdmin):
+class ClientNotificationSubscriptionAdmin(NotificationSubscriptionAdmin):
     pass

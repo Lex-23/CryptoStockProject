@@ -35,7 +35,7 @@ class ClientNotificationType(ChoiceEnum):
 
 
 # When we created new schedule notification tasks - required add them to this list
-SCHEDULE_NOTIFICATION_TYPES = [
+SCHEDULE_MARKET_NOTIFICATION_TYPES = [
     BrokerNotificationType.ASSET_APPEARED_ON_MARKET,
     BrokerNotificationType.ASSET_PRICE_HAS_BEEN_DROPPED_ON_MARKET,
     BrokerNotificationType.ASSET_PRICE_HAS_BEEN_RICED_ON_MARKET,

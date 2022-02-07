@@ -1,5 +1,7 @@
 import os
 
+from account.models import Account
+from notification.models import BrokerNotificationType, ClientNotificationType
 from rest_framework import serializers
 
 ALLOWED_TELEGRAM_BOTS_NAMES = [os.environ["TELEGRAM_BOT_NAME"]]
@@ -28,3 +30,22 @@ class FromVKDataSerializer(serializers.Serializer):
 
 class CreateConsumerSerializer(serializers.Serializer):
     recipient = serializers.EmailField(required=False)
+
+
+class NotificationSubscriptionSerializer(serializers.Serializer):
+    queryset = Account.objects.all()
+
+    account = serializers.PrimaryKeyRelatedField(queryset=queryset, required=False)
+    notification_type = serializers.CharField()
+    enable = serializers.BooleanField(default=True, required=False)
+    data = serializers.JSONField(required=False, default={})
+
+    def validate_notification_type(self, value):
+        if (
+            value not in ClientNotificationType.__members__
+            or value not in BrokerNotificationType.__members__
+        ):
+            raise serializers.ValidationError(
+                f"{value} - unsupported notification type"
+            )
+        return value
