@@ -41,9 +41,9 @@ class NotificationSubscriptionSerializer(serializers.Serializer):
     data = serializers.JSONField(required=False, default={})
 
     def validate_notification_type(self, value):
-        if (
-            value not in ClientNotificationType.__members__
-            or value not in BrokerNotificationType.__members__
+        if not (
+            value in ClientNotificationType.__members__
+            or value in BrokerNotificationType.__members__
         ):
             raise serializers.ValidationError(
                 f"{value} - unsupported notification type"

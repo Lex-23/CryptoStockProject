@@ -1,5 +1,6 @@
 from account.models import Account
 from celery_tasks.general_notification_tasks import success_notification_activated
+from celery_tasks.schedule_tasks import create_periodic_task_broker
 from django.db import transaction
 from notification.models import (
     BrokerNotificationSubscription,
@@ -84,11 +85,15 @@ class NotificationSubscriptionListApiView(APIView):
     @transaction.atomic
     def post(self, request):
         serializer = NotificationSubscriptionSerializer(data=request.data)
+        breakpoint()
         serializer.is_valid(raise_exception=True)
 
         if request.auth["user_role"] == "broker":
             notification_sub = BrokerNotificationSubscription.objects.create(
                 account=request.user.account.broker, **serializer.data
+            )
+            create_periodic_task_broker(
+                notification_sub.notification_type, request.user.account.broker.id
             )
         else:
             notification_sub = ClientNotificationSubscription.objects.create(

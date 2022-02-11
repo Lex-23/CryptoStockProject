@@ -98,6 +98,12 @@ class BrokerNotificationSubscription(NotificationSubscription):
         max_length=100, choices=BrokerNotificationType.choices()
     )
 
+    @staticmethod
+    def get_all_enable_schedule_notification_subscriptions():
+        return BrokerNotificationSubscription.objects.filter(
+            notification_type__in=SCHEDULE_MARKET_NOTIFICATION_TYPES, enable=True
+        )
+
 
 class ClientNotificationSubscription(NotificationSubscription):
     account = models.ForeignKey(

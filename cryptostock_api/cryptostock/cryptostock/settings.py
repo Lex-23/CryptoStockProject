@@ -151,6 +151,7 @@ CELERY_TASK_SERIALIZER = "json"
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TIMEZONE = os.environ["CRYPTOSTOCK_TIMEZONE"]
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
+CELERY_IMPORTS = "celery_tasks.schedule_tasks"
 
 # email_server config
 EMAIL_BACKEND = os.environ["CRYPTOSTOCK_EMAIL_BACKEND"]

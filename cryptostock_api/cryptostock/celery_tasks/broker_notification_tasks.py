@@ -38,3 +38,15 @@ def async_notify_salesdashboard_is_over(broker, deal_id, asset_name):
             asset_name=asset_name,
         ).apply_async(task_id=f"salesdashboard_is_over notification: {deal_id}")
     )
+
+
+# def retrieve_assets_from_market():
+#     for market in Market.objects.all():
+#         market.kwargs['last_update_info'] = market.client.get_assets()
+#         market.save()
+#
+#
+# @shared_task(name='scan_markets')
+# def scan_markets():
+#     print(retrieve_assets_from_market)
+#     return retrieve_assets_from_market()
