@@ -137,6 +137,7 @@ class TemplaterRegister:
 class BaseTemplater:
     @staticmethod
     def render(data: Dict[str, Any], notification_type) -> Any:
+        print(f"DATA: {data}")
         return f"Happened {notification_type} with info: {data}."
 
 
@@ -150,6 +151,8 @@ class SuccessOfferTemplater:
             f"{offer.asset.name}\n</b>for total value: <b>{offer.total_value}</b> in {offer.timestamp.date()}.\n"
             f"Buyer email: {offer.client.owner.email}."
         )
+
+    {"assets_info": {"Yahoo": {"BTC": "42105.08"}, "Yahoo1": {"BTC": "42105.08"}}}
 
 
 @TemplaterRegister.register(
@@ -198,6 +201,20 @@ class PriceAssetHasBeenDropped:
             f"Info: salesdashboard with <b>id: {sale.id}</b>:\n"
             f"<b>price: {sale.price}</b>, <b>count: {sale.count}</b>."
         )
+
+
+@TemplaterRegister.register(
+    notification_type=BrokerNotificationType.ASSET_APPEARED_ON_MARKET
+)
+class AssetAppearedOnMarket:
+    @staticmethod
+    def render(data: Dict[str, Any], *args) -> Any:
+        assets_info = data.get("assets_info")
+        result_list = []
+        for market, assets in assets_info.items():
+            for name, price in assets.items():
+                result_list.append(f"- <b>{market}</b> - {name}: <b>{price}</b>. \n")
+        return f"We have update info about assets from markets for you:\n{''.join(result_list)}"
 
 
 @TemplaterRegister.register(

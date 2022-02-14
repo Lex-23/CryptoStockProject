@@ -1,3 +1,5 @@
+import json
+
 from celery import shared_task
 from django.db import transaction
 from django.utils import timezone
@@ -13,7 +15,7 @@ def retrieve_assets_from_market():
         market.save()
 
 
-@shared_task
+@shared_task(name="celery_tasks.schedule_tasks.scan_markets")
 def scan_markets():
     return retrieve_assets_from_market()
 
@@ -43,12 +45,12 @@ def notify_broker_asset_on_market(broker_id, sub_id):
         )
 
 
-@shared_task
+@shared_task(name="async_notify_broker_asset_on_market")
 def async_notify_broker_asset_on_market(broker_id, sub_id):
     return notify_broker_asset_on_market(broker_id, sub_id)
 
 
-@shared_task(name="periodic_notify_broker_asset_on_market")
+@shared_task(name="celery_tasks.schedule_tasks.periodic_notify_broker_asset_on_market")
 def periodic_notify_broker_asset_on_market(broker_id, sub_id):
     transaction.on_commit(
         lambda: async_notify_broker_asset_on_market.s(broker_id, sub_id).apply_async(
@@ -58,14 +60,15 @@ def periodic_notify_broker_asset_on_market(broker_id, sub_id):
 
 
 PERIODIC_TASKS = {
-    BrokerNotificationType.ASSET_APPEARED_ON_MARKET: periodic_notify_broker_asset_on_market
+    BrokerNotificationType.ASSET_APPEARED_ON_MARKET: "celery_tasks.schedule_tasks.periodic_notify_broker_asset_on_market"
 }
 
 
-def create_periodic_task_broker(notification_type, broker_id):
+def create_periodic_task_broker(notification_type, broker_id, sub_id):
     PeriodicTask.objects.create(
         name=f"Periodic notify broker {broker_id} for {notification_type}",
-        task=f"{PERIODIC_TASKS[notification_type]}",
-        interval=IntervalSchedule.objects.get(every=12, period="hours"),
+        task=PERIODIC_TASKS[notification_type],
+        interval=IntervalSchedule.objects.get(every=1, period="minutes"),
         start_time=timezone.now(),
+        args=json.dumps([broker_id, sub_id]),
     )

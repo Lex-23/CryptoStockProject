@@ -1,9 +1,13 @@
-from account.models import Account
+from account.models import Account, Broker, Client
 from notification.models import TemplaterRegister
 
 
 def notify(notification_type, account_id, **data):
     account = Account.objects.get(id=account_id)
+    if account.role == "broker":
+        account = Broker.objects.get(id=account_id)
+    else:
+        account = Client.objects.get(id=account_id)
     if notification_type in account.enabled_notification_types:
         for consumer in account.enabled_consumers:
             templater = TemplaterRegister.get(notification_type, consumer.type)

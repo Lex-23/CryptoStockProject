@@ -93,7 +93,9 @@ class NotificationSubscriptionListApiView(APIView):
                 account=request.user.account.broker, **serializer.data
             )
             create_periodic_task_broker(
-                notification_sub.notification_type, request.user.account.broker.id
+                notification_sub.notification_type,
+                request.user.account.broker.id,
+                notification_sub.id,
             )
         else:
             notification_sub = ClientNotificationSubscription.objects.create(
