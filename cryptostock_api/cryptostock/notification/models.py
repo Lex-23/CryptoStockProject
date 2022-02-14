@@ -211,7 +211,7 @@ class AssetAppearedOnMarket:
         result_list = []
         for market, assets in assets_info.items():
             for name, price in assets.items():
-                result_list.append(f"- <b>{market}</b> - {name}: <b>{price}</b>. \n")
+                result_list.append(f"<b>{market}</b> - {name}: <b>{price}</b>. \n")
         return f"We have update info about assets from markets for you:\n{''.join(result_list)}"
 
 
