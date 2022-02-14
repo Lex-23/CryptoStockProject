@@ -24,6 +24,8 @@ class NotificationType(ChoiceEnum):
     SUCCESS_OFFER = "SUCCESS_OFFER"
     SALESDASHBOARD_SOON_OVER = "SALESDASHBOARD_SOON_OVER"
     SALESDASHBOARD_IS_OVER = "SALESDASHBOARD_IS_OVER"
+    NEW_SALESDASHBOARD = "NEW_SALESDASHBOARD"
+    ASSET_PRICE_HAS_BEEN_DROPPED = "ASSET_PRICE_HAS_BEEN_DROPPED"
 
 
 SENDER = {
@@ -62,12 +64,17 @@ class NotificationSubscription(models.Model):
         max_length=50, choices=NotificationType.choices()
     )
     enable = models.BooleanField(default=True)
+    data = models.JSONField(default=dict, blank=True)
 
     def __str__(self):
         return self.notification_type
 
     class Meta:
         unique_together = ("account", "notification_type")
+
+    @classmethod
+    def get_all_enable_subscriptions_filter_by_type(cls, notification_type):
+        return cls.objects.filter(notification_type=notification_type, enable=True)
 
 
 class TemplaterRegister:
@@ -124,6 +131,32 @@ class SalesDashboardIsOverTemplater:
     @staticmethod
     def render(data: Dict[str, Any], *args) -> Any:
         return f"Your sales dashboard #{data['deal_id']} with <b>{data['asset_name']} sold completely</b>."
+
+
+@TemplaterRegister.register(notification_type=NotificationType.NEW_SALESDASHBOARD)
+class UpdateAssetOnSalesDashboard:
+    @staticmethod
+    def render(data: Dict[str, Any], *args) -> Any:
+        sale = SalesDashboard.objects.get(id=data["sale_id"])
+        return (
+            f"We have <b>updates</b> for your tracked asset <b>{sale.asset.name}</b>.\n"
+            f"Info about new salesdashboard with <b>id: {sale.id}</b>:\n"
+            f"<b>price: {sale.price}</b>, <b>count: {sale.count}</b>."
+        )
+
+
+@TemplaterRegister.register(
+    notification_type=NotificationType.ASSET_PRICE_HAS_BEEN_DROPPED
+)
+class PriceAssetHasBeenDropped:
+    @staticmethod
+    def render(data: Dict[str, Any], *args) -> Any:
+        sale = SalesDashboard.objects.get(id=data["sale_id"])
+        return (
+            f"We have asset <b>{sale.asset.name}</b> which price has been dropped.\n"
+            f"Info: salesdashboard with <b>id: {sale.id}</b>:\n"
+            f"<b>price: {sale.price}</b>, <b>count: {sale.count}</b>."
+        )
 
 
 @TemplaterRegister.register(

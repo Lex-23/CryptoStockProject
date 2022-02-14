@@ -10,5 +10,5 @@ class ConsumerAdmin(admin.ModelAdmin):
 
 @admin.register(NotificationSubscription)
 class NotificationSubscriptionAdmin(admin.ModelAdmin):
-    fields = ("account", "enable", "notification_type")
-    list_display = ("id", "account", "enable", "notification_type")
+    fields = ("account", "enable", "notification_type", "data")
+    list_display = ("id", "account", "enable", "notification_type", "data")
