@@ -152,8 +152,6 @@ class SuccessOfferTemplater:
             f"Buyer email: {offer.client.owner.email}."
         )
 
-    {"assets_info": {"Yahoo": {"BTC": "42105.08"}, "Yahoo1": {"BTC": "42105.08"}}}
-
 
 @TemplaterRegister.register(
     notification_type=BrokerNotificationType.SALESDASHBOARD_SOON_OVER
