@@ -7,6 +7,7 @@ from django_celery_beat.models import IntervalSchedule, PeriodicTask
 from market.models import Market
 from notification.models import BrokerNotificationSubscription, BrokerNotificationType
 from utils.notification_handlers.common_services import notify
+from utils.notification_handlers.market_info_parser import MarketInfoParser
 
 
 def retrieve_assets_from_market():
@@ -36,7 +37,10 @@ def parse_market_for_assets(asset_list: list):
 def notify_broker_asset_on_market(broker_id, sub_id):
     sub = BrokerNotificationSubscription.objects.get(id=sub_id)
     asset_list = sub.data["tracked_assets"]
-    assets_info = parse_market_for_assets(asset_list)
+
+    parser = MarketInfoParser()
+    parser.get_assets_by_list(asset_list)
+    assets_info = parser.get_info_not_null
     if assets_info:
         notify(
             notification_type=BrokerNotificationType.ASSET_APPEARED_ON_MARKET,
