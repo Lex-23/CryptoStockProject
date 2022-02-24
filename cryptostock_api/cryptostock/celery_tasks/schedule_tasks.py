@@ -50,7 +50,7 @@ def notify_broker_asset_has_been_dropped_on_market(broker_id, sub_id):
         )
 
 
-def notify_broker_asset_has_been_riced_on_market(broker_id, sub_id):
+def notify_broker_asset_has_been_raised_on_market(broker_id, sub_id):
     sub = BrokerNotificationSubscription.objects.get(id=sub_id)
     asset_dict = sub.data["max_asset_price"]
 
@@ -58,7 +58,7 @@ def notify_broker_asset_has_been_riced_on_market(broker_id, sub_id):
     assets_info = parser.get_assets_by_dict(asset_dict, key="max_asset_price")
     if assets_info:
         notify(
-            notification_type=BrokerNotificationType.ASSET_PRICE_HAS_BEEN_RICED_ON_MARKET,
+            notification_type=BrokerNotificationType.ASSET_PRICE_HAS_BEEN_RAISED_ON_MARKET,
             account_id=broker_id,
             assets_info=assets_info,
         )
@@ -74,9 +74,9 @@ def async_notify_broker_asset_has_been_dropped_on_market(broker_id, sub_id):
     return notify_broker_asset_has_been_dropped_on_market(broker_id, sub_id)
 
 
-@shared_task(name="async_notify_broker_asset_has_been_riced_on_market")
-def async_notify_broker_asset_has_been_riced_on_market(broker_id, sub_id):
-    return notify_broker_asset_has_been_riced_on_market(broker_id, sub_id)
+@shared_task(name="async_notify_broker_asset_has_been_raised_on_market")
+def async_notify_broker_asset_has_been_raised_on_market(broker_id, sub_id):
+    return notify_broker_asset_has_been_raised_on_market(broker_id, sub_id)
 
 
 @shared_task(
@@ -104,14 +104,14 @@ def periodic_notify_broker_asset_has_been_dropped_on_market(broker_id, sub_id):
 
 
 @shared_task(
-    name="celery_tasks.schedule_tasks.periodic_notify_broker_asset_has_been_riced_on_market"
+    name="celery_tasks.schedule_tasks.periodic_notify_broker_asset_has_been_raised_on_market"
 )
-def periodic_notify_broker_asset_has_been_riced_on_market(broker_id, sub_id):
+def periodic_notify_broker_asset_has_been_raised_on_market(broker_id, sub_id):
     transaction.on_commit(
-        lambda: async_notify_broker_asset_has_been_riced_on_market.s(
+        lambda: async_notify_broker_asset_has_been_raised_on_market.s(
             broker_id, sub_id
         ).apply_async(
-            task_id=f"notify broker {broker_id} - asset has been riced on market"
+            task_id=f"notify broker {broker_id} - asset has been raised on market"
         )
     )
 
@@ -121,8 +121,8 @@ PERIODIC_TASKS = {
         "celery_tasks.schedule_tasks.periodic_notify_broker_asset_appeared_on_market",
     BrokerNotificationType.ASSET_PRICE_HAS_BEEN_DROPPED_ON_MARKET:
         "celery_tasks.schedule_tasks.periodic_notify_broker_asset_has_been_dropped_on_market",
-    BrokerNotificationType.ASSET_PRICE_HAS_BEEN_RICED_ON_MARKET:
-        "celery_tasks.schedule_tasks.periodic_notify_broker_asset_has_been_riced_on_market",
+    BrokerNotificationType.ASSET_PRICE_HAS_BEEN_RAISED_ON_MARKET:
+        "celery_tasks.schedule_tasks.periodic_notify_broker_asset_has_been_raised_on_market",
 }
 
 

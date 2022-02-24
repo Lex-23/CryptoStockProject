@@ -26,7 +26,7 @@ class BrokerNotificationType(ChoiceEnum):
     SALESDASHBOARD_IS_OVER = "SALESDASHBOARD_IS_OVER"
     ASSET_APPEARED_ON_MARKET = "ASSET_APPEARED_ON_MARKET"
     ASSET_PRICE_HAS_BEEN_DROPPED_ON_MARKET = "ASSET_PRICE_HAS_BEEN_DROPPED_ON_MARKET"
-    ASSET_PRICE_HAS_BEEN_RICED_ON_MARKET = "ASSET_PRICE_HAS_BEEN_RICED_ON_MARKET"
+    ASSET_PRICE_HAS_BEEN_RAISED_ON_MARKET = "ASSET_PRICE_HAS_BEEN_RAISED_ON_MARKET"
 
 
 class ClientNotificationType(ChoiceEnum):
@@ -38,7 +38,7 @@ class ClientNotificationType(ChoiceEnum):
 SCHEDULE_MARKET_NOTIFICATION_TYPES = [
     BrokerNotificationType.ASSET_APPEARED_ON_MARKET,
     BrokerNotificationType.ASSET_PRICE_HAS_BEEN_DROPPED_ON_MARKET,
-    BrokerNotificationType.ASSET_PRICE_HAS_BEEN_RICED_ON_MARKET,
+    BrokerNotificationType.ASSET_PRICE_HAS_BEEN_RAISED_ON_MARKET,
 ]
 
 
@@ -202,7 +202,7 @@ class PriceAssetHasBeenDropped:
 
 
 @TemplaterRegister.register(
-    notification_type=BrokerNotificationType.ASSET_PRICE_HAS_BEEN_RICED_ON_MARKET
+    notification_type=BrokerNotificationType.ASSET_PRICE_HAS_BEEN_RAISED_ON_MARKET
 )
 @TemplaterRegister.register(
     notification_type=BrokerNotificationType.ASSET_PRICE_HAS_BEEN_DROPPED_ON_MARKET
