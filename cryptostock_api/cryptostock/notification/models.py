@@ -202,17 +202,26 @@ class PriceAssetHasBeenDropped:
 
 
 @TemplaterRegister.register(
+    notification_type=BrokerNotificationType.ASSET_PRICE_HAS_BEEN_RICED_ON_MARKET
+)
+@TemplaterRegister.register(
+    notification_type=BrokerNotificationType.ASSET_PRICE_HAS_BEEN_DROPPED_ON_MARKET
+)
+@TemplaterRegister.register(
     notification_type=BrokerNotificationType.ASSET_APPEARED_ON_MARKET
 )
 class AssetAppearedOnMarket:
     @staticmethod
-    def render(data: Dict[str, Any], *args) -> Any:
+    def render(data: Dict[str, Any], notification_type) -> Any:
         assets_info = data.get("assets_info")
         result_list = []
         for market, assets in assets_info.items():
             for name, price in assets.items():
                 result_list.append(f"<b>{market}</b> - {name}: <b>{price}</b>. \n")
-        return f"We have update info about assets from markets for you:\n{''.join(result_list)}"
+        return (
+            f"We have update info about assets from markets for you:\n{''.join(result_list)}"
+            f"event: {notification_type}"
+        )
 
 
 @TemplaterRegister.register(

@@ -85,7 +85,6 @@ class NotificationSubscriptionListApiView(APIView):
     @transaction.atomic
     def post(self, request):
         serializer = NotificationSubscriptionSerializer(data=request.data)
-        breakpoint()
         serializer.is_valid(raise_exception=True)
 
         if request.auth["user_role"] == "broker":

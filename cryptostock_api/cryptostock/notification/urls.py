@@ -1,5 +1,5 @@
 from django.urls import path
-from notification.views import (  # NotificationSubscriptionApiView
+from notification.views import (
     CreateConsumerApiView,
     NotificationSubscriptionListApiView,
     TelegramNotificationActivateApiView,
@@ -18,7 +18,4 @@ urlpatterns = [
         "notifications/consumers/VK/activate/", VKNotificationActivateApiView.as_view()
     ),
     path("notifications/subscriptions/", NotificationSubscriptionListApiView.as_view()),
-    # path(
-    #     "notifications/subscriptions/<int:pk>/", NotificationSubscriptionApiView.as_view()
-    # ),
 ]
