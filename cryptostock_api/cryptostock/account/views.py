@@ -83,7 +83,7 @@ class SaleApiView(APIView):
         serializer.save()
 
         async_notify_clients_update_on_salesdashboard(
-            serializer.data["id"], ClientNotificationType.ASSET_PRICE_HAS_BEEN_DROPPED
+           serializer.data["id"], ClientNotificationType.ASSET_PRICE_HAS_BEEN_DROPPED
         )
         return Response(serializer.data)
 
