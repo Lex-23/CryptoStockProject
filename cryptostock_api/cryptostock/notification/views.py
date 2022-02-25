@@ -1,6 +1,8 @@
 from account.models import Account
 from celery_tasks.general_notification_tasks import success_notification_activated
-from celery_tasks.schedule_tasks import create_periodic_task_broker
+from celery_tasks.periodic_broker_notification_handlers import (
+    create_periodic_task_broker,
+)
 from django.db import transaction
 from notification.models import (
     BrokerNotificationSubscription,

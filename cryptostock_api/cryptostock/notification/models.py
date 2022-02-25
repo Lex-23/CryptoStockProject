@@ -86,7 +86,7 @@ class NotificationSubscription(models.Model):
         unique_together = ("account", "notification_type")
 
     @classmethod
-    def get_all_enable_subscriptions_filter_by_type(cls, notification_type):
+    def get_all_enable_subscriptions_by_type(cls, notification_type):
         return cls.objects.filter(notification_type=notification_type, enable=True)
 
 
@@ -137,7 +137,6 @@ class TemplaterRegister:
 class BaseTemplater:
     @staticmethod
     def render(data: Dict[str, Any], notification_type) -> Any:
-        print(f"DATA: {data}")
         return f"Happened {notification_type} with info: {data}."
 
 
@@ -214,10 +213,11 @@ class AssetAppearedOnMarket:
     @staticmethod
     def render(data: Dict[str, Any], notification_type) -> Any:
         assets_info = data.get("assets_info")
-        result_list = []
-        for market, assets in assets_info.items():
-            for name, price in assets.items():
-                result_list.append(f"<b>{market}</b> - {name}: <b>{price}</b>. \n")
+        result_list = [
+            f"<b>{market}</b> - {name}: <b>{price}</b>. \n"
+            for market, assets in assets_info.items()
+            for name, price in assets.items()
+        ]
         return (
             f"We have update info about assets from markets for you:\n{''.join(result_list)}"
             f"event: {notification_type}"

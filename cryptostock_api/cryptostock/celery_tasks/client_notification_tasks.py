@@ -10,9 +10,10 @@ from utils.notification_handlers.common_services import notify
 def notify_scope_of_clients_new_salesdashboard(**data):
     notification_type = ClientNotificationType.NEW_SALESDASHBOARD
     sale = SalesDashboard.objects.get(id=data["sale_id"])
-    filter_queryset = ClientNotificationSubscription.get_all_enable_subscriptions_filter_by_type(
+    subscriptions = ClientNotificationSubscription.get_all_enable_subscriptions_by_type(
         notification_type
-    ).filter(
+    )
+    filter_queryset = subscriptions.filter(
         data__tracked_assets__contains=sale.asset.name
     )
     for notification_subscription in filter_queryset:
@@ -22,9 +23,10 @@ def notify_scope_of_clients_new_salesdashboard(**data):
 def notify_scope_of_clients_asset_price_dropped(**data):
     notification_type = ClientNotificationType.ASSET_PRICE_HAS_BEEN_DROPPED
     sale = SalesDashboard.objects.get(id=data["sale_id"])
-    filter_queryset = ClientNotificationSubscription.get_all_enable_subscriptions_filter_by_type(
+    subscriptions = ClientNotificationSubscription.get_all_enable_subscriptions_by_type(
         notification_type
-    ).filter(
+    )
+    filter_queryset = subscriptions.filter(
         data__min_tracked_price__has_key=sale.asset.name
     )
     for notification_subscription in filter_queryset:
