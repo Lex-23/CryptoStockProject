@@ -9,7 +9,9 @@ install-poetry:
 
 .PHONY: export-requirements
 export-requirements:
-	cd ../$(PROJECT_DIR) && poetry export -f requirements.txt --output requirements.txt --dev --without-hashes && mv requirements.txt $(CODE_DIR)/
+	cd ../$(PROJECT_DIR) && \
+		poetry export -f requirements.txt --output requirements.txt --dev --without-hashes && \
+		mv requirements.txt $(CODE_DIR)/
 
 .PHONY: container_up
 container_up:
