@@ -1,7 +1,7 @@
 PROJECT_DIR = cryptostock_api
 CODE_DIR = cryptostock
 
-all: | install-poetry export-requirements container_up
+all: | install-poetry export-requirements containers-up
 
 .PHONY: install-poetry
 install-poetry:
