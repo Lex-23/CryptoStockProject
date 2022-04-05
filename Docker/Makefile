@@ -13,6 +13,6 @@ export-requirements:
 		poetry export -f requirements.txt --output requirements.txt --dev --without-hashes && \
 		mv requirements.txt $(CODE_DIR)/
 
-.PHONY: container_up
-container_up:
+.PHONY: containers-up
+containers-up:
 	docker-compose up
