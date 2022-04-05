@@ -17,20 +17,34 @@ services:
 
   be:
     build: ../cryptostock_api/cryptostock/
-    command: python3 manage.py runserver 0.0.0.0:8000
-    ports:
-      - "8000:8000"
     env_file:
       - docker.dev.env
+    command: python3 manage.py collectstatic --noinput
+    restart: on-failure
     depends_on:
       - db
+    volumes:
+      - static_volume:/home/code/staticfiles
+
+  gunicorn:
+    build: ../cryptostock_api/cryptostock/
+    env_file:
+      - docker.dev.env
+    command: gunicorn -b 0.0.0.0:8000 cryptostock.wsgi:application
+    ports:
+      - "8000:8000"
+    restart: always
+    depends_on:
+      - be
+    volumes:
+      - static_volume:/home/code/staticfiles
 
   celery:
     build: ../cryptostock_api/cryptostock/
-    restart: always
-    command: celery -A cryptostock worker -l info
     env_file:
       - docker.dev.env
+    restart: always
+    command: celery -A cryptostock worker -l info
     links:
       - redis:redis
     depends_on:
@@ -39,3 +53,4 @@ services:
 
 volumes:
   db_store:
+  static_volume:
