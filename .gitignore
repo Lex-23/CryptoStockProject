@@ -134,4 +134,5 @@ media/
 *.env
 
 staticfiles/
-requirements.txt/
+
+requirements.txt
