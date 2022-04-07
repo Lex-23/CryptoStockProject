@@ -45,8 +45,6 @@ services:
       - docker.dev.env
     restart: always
     command: celery -A cryptostock worker -l info
-    links:
-      - redis:redis
     depends_on:
       - redis
       - be
