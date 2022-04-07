@@ -15,12 +15,14 @@ services:
     ports:
       - "6379:6379"
 
-  be:
+  be_build:
     build: ../cryptostock_api/cryptostock/
     env_file:
       - docker.dev.env
-    command: python3 manage.py collectstatic --noinput
-    restart: on-failure
+    command: >
+        bash -c "python3 manage.py makemigrations &&
+        python3 manage.py migrate &&
+        python3 manage.py collectstatic --noinput"
     depends_on:
       - db
     volumes:
@@ -35,7 +37,8 @@ services:
       - "8000:8000"
     restart: always
     depends_on:
-      - be
+      - db
+      - be_build
     volumes:
       - static_volume:/home/code/staticfiles
 
@@ -47,7 +50,7 @@ services:
     command: celery -A cryptostock worker -l info
     depends_on:
       - redis
-      - be
+      - be_build
 
 volumes:
   db_store:
