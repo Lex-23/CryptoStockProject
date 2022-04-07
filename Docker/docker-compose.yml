@@ -31,8 +31,6 @@ services:
     command: celery -A cryptostock worker -l info
     env_file:
       - docker.dev.env
-    links:
-      - redis:redis
     depends_on:
       - redis
       - be
