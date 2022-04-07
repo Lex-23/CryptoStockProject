@@ -15,21 +15,8 @@ services:
     ports:
       - "6379:6379"
 
-  be_build:
-    build: ../cryptostock_api/cryptostock/
-    env_file:
-      - docker.dev.env
-    command: >
-        bash -c "python3 manage.py makemigrations &&
-        python3 manage.py migrate &&
-        python3 manage.py collectstatic --noinput"
-    depends_on:
-      - db
-    volumes:
-      - static_volume:/home/code/staticfiles
-
-  gunicorn:
-    build: ../cryptostock_api/cryptostock/
+  be:
+    image: be_build:latest
     env_file:
       - docker.dev.env
     command: gunicorn -b 0.0.0.0:8000 cryptostock.wsgi:application
@@ -38,7 +25,6 @@ services:
     restart: always
     depends_on:
       - db
-      - be_build
     volumes:
       - static_volume:/home/code/staticfiles
 
@@ -50,7 +36,6 @@ services:
     command: celery -A cryptostock worker -l info
     depends_on:
       - redis
-      - be_build
 
 volumes:
   db_store:
