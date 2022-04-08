@@ -47,7 +47,6 @@ services:
     command: python3 -m telegram_bot
     depends_on:
       - redis
-      - be
 
   vk_bot:
     build: ../cryptostock_notification_services
