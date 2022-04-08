@@ -37,6 +37,28 @@ services:
     depends_on:
       - redis
 
+  telegram_bot:
+    build: ../cryptostock_notification_services
+    ports:
+      - "8020:8020"
+    env_file:
+      - docker.dev.env
+    restart: always
+    command: python3 -m telegram_bot
+    depends_on:
+      - redis
+
+  vk_bot:
+    build: ../cryptostock_notification_services
+    ports:
+      - "8030:8030"
+    env_file:
+      - docker.dev.env
+    restart: always
+    command: python3 -m vk_bot
+    depends_on:
+      - be
+
 volumes:
   db_store:
   static_volume:

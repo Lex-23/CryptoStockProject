@@ -4,8 +4,14 @@ from functools import wraps
 from aiogram import Bot, Dispatcher, executor
 from aiogram.contrib.fsm_storage.redis import RedisStorage2
 
+TELEGRAM_STORAGE_HOST = os.environ["TELEGRAM_STORAGE_HOST"]
+TELEGRAM_STORAGE_PORT = os.environ["TELEGRAM_STORAGE_PORT"]
+
 bot = Bot(token=os.getenv("TELEGRAM_BOT_API_TOKEN"))
-dispatcher = Dispatcher(bot, storage=RedisStorage2())
+dispatcher = Dispatcher(
+    bot,
+    storage=RedisStorage2(host=TELEGRAM_STORAGE_HOST, port=int(TELEGRAM_STORAGE_PORT)),
+)
 
 
 def executor_start(func):
