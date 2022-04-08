@@ -1,5 +1,6 @@
 import debug_toolbar
 from django.contrib import admin
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import include, path, re_path
 from utils import jwt_views
 from utils.swagger_views import schema_view
@@ -26,3 +27,5 @@ urlpatterns = [
     path("swagger/", schema_view.with_ui("swagger"), name="schema-swagger-ui"),
     path("redoc/", schema_view.with_ui("redoc"), name="schema-redoc"),
 ]
+
+urlpatterns += staticfiles_urlpatterns()
