@@ -8,13 +8,15 @@ from aiogram.dispatcher.filters import Text
 
 logging.basicConfig(level=logging.INFO)
 
-storage = RedisStorage2()
+TELEGRAM_STORAGE_HOST = os.environ["TELEGRAM_STORAGE_HOST"]
+TELEGRAM_STORAGE_PORT = os.environ["TELEGRAM_STORAGE_PORT"]
+TELEGRAM_BOT_NAME = os.environ["TELEGRAM_BOT_NAME"]
+TELEGRAM_NOTIFICATION_ACTIVATE_URL = os.environ["TELEGRAM_NOTIFICATION_ACTIVATE_URL"]
+
+storage = RedisStorage2(host=TELEGRAM_STORAGE_HOST, port=int(TELEGRAM_STORAGE_PORT))
 
 bot = Bot(token=os.getenv("TELEGRAM_BOT_API_TOKEN"))
 dp = Dispatcher(bot, storage=storage)
-
-TELEGRAM_BOT_NAME = os.environ["TELEGRAM_BOT_NAME"]
-TELEGRAM_NOTIFICATION_ACTIVATE_URL = os.environ["TELEGRAM_NOTIFICATION_ACTIVATE_URL"]
 
 
 @dp.message_handler(commands=["start"])
@@ -33,6 +35,7 @@ async def start(message: types.Message):
         }
 
         response = requests.post(TELEGRAM_NOTIFICATION_ACTIVATE_URL, data=payload)
+
         logging.info("notification TURN ON in process")
         await message.reply(
             "*Activating notifications in process*. Please wait success message",
@@ -41,6 +44,7 @@ async def start(message: types.Message):
         )
 
         if response.status_code != 200:
+            logging.warning(f"BAD RESPONSE: {response.json()}")
             await message.reply(
                 "*Activating notifications failure*. Please, try again or write to support.",
                 reply_markup=keyboard,
