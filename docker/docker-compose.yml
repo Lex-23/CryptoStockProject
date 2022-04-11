@@ -59,6 +59,16 @@ services:
     depends_on:
       - be
 
+  nginx:
+    build: ./nginx
+    ports:
+      - "80:80"
+    restart: always
+    depends_on:
+      - be
+    volumes:
+      - static_volume:/home/code/staticfiles
+
 volumes:
   db_store:
   static_volume:
