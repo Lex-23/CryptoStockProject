@@ -3,39 +3,42 @@ import decimal
 from account.models import SalesDashboard
 from celery import shared_task
 from django.db import transaction
-from notification.models import NotificationSubscription, NotificationType
+from notification.models import ClientNotificationSubscription, ClientNotificationType
 from utils.notification_handlers.common_services import notify
 
 
 def notify_scope_of_clients_new_salesdashboard(**data):
-    notification_type = NotificationType.NEW_SALESDASHBOARD
+    notification_type = ClientNotificationType.NEW_SALESDASHBOARD
     sale = SalesDashboard.objects.get(id=data["sale_id"])
-    for (
-        notification_subscription
-    ) in NotificationSubscription.get_all_enable_subscriptions_filter_by_type(
+    subscriptions = ClientNotificationSubscription.get_all_enable_subscriptions_by_type(
         notification_type
-    ).filter(
+    )
+    filter_queryset = subscriptions.filter(
         data__tracked_assets__contains=sale.asset.name
-    ):
+    )
+    for notification_subscription in filter_queryset:
         notify(notification_type, notification_subscription.account.id, **data)
 
 
 def notify_scope_of_clients_asset_price_dropped(**data):
-    notification_type = NotificationType.ASSET_PRICE_HAS_BEEN_DROPPED
+    notification_type = ClientNotificationType.ASSET_PRICE_HAS_BEEN_DROPPED
     sale = SalesDashboard.objects.get(id=data["sale_id"])
-    queryset = NotificationSubscription.get_all_enable_subscriptions_filter_by_type(
+    subscriptions = ClientNotificationSubscription.get_all_enable_subscriptions_by_type(
         notification_type
-    ).filter(data__min_tracked_price__has_key=sale.asset.name)
-    for notification_subscription in queryset:
+    )
+    filter_queryset = subscriptions.filter(
+        data__min_tracked_price__has_key=sale.asset.name
+    )
+    for notification_subscription in filter_queryset:
         if sale.price <= decimal.Decimal(
-            notification_subscription.data["min_tracked_price"][sale.asset.name]
+            notification_subscription.data["tracked_price"][sale.asset.name]
         ):
             notify(notification_type, notification_subscription.account.id, **data)
 
 
 NOTIFY_SCOPE_OF_CLIENTS = {
-    NotificationType.NEW_SALESDASHBOARD: notify_scope_of_clients_new_salesdashboard,
-    NotificationType.ASSET_PRICE_HAS_BEEN_DROPPED: notify_scope_of_clients_asset_price_dropped,
+    ClientNotificationType.NEW_SALESDASHBOARD: notify_scope_of_clients_new_salesdashboard,
+    ClientNotificationType.ASSET_PRICE_HAS_BEEN_DROPPED: notify_scope_of_clients_asset_price_dropped,
 }
 
 

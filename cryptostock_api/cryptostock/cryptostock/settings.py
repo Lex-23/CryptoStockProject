@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django_celery_beat",
     "drf_yasg",
     "debug_toolbar",
     "rest_framework",
@@ -143,7 +144,7 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# celery
+# celery config
 CELERY_BROKER_URL = os.environ["CRYPTOSTOCK_CELERY_BROKER_URL"]
 CELERY_RESULT_BACKEND = os.environ["CRYPTOSTOCK_CELERY_RESULT_BACKEND"]
 CELERY_ACCEPT_CONTENT = ["application/json"]
@@ -151,7 +152,8 @@ CELERY_RESULT_SERIALIZER = "json"
 CELERY_TASK_SERIALIZER = "json"
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TIMEZONE = os.environ["CRYPTOSTOCK_TIMEZONE"]
-
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
+CELERY_IMPORTS = "celery_tasks.schedule_tasks"
 
 # email_server config
 EMAIL_BACKEND = os.environ["CRYPTOSTOCK_EMAIL_BACKEND"]

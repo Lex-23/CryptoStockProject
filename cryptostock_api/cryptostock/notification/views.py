@@ -1,11 +1,20 @@
 from account.models import Account
 from celery_tasks.general_notification_tasks import success_notification_activated
+from celery_tasks.periodic_broker_notification_handlers import (
+    create_periodic_task_broker,
+)
 from django.db import transaction
-from notification.models import Consumer, ConsumerType
+from notification.models import (
+    BrokerNotificationSubscription,
+    ClientNotificationSubscription,
+    Consumer,
+    ConsumerType,
+)
 from notification.serializers import (
     CreateConsumerSerializer,
     FromTelegramDataSerializer,
     FromVKDataSerializer,
+    NotificationSubscriptionSerializer,
 )
 from rest_framework import permissions, status
 from rest_framework.response import Response
@@ -63,3 +72,35 @@ class CreateConsumerApiView(APIView):
 
         data = CONSUMER_ACTIVATE_DATA[consumer_type](account, **serializer.data)
         return Response(data, status=status.HTTP_201_CREATED)
+
+
+class NotificationSubscriptionListApiView(APIView):
+    def get(self, request):
+        account = request.user.account
+        if request.auth["user_role"] == "broker":
+            subs = BrokerNotificationSubscription.objects.filter(account=account)
+        else:
+            subs = ClientNotificationSubscription.objects.filter(account=account)
+        serializer = NotificationSubscriptionSerializer(subs, many=True)
+        return Response(serializer.data)
+
+    @transaction.atomic
+    def post(self, request):
+        serializer = NotificationSubscriptionSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        if request.auth["user_role"] == "broker":
+            notification_sub = BrokerNotificationSubscription.objects.create(
+                account=request.user.account.broker, **serializer.data
+            )
+            create_periodic_task_broker(
+                notification_sub.notification_type,
+                request.user.account.broker.id,
+                notification_sub.id,
+            )
+        else:
+            notification_sub = ClientNotificationSubscription.objects.create(
+                account=request.user.account.client, **serializer.data
+            )
+        serializer = NotificationSubscriptionSerializer(notification_sub)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

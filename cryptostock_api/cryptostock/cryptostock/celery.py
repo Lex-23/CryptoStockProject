@@ -6,6 +6,8 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cryptostock.settings")
 
 app = Celery("cryptostock")
 
+CELERY_IMPORTS = "schedule_tasks"
+
 app.config_from_object("django.conf:settings", namespace="CELERY")
 
 app.autodiscover_tasks()

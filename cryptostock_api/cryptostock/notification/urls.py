@@ -1,6 +1,7 @@
 from django.urls import path
 from notification.views import (
     CreateConsumerApiView,
+    NotificationSubscriptionListApiView,
     TelegramNotificationActivateApiView,
     VKNotificationActivateApiView,
 )
@@ -16,4 +17,5 @@ urlpatterns = [
     path(
         "notifications/consumers/VK/activate/", VKNotificationActivateApiView.as_view()
     ),
+    path("notifications/subscriptions/", NotificationSubscriptionListApiView.as_view()),
 ]

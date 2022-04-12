@@ -90,6 +90,50 @@ class YahooMarket(AbstractMarket):
         return assets_list
 
 
+@market_register
+class YahooMarketCopy(AbstractMarket):
+    NAME = "Yahoo1"
+
+    def get_assets(self):
+        return self.get_assets_from_yahoo()
+
+    def get_asset(self, name):
+        assets = (asset for asset in self.get_assets() if asset["name"] == name)
+        asset = next(assets, None)
+        return asset
+
+    def buy(self, name, count):
+        asset = self.get_asset(name)
+        total_price = (
+            decimal.Decimal(asset["price"]).quantize(
+                decimal.Decimal("0.01"), rounding=decimal.ROUND_UP
+            )
+            * count
+        )
+        return BuyResponse(asset=asset, count=count, total_price=total_price)
+
+    @lru_cache(maxsize=None)
+    def get_assets_from_yahoo(self):
+        """
+        Function for get assets info from Yahoo.
+        """
+        response = requests.get(self.url)
+        soup = BeautifulSoup(response.text, "lxml")
+        parse_names = soup.find_all("td", attrs={"aria-label": "Symbol"})
+        parse_descriptions = soup.find_all("td", attrs={"aria-label": "Name"})
+        parse_price = soup.find_all("td", attrs={"aria-label": "Price (Intraday)"})
+
+        assets_list = []
+        for name, desc, price in zip(parse_names, parse_descriptions, parse_price):
+            asset = {
+                "name": name.text.split("-")[0],
+                "description": desc.text.split()[0],
+                "price": price.text.replace(",", ""),
+            }
+            assets_list.append(asset)
+        return assets_list
+
+
 class Market(models.Model):
     name = models.CharField(max_length=20, unique=True)
     url = models.URLField()
