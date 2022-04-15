@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import axiosInstance from "../axiosApi";
 
+const JWTPrefix = "Bearer "
+
 class Login extends Component{
     constructor(props){
         super(props);
@@ -21,7 +23,7 @@ class Login extends Component{
                 username: this.state.username,
                 password: this.state.password
             });
-            axiosInstance.defaults.headers['Authorization'] = "Bearer " + response.data.access;
+            axiosInstance.defaults.headers['Authorization'] = JWTPrefix + response.data.access;
             localStorage.setItem('access_token', response.data.access);
             localStorage.setItem('refresh_token', response.data.refresh);
             console.log(response.data)
