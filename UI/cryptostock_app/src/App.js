@@ -1,21 +1,45 @@
 import React from "react";
-import "./App.css";
+import Login from "./components/login";
+import AuthPing from "./components/authPing";
 
-import Login from "./components/Login/Login";
-import Header from "./components/Header/Header";
-
-import { Route, Switch, Redirect } from "react-router-dom";
+import { Route, Switch, Redirect, Link } from "react-router-dom";
 import HomePage from "./pages/home";
 
+import axiosInstance from "./axiosApi";
+
 class App extends React.Component {
+
+  constructor() {
+    super();
+    this.handleLogout = this.handleLogout.bind(this);
+  }
+
+  async handleLogout() {
+    try {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+        axiosInstance.defaults.headers['Authorization'] = null;
+    }
+    catch (e) {
+        console.log(e);
+    }
+  };
+
   render() {
     return (
       <div className="app">
-        <Header></Header>
+        <h1>CryptostocProject TEST</h1>
+        <nav>
+            <Link className="nav-link" to="/">Home</Link>
+            <Link className="nav-link" to="/login/">Login</Link>
+            <Link className="nav-link" to="/auth-ping/">AuthPing</Link>
+            <button onClick={this.handleLogout} render={<h2>Logged out</h2>}>Logout</button>
+        </nav>
         <main className="main">
           <Switch>
-            <Route path="/login" component={Login} />
-            <Route exact path="/" component={HomePage} />
+            <Route exact path="/login/" component={Login} />
+            <Route exact path="/auth-ping/" component={AuthPing} />
+            <Route path="/" component={HomePage} />
             <Redirect to="/" />
           </Switch>
         </main>
