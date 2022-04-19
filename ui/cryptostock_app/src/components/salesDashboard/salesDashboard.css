@@ -1,0 +1,47 @@
+.sale-container {
+    box-sizing: border-box;
+    flex-basis: 33.33%;
+    padding: 10px;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    border-style: double;
+    border-width: 3px;
+    border-color: black;
+}
+
+
+.sale__asset-name {
+    margin: 10px 0;
+    text-align: left;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.sale__asset-desc {
+    margin: 10px 0;
+    text-align: left;
+    font-size: 12px;
+    font-weight: normal;
+}
+
+.sale__count {
+    margin: 10px 0;
+    text-align: left;
+    font-size: 18px;
+    font-weight: normal;
+}
+
+.sale__price {
+    margin: 10px 0;
+    text-align: left;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.sale__broker {
+    margin: 10px 0;
+    text-align: left;
+    font-size: 14px;
+    font-weight: bold;
+}
