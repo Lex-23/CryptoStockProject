@@ -26,7 +26,6 @@ class Login extends Component{
             axiosInstance.defaults.headers['Authorization'] = JWTPrefix + response.data.access;
             localStorage.setItem('access_token', response.data.access);
             localStorage.setItem('refresh_token', response.data.refresh);
-            console.log(response.data)
             return response;
         } catch (error) {
             throw error;
