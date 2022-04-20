@@ -23,7 +23,7 @@ INTERNAL_IPS = os.environ["CRYPTOSTOCK_INTERNAL_IPS"].split(",")
 # Application definition
 
 INSTALLED_APPS = [
-    "corsheaders",  # TODO remove after FE build success
+    "corsheaders",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -42,7 +42,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    "corsheaders.middleware.CorsMiddleware",  # TODO remove after FE build success
+    "corsheaders.middleware.CorsMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -53,8 +53,12 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-
-CORS_ALLOW_ALL_ORIGINS = True  # TODO remove after FE build success
+CORS_ALLOWED_ORIGINS = [
+    "http://127.0.0.1:3000",
+    "http://localhost:3000",
+    "http://localhost",
+    "http://127.0.0.1",
+]
 
 ROOT_URLCONF = "cryptostock.urls"
 
