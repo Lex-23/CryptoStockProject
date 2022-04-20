@@ -60,7 +60,7 @@ services:
       - be
 
   nginx:
-    build: ./nginx
+    build: ../ui/cryptostock_app
     ports:
       - "80:80"
     restart: always

@@ -7,7 +7,7 @@ ARG env_file=docker.dev.env
 WORKDIR /home/code/
 COPY . .
 
-RUN mkdir static
+RUN mkdir django_static
 RUN pip3 install -r requirements.txt
 RUN pip3 install gunicorn
 
