@@ -37,9 +37,9 @@ class App extends React.Component {
         </nav>
         <main className="main">
           <Switch>
-            <Route exact path="/login/" component={Login} />
-            <Route exact path="/auth-ping/" component={AuthPing} />
-            <Route exact path="/salesdashboard/" component={SalesDashboardList} />
+            <Route path="/login/" component={Login} />
+            <Route path="/auth-ping/" component={AuthPing} />
+            <Route path="/salesdashboard/" component={SalesDashboardList} />
             <Route path="/" component={HomePage} />
             <Redirect to="/" />
           </Switch>
