@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: django-test
+  name: django-dev
   namespace: dev
   labels:
     app: django
@@ -16,7 +16,7 @@ spec:
         app: django-container
     spec:
       containers:
-        - name: django-test
+        - name: django-dev
           image: be-dev:alfa
           command: ['/bin/bash', 'run.sh']
           ports:
