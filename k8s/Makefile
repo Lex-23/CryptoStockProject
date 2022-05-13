@@ -5,13 +5,15 @@ BE_IMAGE_NAME = be-dev:alfa
 NAMESPACE_FILE_NAME = dev-namespace.yaml
 CONFIGMAP_FILE_NAME = dev-configmap.yaml
 BD_MANIFEST = postgres/
+CMD = $(minikube docker-env)
 
-all: | start-minikube export-requirements-app be-build
+all: | start-minikube export-requirements-app be-build apply-namespace \
+	   apply-configmap apply-bd-manifest
 
 .PHONY: start-minikube
 # create local cluster and use minikube docker daemon instead host docker daemon
 start-minikube:
-	minikube start && eval $(minikube docker-env)
+	minikube start && eval $$(minikube docker-env)
 
 .PHONY: export-requirements-app
 export-requirements-app:

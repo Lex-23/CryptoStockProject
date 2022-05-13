@@ -4,10 +4,8 @@ metadata:
   name: cryptostock-dev-config
   namespace: dev
 data:
-  dev.env: |-
-    POSTGRES_DB=stock_be
+  dev.env: |
     POSTGRES_PORT=5432
-    POSTGRES_HOST=postgres-service
     CRYPTOSTOCK_SECRET_KEY=django-insecure-p&y5d@dyy$5#m*mzb_%w)exh^238lq+yw&m5%ss)85z6gq^ex@
     CRYPTOSTOCK_ALLOWED_HOSTS=testserver,127.0.0.1,gunicorn,192.168.49.2,
     CRYPTOSTOCK_INTERNAL_IPS=127.0.0.1,
