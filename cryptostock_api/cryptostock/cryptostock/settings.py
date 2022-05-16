@@ -94,11 +94,11 @@ WSGI_APPLICATION = "cryptostock.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("POSTGRES_NAME"),
-        "USER": os.getenv("POSTGRES_USER"),
-        "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
+        "NAME": os.environ["POSTGRES_NAME"],
+        "USER": os.environ["POSTGRES_USER"],
+        "PASSWORD": os.environ["POSTGRES_PASSWORD"],
         "PORT": int(os.getenv("POSTGRES_PORT", "5432")),
-        "HOST": os.getenv("POSTGRES_HOST"),
+        "HOST": os.environ["POSTGRES_HOST"],
     }
 }
 
