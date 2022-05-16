@@ -1,7 +1,8 @@
+STAGE = dev
 PROJECT_DIR = cryptostock_api
 BE_CODE_DIR = cryptostock
 BE_DOCKERFILE_NAME = Dockerfile-k8s
-BE_IMAGE_NAME = be-dev:alfa
+BE_IMAGE_NAME = be-${STAGE}:alfa
 NAMESPACE_FILE_NAME = dev-namespace.yaml
 CONFIGMAP_FILE_NAME = dev-configmap.yaml
 DB_MANIFEST = postgres/

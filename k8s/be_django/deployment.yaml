@@ -40,6 +40,9 @@ spec:
             - name: POSTGRES_DB
               value: stock_be
 
+            - name: APP_PORT
+              value: "8543"
+
           envFrom:
             - configMapRef:
                 name: cryptostock-dev-config
