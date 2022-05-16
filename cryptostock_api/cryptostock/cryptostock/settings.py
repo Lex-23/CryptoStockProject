@@ -39,6 +39,13 @@ INSTALLED_APPS = [
     "wallet",
     "account",
     "notification",
+    # Running Health Checks
+    "health_check",
+    "health_check.db",
+    "health_check.storage",
+    "health_check.contrib.migrations",
+    "health_check.contrib.celery",
+    "health_check.contrib.celery_ping",
 ]
 
 MIDDLEWARE = [
@@ -87,10 +94,10 @@ WSGI_APPLICATION = "cryptostock.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ["POSTGRES_DB"],
+        "NAME": os.environ["POSTGRES_NAME"],
         "USER": os.environ["POSTGRES_USER"],
         "PASSWORD": os.environ["POSTGRES_PASSWORD"],
-        "PORT": int(os.environ["POSTGRES_PORT"]),
+        "PORT": int(os.getenv("POSTGRES_PORT", "5432")),
         "HOST": os.environ["POSTGRES_HOST"],
     }
 }

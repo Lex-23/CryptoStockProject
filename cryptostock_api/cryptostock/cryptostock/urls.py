@@ -28,6 +28,7 @@ urlpatterns = [
     ),
     path("swagger/", schema_view.with_ui("swagger"), name="schema-swagger-ui"),
     path("redoc/", schema_view.with_ui("redoc"), name="schema-redoc"),
+    path("health-check/", include("health_check.urls")),
 ]
 
 urlpatterns += staticfiles_urlpatterns()
