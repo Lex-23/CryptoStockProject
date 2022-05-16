@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: django-dev
-          image: be-dev:alfa
+          image: be-dev:beta
           command: ['/bin/bash', 'run.sh']
           ports:
             - containerPort: 8543
