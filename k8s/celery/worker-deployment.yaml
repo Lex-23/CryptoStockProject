@@ -1,26 +1,24 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: django-dev
+  name: celery-worker
   namespace: dev
   labels:
-    app: django
+    deployment: celery-worker
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: django-container
+      pod: celery-worker
   template:
     metadata:
       labels:
-        app: django-container
+        pod: celery-worker
     spec:
       containers:
-        - name: django-dev
+        - name: celery-worker
           image: be-dev:gamma
-          command: ['/bin/bash', 'run.sh']
-          ports:
-            - containerPort: 8543
+          command: ['celery', '-A', 'cryptostock', 'worker', '-l', 'INFO']
           env:
             - name: POSTGRES_USER
               valueFrom:
@@ -36,12 +34,6 @@ spec:
 
             - name: POSTGRES_HOST
               value: postgres-service
-
-            - name: POSTGRES_DB
-              value: stock_be
-
-            - name: APP_PORT
-              value: "8543"
 
           envFrom:
             - configMapRef:

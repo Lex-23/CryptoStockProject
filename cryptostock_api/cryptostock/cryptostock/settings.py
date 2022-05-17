@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "health_check.contrib.migrations",
     "health_check.contrib.celery",
     "health_check.contrib.celery_ping",
+    "health_check.contrib.redis",
 ]
 
 MIDDLEWARE = [
@@ -94,11 +95,11 @@ WSGI_APPLICATION = "cryptostock.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ["POSTGRES_NAME"],
-        "USER": os.environ["POSTGRES_USER"],
-        "PASSWORD": os.environ["POSTGRES_PASSWORD"],
+        "NAME": os.getenv("POSTGRES_NAME"),
+        "USER": os.getenv("POSTGRES_USER"),
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD"),
         "PORT": int(os.getenv("POSTGRES_PORT", "5432")),
-        "HOST": os.environ["POSTGRES_HOST"],
+        "HOST": os.getenv("POSTGRES_HOST"),
     }
 }
 
@@ -158,6 +159,9 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# redis
+REDIS_URL = os.environ["CRYPTOSTOCK_CELERY_BROKER_URL"]
 
 # celery
 CELERY_BROKER_URL = os.environ["CRYPTOSTOCK_CELERY_BROKER_URL"]

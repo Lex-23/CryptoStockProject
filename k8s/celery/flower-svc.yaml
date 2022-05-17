@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: flower-service
+  namespace: dev
+spec:
+  selector:
+    pod: celery-flower
+  ports:
+  - port: 5555
+    nodePort: 30555
+  type: NodePort
