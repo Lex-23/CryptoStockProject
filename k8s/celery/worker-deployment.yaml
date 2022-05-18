@@ -38,3 +38,10 @@ spec:
           envFrom:
             - configMapRef:
                 name: cryptostock-dev-config
+
+          livenessProbe:
+            exec:
+              command: [ 'celery', '-A', 'cryptostock', 'inspect', 'ping' ]
+            initialDelaySeconds: 30
+            periodSeconds: 60
+            timeoutSeconds: 10
