@@ -5,8 +5,8 @@ metadata:
   namespace: dev
 data:
   CRYPTOSTOCK_ALLOWED_HOSTS: testserver,127.0.0.1,gunicorn,192.168.49.2,
-  CRYPTOSTOCK_CELERY_BROKER_URL: redis://redis:6379/0
-  CRYPTOSTOCK_CELERY_RESULT_BACKEND: redis://redis:6379/0
+  CRYPTOSTOCK_CELERY_BROKER_URL: redis://redis-service:6379/0
+  CRYPTOSTOCK_CELERY_RESULT_BACKEND: redis://redis-service:6379/0
   CRYPTOSTOCK_EMAIL_BACKEND: django.core.mail.backends.smtp.EmailBackend
   CRYPTOSTOCK_EMAIL_HOST: smtp.gmail.com
   CRYPTOSTOCK_EMAIL_HOST_PASSWORD: CrUnChi_56@76!-HreT

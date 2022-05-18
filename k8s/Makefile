@@ -2,14 +2,17 @@ STAGE = dev
 PROJECT_DIR = cryptostock_api
 BE_CODE_DIR = cryptostock
 BE_DOCKERFILE_NAME = Dockerfile-k8s
-BE_IMAGE_NAME = be-${STAGE}:beta
+BE_IMAGE_NAME = be-${STAGE}:gamma
 NAMESPACE_FILE_NAME = ${STAGE}-namespace.yaml
 CONFIGMAP_FILE_NAME = ${STAGE}-configmap.yaml
 DB_MANIFEST = postgres/
 BE_MANIFEST = be_django/
+REDIS_MANIFEST = redis/
+CELERY_MANIFEST = celery/
 
 all: | start-minikube export-requirements-app be-build apply-namespace \
-	   apply-configmap apply-db-manifest apply-be-manifest
+	   apply-configmap apply-db-manifest apply-be-manifest apply-redis-manifest \
+	   apply-celery-manifest
 
 .PHONY: start-minikube
 # create local cluster and use minikube docker daemon instead host docker daemon
@@ -42,3 +45,11 @@ apply-db-manifest:
 .PHONY: apply-be-manifest
 apply-be-manifest:
 	kubectl apply -f $(BE_MANIFEST)
+
+.PHONY: apply-redis-manifest
+apply-redis-manifest:
+	kubectl apply -f $(REDIS_MANIFEST)
+
+.PHONY: apply-celery-manifest
+apply-celery-manifest:
+	kubectl apply -f $(CELERY_MANIFEST)
