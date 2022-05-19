@@ -1,14 +1,19 @@
-STAGE = dev
 PROJECT_DIR = cryptostock_api
 BE_CODE_DIR = cryptostock
 BE_DOCKERFILE_NAME = Dockerfile-k8s
-BE_IMAGE_NAME = be-${STAGE}:gamma
+
+STAGE = dev
+BE_BUILD_TAG = gamma
+BE_IMAGE_NAME = be-${STAGE}:${BE_BUILD_TAG}
+
 NAMESPACE_FILE_NAME = ${STAGE}-namespace.yaml
 CONFIGMAP_FILE_NAME = ${STAGE}-configmap.yaml
 DB_MANIFEST = postgres/
 BE_MANIFEST = be_django/
 REDIS_MANIFEST = redis/
 CELERY_MANIFEST = celery/
+
+export BE_IMAGE_NAME
 
 all: | start-minikube export-requirements-app be-build apply-namespace \
 	   apply-configmap apply-db-manifest apply-be-manifest apply-redis-manifest \
@@ -44,7 +49,8 @@ apply-db-manifest:
 
 .PHONY: apply-be-manifest
 apply-be-manifest:
-	kubectl apply -f $(BE_MANIFEST)
+	envsubst < $(BE_MANIFEST)/deployment.yaml && \
+		kubectl apply -f $(BE_MANIFEST)
 
 .PHONY: apply-redis-manifest
 apply-redis-manifest:
@@ -52,4 +58,7 @@ apply-redis-manifest:
 
 .PHONY: apply-celery-manifest
 apply-celery-manifest:
-	kubectl apply -f $(CELERY_MANIFEST)
+	envsubst < $(CELERY_MANIFEST)/beat-deployment.yaml && \
+	envsubst < $(CELERY_MANIFEST)/flower-deployment.yaml && \
+	envsubst < $(CELERY_MANIFEST)/worker-deployment.yaml && \
+		kubectl apply -f $(CELERY_MANIFEST)
