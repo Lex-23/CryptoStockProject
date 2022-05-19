@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vk-bot
+  namespace: dev
+  labels:
+    app: vk-bot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vk-bot
+  template:
+    metadata:
+      labels:
+        app: vk-bot
+    spec:
+      containers:
+        - name: vk-bot
+          image: $NOTIFICATION_BOTS_IMAGE_NAME
+          command: ['python3', '-m', 'vk_bot']
+          ports:
+            - containerPort: 8030
+
+          envFrom:
+            - configMapRef:
+                name: cryptostock-dev-config
