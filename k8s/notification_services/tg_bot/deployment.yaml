@@ -20,7 +20,7 @@ spec:
           image: $NOTIFICATION_BOTS_IMAGE_NAME
           command: ['python3', '-m', 'telegram_bot']
           ports:
-            - containerPort: 8020
+            - containerPort: $TG_BOT_PORT
 
           envFrom:
             - configMapRef:

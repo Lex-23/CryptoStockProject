@@ -17,9 +17,13 @@ REDIS_MANIFEST = redis/
 CELERY_MANIFEST = celery/
 TG_BOT_MANIFEST = notification_services/tg_bot/
 VK_BOT_MANIFEST = notification_services/vk_bot/
+TG_BOT_PORT = 8020
+VK_BOT_PORT = 8030
 
 export BE_IMAGE_NAME
 export NOTIFICATION_BOTS_IMAGE_NAME
+export TG_BOT_PORT
+export VK_BOT_PORT
 
 all: | start-minikube export-requirements-app be-build apply-namespace \
 	   apply-configmap apply-db-manifest apply-be-manifest apply-redis-manifest \
