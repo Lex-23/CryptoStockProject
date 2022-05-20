@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: telegram-bot
+  namespace: dev
+  labels:
+    app: telegram-bot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: telegram-bot
+  template:
+    metadata:
+      labels:
+        app: telegram-bot
+    spec:
+      containers:
+        - name: telegram-bot
+          image: $NOTIFICATION_BOTS_IMAGE_NAME
+          command: ['python3', '-m', 'telegram_bot']
+          ports:
+            - containerPort: 8020
+
+          envFrom:
+            - configMapRef:
+                name: cryptostock-dev-config
