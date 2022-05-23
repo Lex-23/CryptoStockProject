@@ -1,26 +1,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: vk-bot
+  name: telegram-bot
   namespace: dev
   labels:
-    app: vk-bot
+    app: telegram-bot
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: vk-bot
+      app: telegram-bot
   template:
     metadata:
       labels:
-        app: vk-bot
+        app: telegram-bot
     spec:
       containers:
-        - name: vk-bot
-          image: $NOTIFICATION_BOTS_IMAGE_NAME
-          command: ['python3', '-m', 'vk_bot']
+        - name: telegram-bot
+          image: ${NOTIFICATION_BOTS_IMAGE_NAME}
+          command: ['python3', '-m', 'telegram_bot']
           ports:
-            - containerPort: $VK_BOT_PORT
+            - containerPort: 8020
 
           envFrom:
             - configMapRef:
