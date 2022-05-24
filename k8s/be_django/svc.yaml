@@ -10,5 +10,3 @@ spec:
   - protocol: TCP
     port: 8543
     targetPort: 8543
-    nodePort: 30055
-  type: NodePort

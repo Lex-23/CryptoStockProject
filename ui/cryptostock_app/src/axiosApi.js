@@ -1,7 +1,5 @@
 import axios from 'axios'
 
-//axios.defaults.baseURL = '/api/';
-//const baseURL = 'http://192.168.49.2:30055/api/'
 const baseURL = process.env.REACT_APP_BASE_URL
 const JWTPrefix = "Bearer "
 
