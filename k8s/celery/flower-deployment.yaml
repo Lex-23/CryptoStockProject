@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: flower
-        image: $BE_IMAGE_NAME
+        image: ${BE_IMAGE_NAME}
         command: ['celery', '-A', 'cryptostock', 'flower']
         ports:
           - containerPort: 5555

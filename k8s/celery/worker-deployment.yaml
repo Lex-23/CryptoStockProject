@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: celery-worker
-          image: $BE_IMAGE_NAME
+          image: ${BE_IMAGE_NAME}
           command: ['celery', '-A', 'cryptostock', 'worker', '-l', 'INFO']
           env:
             - name: POSTGRES_USER

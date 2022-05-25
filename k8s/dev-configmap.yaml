@@ -4,7 +4,8 @@ metadata:
   name: cryptostock-dev-config
   namespace: dev
 data:
-  CRYPTOSTOCK_ALLOWED_HOSTS: testserver,127.0.0.1,gunicorn,192.168.49.2,
+  CRYPTOSTOCK_ALLOWED_HOSTS: testserver,127.0.0.1,gunicorn,${NODE_IP},${DNS},
+  CRYPTOSTOCK_CORS_ALLOWED_ORIGINS: http://127.0.0.1:3000,http://localhost:3000,http://${DNS},
   CRYPTOSTOCK_CELERY_BROKER_URL: redis://redis-service:6379/0
   CRYPTOSTOCK_CELERY_RESULT_BACKEND: redis://redis-service:6379/0
   CRYPTOSTOCK_EMAIL_BACKEND: django.core.mail.backends.smtp.EmailBackend
@@ -23,9 +24,9 @@ data:
   REDIS_PORT: "6379"
   TELEGRAM_BOT_API_TOKEN: 5081655043:AAF38F7RTTkJKMx_LGZNim2LqR_QvFJoQQM
   TELEGRAM_BOT_NAME: cryptostock_2021_bot
-  TELEGRAM_NOTIFICATION_ACTIVATE_URL: http://192.168.49.2:30055/api/notifications/consumers/TELEGRAM/activate/
+  TELEGRAM_NOTIFICATION_ACTIVATE_URL: http://${DNS}/api/notifications/consumers/TELEGRAM/activate/
   TELEGRAM_STORAGE_HOST: redis-service
   TELEGRAM_STORAGE_PORT: "6379"
   VK_BOT_API_TOKEN: 9cd7276c5be6e81588468adbea6a9cf3e5da70637793d904da457815174e354410cdd13039b8721bf3fa4
   VK_BOT_PUBLIC_NUMBER: "210120626"
-  VK_NOTIFICATION_ACTIVATE_URL: http://192.168.49.2:30055/api/notifications/consumers/VK/activate/
+  VK_NOTIFICATION_ACTIVATE_URL: http://${DNS}/api/notifications/consumers/VK/activate/

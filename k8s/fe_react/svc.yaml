@@ -1,12 +1,12 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: django-service
+  name: react-service
   namespace: dev
 spec:
   selector:
-    app: django-container
+    app: react
   ports:
   - protocol: TCP
-    port: 8543
-    targetPort: 8543
+    port: 80
+    targetPort: 80
