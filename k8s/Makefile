@@ -5,9 +5,9 @@ NOTIFICATION_SERVICES_DIR = cryptostock_notification_services
 UI_APP_PATH = ui/cryptostock_app/
 
 STAGE = dev
-BE_BUILD_TAG = final
-NOTIFICATION_BOTS_IMAGE_TAG = final
-UI_BUILD_TAG = final
+BE_BUILD_TAG = 1.0.0
+NOTIFICATION_BOTS_IMAGE_TAG = 1.0.0
+UI_BUILD_TAG = 1.0.0
 
 DB_MANIFEST = postgres
 BE_MANIFEST = be_django
@@ -18,18 +18,19 @@ VK_BOT_MANIFEST = vk_bot
 UI_MANIFEST = fe_react
 
 export DNS=cryptostock.market.sample
-export BE_IMAGE_NAME=be-${STAGE}:${BE_BUILD_TAG}
-export NOTIFICATION_BOTS_IMAGE_NAME=notification_bots-${STAGE}:${NOTIFICATION_BOTS_IMAGE_TAG}
+export BE_IMAGE_NAME="be-${STAGE}:${BE_BUILD_TAG}"
+export NOTIFICATION_BOTS_IMAGE_NAME="notification_bots-${STAGE}:${NOTIFICATION_BOTS_IMAGE_TAG}"
 export NODE_IP=192.168.49.2
 export APP_PORT=8543
-export UI_IMAGE_NAME=ui-${STAGE}:${UI_BUILD_TAG}
-export REACT_APP_BASE_URL=http://${DNS}/api/
+export UI_IMAGE_NAME="ui-${STAGE}:${UI_BUILD_TAG}"
+export REACT_APP_BASE_URL="http://${DNS}/api/"
 
 all: | start-minikube export-requirements-app be-build apply-namespace \
 	   apply-configmap apply-db-manifest apply-be-manifest apply-redis-manifest \
 	   apply-celery-manifest export-requirements-notification-services \
 	   notification-services-build apply-tg-bot-manifest apply-vk-bot-manifest \
 	   create-ui-builder build-ui apply-ui-manifest apply-ingress-manifest
+
 
 .PHONY: start-minikube
 # create local cluster and use minikube docker daemon instead host docker daemon
@@ -49,11 +50,11 @@ be-build:
 
 .PHONY: apply-namespace
 apply-namespace:
-	kubectl apply -f ${STAGE}-namespace.yaml
+	kubectl apply -f "${STAGE}-namespace.yaml"
 
 .PHONY: apply-configmap
 apply-configmap:
-	envsubst < ${STAGE}-configmap.yaml | kubectl apply -f -
+	envsubst < "${STAGE}-configmap.yaml" | kubectl apply -f -
 
 .PHONY: apply-db-manifest
 apply-db-manifest:
@@ -108,4 +109,4 @@ apply-ui-manifest:
 
 .PHONY: apply-ingress-manifest
 apply-ingress-manifest:
-	kubectl apply -f ${STAGE}-ingress.yaml
+	kubectl apply -f "${STAGE}-ingress.yaml"
