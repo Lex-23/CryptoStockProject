@@ -14,5 +14,4 @@ def test_get_all_enable_subscriptions_filter_by_type():
     expect = NotificationSubscription.get_all_enable_subscriptions_filter_by_type(
         notification_type="TARGET_ASSET_ON_SALESDASHBOAD"
     )
-    breakpoint()
     assert len(expect) == 5
