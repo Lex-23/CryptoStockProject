@@ -1,6 +1,5 @@
 PROJECT_DIR = cryptostock_api
 BE_CODE_DIR = cryptostock
-BE_DOCKERFILE_NAME = Dockerfile-k8s
 NOTIFICATION_SERVICES_DIR = cryptostock_notification_services
 UI_APP_PATH = ui/cryptostock_app/
 
@@ -46,7 +45,7 @@ export-requirements-app:
 .PHONY: be-build
 be-build:
 	cd ../$(PROJECT_DIR)/$(BE_CODE_DIR) && \
-	docker build -f $(BE_DOCKERFILE_NAME) -t $(BE_IMAGE_NAME) .
+	docker build -t $(BE_IMAGE_NAME) .
 
 .PHONY: apply-namespace
 apply-namespace:

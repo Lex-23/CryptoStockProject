@@ -1,0 +1,11 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build',
+         '-t',
+         '${_UI_BUILDER_NAME}',
+         '--build-arg',
+         'REACT_APP_BASE_URL=${_REACT_APP_BASE_URL}',
+         '.']
+
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', '${_UI_BUILDER_NAME}']

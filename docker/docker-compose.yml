@@ -29,7 +29,8 @@ services:
       - static_volume:/home/code/staticfiles
 
   celery:
-    build: ../cryptostock_api/cryptostock/
+    build:
+      dockerfile: ../cryptostock_api/cryptostock/Dockerfile-dev
     env_file:
       - docker.dev.env
     restart: always

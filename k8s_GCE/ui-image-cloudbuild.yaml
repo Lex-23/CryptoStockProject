@@ -1,0 +1,10 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build',
+         '-t',
+         '${_UI_IMAGE_NAME}',
+         '--build-arg',
+         'FE_BUILD_IMAGE=${_UI_BUILDER_NAME}',
+         '.']
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', '${_UI_IMAGE_NAME}']
